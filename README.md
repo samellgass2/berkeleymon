@@ -8,5 +8,8 @@ An infinite, pseudorandom Pokemon-style top-down 2D game
 - **Procedural Generation**: the game should be able to generate an infinite number of trainers and enemy pokemon, all tuned to be challenging based on the player's level
 
 ## Progress
-
+- **5/19/22**:
+  - Created system to store locations and parse them for screen-sized presentation
+  - Created system to render tiles to screen and completed player animation and representation
+  - Set flags and infrastructure for transitioning between areas by repopulating BOARD.location
 
