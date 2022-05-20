@@ -1,2 +1,12 @@
-# berkeleymon
-A Pokemon-style top-down 2D game in Berkeley, CA
+# Berkeleymon
+An infinite, pseudorandom Pokemon-style top-down 2D game
+
+# Goals
+- **Traversability**: the game world should be interactive and traversable, as in Pokemon games
+- **Pokemon Encounter System**: wild Pokemon should be pulled from some encounter table based on area, and trainer pokemon should be appropriate as well
+- **Saving and Loading**: the game state should be able to be saved and loaded in a MINIMAL state representation 
+- **Procedural Generation**: the game should be able to generate an infinite number of trainers and enemy pokemon, all tuned to be challenging based on the player's level
+
+## Progress
+
+
