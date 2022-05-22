@@ -72,16 +72,16 @@ def on_key_release(symbol, modifiers):
     # if not in_encounter
     if (symbol == pg.window.key.W or symbol == pg.window.key.UP) and BOARD.player_heading == 0:
         # set to travel up
-        #BOARD.move(BOARD.player_heading)
+        BOARD.player_last_facing = BOARD.player_heading
         BOARD.player_heading = -1
     elif (symbol == pg.window.key.D or symbol == pg.window.key.RIGHT) and BOARD.player_heading == 1:
-        #BOARD.move(BOARD.player_heading)
+        BOARD.player_last_facing = BOARD.player_heading
         BOARD.player_heading = -1
     elif (symbol == pg.window.key.S or symbol == pg.window.key.DOWN) and BOARD.player_heading == 2:
-        #BOARD.move(BOARD.player_heading)
+        BOARD.player_last_facing = BOARD.player_heading
         BOARD.player_heading = -1
     elif (symbol == pg.window.key.A or symbol == pg.window.key.LEFT) and BOARD.player_heading == 3:
-        #BOARD.move(BOARD.player_heading)
+        BOARD.player_last_facing = BOARD.player_heading
         BOARD.player_heading = -1
     elif symbol == pg.window.key.SPACE:
         # set sprint modifier

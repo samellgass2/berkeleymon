@@ -35,9 +35,10 @@ class BoardTile:
 
 class Location:
     """A representation of the entire location to be given to a GameBoard."""
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, indoors: bool=False):
         self.width = width
         self.height = height
+        self.is_indoors = indoors
         self._area = []
         for i in range(self.height):
             self._area.append([None for i in range(self.width)])
@@ -179,7 +180,7 @@ empty = pg.sprite.Sprite(empty_space_img)
 
 ### TEST LOC ###
 # TODO: the test location is a 50 x 50 grass patch with appropriate edges.
-TEST_LOCATION = Location(50, 50)
+TEST_LOCATION = Location(50, 50, False)
 
 # Define edges appropriately
 for i in range(1, 49):

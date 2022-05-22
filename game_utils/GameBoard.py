@@ -29,6 +29,7 @@ class GameBoard:
 
         ### player params ###
         self.player_loc = (player_x, player_y)
+        self.player_last_facing = 2
         self.player_facing = 2
         self.player_heading = -1
         self.player_sprinting = False
@@ -50,6 +51,8 @@ class GameBoard:
 
     def populate_board(self):
         """Grabs the w x h tiles from Location necessary to fill screen."""
+
+        # Else render environment dynamically
         self.batch = graphics.Batch()
         for j in range(self.height):
             for i in range(self.width):
@@ -65,6 +68,10 @@ class GameBoard:
 
     def transition_board(self, offset: float):
         """Moves all tiles by offset parts of a tile."""
+        # Do not move environment if indoors
+        if self.location.is_indoors:
+            return
+        # Else transition tiles
         offset_tup = (0,0)
         extra_tiles = []
         if self.player_heading == 0 and self.can_move(self.player_loc[0], self.player_loc[1]+1, 0):
@@ -166,7 +173,8 @@ class GameBoard:
                 if self.can_enter(self.player_loc[0], self.player_loc[1]+1, direction):
                     self.get(self.player_loc[0], self.player_loc[1]+1).enter()
                 self.player_loc = (self.player_loc[0], self.player_loc[1]+1)
-                self.bottom_left = (self.bottom_left[0], self.bottom_left[1]+1)
+                if not self.location.is_indoors:
+                    self.bottom_left = (self.bottom_left[0], self.bottom_left[1]+1)
                 self.populate_board()
         # case left
         elif direction==1:
@@ -176,7 +184,8 @@ class GameBoard:
                 if self.can_enter(self.player_loc[0]+1, self.player_loc[1], direction):
                     self.get(self.player_loc[0]+1, self.player_loc[1]).enter()
                 self.player_loc = (self.player_loc[0]+1, self.player_loc[1])
-                self.bottom_left = (self.bottom_left[0]+1, self.bottom_left[1])
+                if not self.location.is_indoors:
+                    self.bottom_left = (self.bottom_left[0]+1, self.bottom_left[1])
                 self.populate_board()
         # case down
         if direction==2:
@@ -186,7 +195,8 @@ class GameBoard:
                 if self.can_enter(self.player_loc[0], self.player_loc[1]-1, direction):
                     self.get(self.player_loc[0], self.player_loc[1]-1).enter()
                 self.player_loc = (self.player_loc[0], self.player_loc[1]-1)
-                self.bottom_left = (self.bottom_left[0], self.bottom_left[1]-1)
+                if not self.location.is_indoors:
+                    self.bottom_left = (self.bottom_left[0], self.bottom_left[1]-1)
                 self.populate_board()
         # case right
         if direction==3:
@@ -196,17 +206,21 @@ class GameBoard:
                 if self.can_enter(self.player_loc[0]-1, self.player_loc[1], direction):
                     self.get(self.player_loc[0]-1, self.player_loc[1]).enter()
                 self.player_loc = (self.player_loc[0]-1, self.player_loc[1])
-                self.bottom_left = (self.bottom_left[0]-1, self.bottom_left[1])
+                if not self.location.is_indoors:
+                    self.bottom_left = (self.bottom_left[0]-1, self.bottom_left[1])
                 self.populate_board()
 
 
     def render_board(self, dt=None):
-
-
+        """Draws the board's tiles to the screen"""
         self.batch.draw()
 
-        self.player_icon.x = self.width//2 *TILE_WIDTH
-        self.player_icon.y =self.height//2 *TILE_HEIGHT
+        if self.location.is_indoors:
+            self.player_icon.x = (self.player_loc[0] - self.bottom_left[0]) * TILE_WIDTH
+            self.player_icon.y = (self.player_loc[1] - self.bottom_left[1]) * TILE_HEIGHT
+        else:
+            self.player_icon.x = self.width//2 *TILE_WIDTH
+            self.player_icon.y =self.height//2 *TILE_HEIGHT
         self.player_icon.draw()
 
         ### for debugging, check on sprites ###
@@ -214,7 +228,13 @@ class GameBoard:
         #     for i in range(self.width):
         #         print(self.get(i, j).sprite, self.get(i, j).sprite.x, self.get(i, j).sprite.y)
 
+
+    def render_indoors(self, dt=None):
+        self.batch.draw()
+
+
     def update_state(self, dt):
+        # Case currently moving
         if self.player_heading > -1:
             if self.move_offset < self.max_moves:
                 self.transition_board(1/self.max_moves)
@@ -223,18 +243,23 @@ class GameBoard:
                 self.move(self.player_heading)
                 self.move_offset = 0
 
-        else:
+            # Case sprinting: move twice as much
+            if self.player_sprinting:
+                if self.move_offset < self.max_moves:
+                    self.transition_board(1 / self.max_moves)
+                    self.move_offset += 1
+                else:
+                    self.move(self.player_heading)
+                    self.move_offset = 0
+
+        # Case movement ended, lock to next square
+        elif self.move_offset > 0:
             while self.move_offset < self.max_moves:
                 self.transition_board(1 / self.max_moves)
                 self.move_offset += 1
+            self.move_offset = 0
+            self.move(self.player_last_facing)
 
-        if self.player_sprinting:
-            if self.move_offset < self.max_moves:
-                self.transition_board(1/self.max_moves)
-                self.move_offset += 1
-            else:
-                self.move(self.player_heading)
-                self.move_offset = 0
 
 
 
