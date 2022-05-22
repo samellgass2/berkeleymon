@@ -18,6 +18,10 @@ class BoardTile:
         self.sprite.x = x
         self.sprite.y = y
 
+    def offset_pos(self, x, y):
+        self.sprite.x += x
+        self.sprite.y += y
+
     def set_batch(self, batch: graphics.Batch):
         self.sprite.batch = batch
 

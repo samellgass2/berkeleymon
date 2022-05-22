@@ -34,6 +34,10 @@ class GameBoard:
         self.player_sprinting = False
         self.player_icon = FACING_FORWARD
 
+        ### animation params ###
+        self.move_offset = 0
+        self.max_moves = 8
+
         self.populate_board()
 
     def get(self, x: int, y: int):
@@ -56,9 +60,66 @@ class GameBoard:
 
                 # Tell tile's sprite where it is
                 tile = self.get(i, j)
-                if tile is not None:
-                    tile.update_pos(i * TILE_WIDTH, j * TILE_HEIGHT)
-                    tile.set_batch(self.batch)
+                tile.update_pos(i * TILE_WIDTH, j * TILE_HEIGHT)
+                tile.set_batch(self.batch)
+
+    def transition_board(self, offset: float):
+        """Moves all tiles by offset parts of a tile."""
+        offset_tup = (0,0)
+        extra_tiles = []
+        if self.player_heading == 0 and self.can_move(self.player_loc[0], self.player_loc[1]+1, 0):
+            offset_tup = (0, -offset*TILE_HEIGHT)
+
+            for x in range(self.bottom_left[0],self.bottom_left[0] + self.width):
+                new_tile = self.location.get(x, self.bottom_left[1]+self.height)
+                sister_tile = self.get((x-self.bottom_left[0]), self.height-1)
+                new_tile.update_pos(sister_tile.sprite.x, sister_tile.sprite.y + TILE_HEIGHT)
+
+                new_tile.set_batch(self.batch)
+                extra_tiles.append(new_tile)
+
+        elif self.player_heading == 1 and self.can_move(self.player_loc[0]+1, self.player_loc[1], 1):
+            offset_tup = (-offset*TILE_WIDTH, 0)
+
+            for y in range(self.bottom_left[1],self.bottom_left[1] + self.height):
+                new_tile = self.location.get(self.bottom_left[0]+self.width, y)
+                sister_tile = self.get(self.width - 1, (y-self.bottom_left[1]))
+                new_tile.update_pos(sister_tile.sprite.x + TILE_WIDTH, sister_tile.sprite.y)
+
+                new_tile.set_batch(self.batch)
+                extra_tiles.append(new_tile)
+
+        elif self.player_heading == 2 and self.can_move(self.player_loc[0], self.player_loc[1]-1, 2):
+            offset_tup = (0, offset*TILE_HEIGHT)
+
+            for x in range(self.bottom_left[0],self.bottom_left[0] + self.width):
+                new_tile = self.location.get(x, self.bottom_left[1]-1)
+                sister_tile = self.get((x - self.bottom_left[0]), 0)
+                new_tile.update_pos(sister_tile.sprite.x, sister_tile.sprite.y - TILE_HEIGHT)
+                new_tile.set_batch(self.batch)
+                extra_tiles.append(new_tile)
+
+        elif self.player_heading == 3 and self.can_move(self.player_loc[0]-1, self.player_loc[1], 3):
+            offset_tup = (offset*TILE_WIDTH, 0)
+
+            for y in range(self.bottom_left[1],self.bottom_left[1] + self.height):
+                new_tile = self.location.get(self.bottom_left[0]-1, y)
+                sister_tile = self.get(0, y - self.bottom_left[1])
+                new_tile.update_pos(sister_tile.sprite.x - TILE_WIDTH, sister_tile.sprite.y)
+
+                new_tile.set_batch(self.batch)
+                extra_tiles.append(new_tile)
+
+        for j in range(self.height):
+            for i in range(self.width):
+                # Tell tile's sprite where it is
+                tile = self.get(i, j)
+                tile.offset_pos(offset_tup[0], offset_tup[1])
+
+        for tile in extra_tiles:
+            tile.offset_pos(offset_tup[0], offset_tup[1])
+
+        self.batch.draw()
 
     def in_bounds(self, direction):
         """Bool, (x,y) in bounds of location."""
@@ -100,6 +161,7 @@ class GameBoard:
         # case up
         if direction==0:
             if self.can_move(self.player_loc[0], self.player_loc[1]+1, direction):
+
                 self.player_facing = direction
                 if self.can_enter(self.player_loc[0], self.player_loc[1]+1, direction):
                     self.get(self.player_loc[0], self.player_loc[1]+1).enter()
@@ -109,6 +171,7 @@ class GameBoard:
         # case left
         elif direction==1:
             if self.can_move(self.player_loc[0]+1, self.player_loc[1], direction):
+
                 self.player_facing = direction
                 if self.can_enter(self.player_loc[0]+1, self.player_loc[1], direction):
                     self.get(self.player_loc[0]+1, self.player_loc[1]).enter()
@@ -118,6 +181,7 @@ class GameBoard:
         # case down
         if direction==2:
             if self.can_move(self.player_loc[0], self.player_loc[1]-1, direction):
+
                 self.player_facing = direction
                 if self.can_enter(self.player_loc[0], self.player_loc[1]-1, direction):
                     self.get(self.player_loc[0], self.player_loc[1]-1).enter()
@@ -127,6 +191,7 @@ class GameBoard:
         # case right
         if direction==3:
             if self.can_move(self.player_loc[0] - 1, self.player_loc[1], direction):
+
                 self.player_facing = direction
                 if self.can_enter(self.player_loc[0]-1, self.player_loc[1], direction):
                     self.get(self.player_loc[0]-1, self.player_loc[1]).enter()
@@ -135,7 +200,9 @@ class GameBoard:
                 self.populate_board()
 
 
-    def render_board(self):
+    def render_board(self, dt=None):
+
+
         self.batch.draw()
 
         self.player_icon.x = self.width//2 *TILE_WIDTH
@@ -149,9 +216,26 @@ class GameBoard:
 
     def update_state(self, dt):
         if self.player_heading > -1:
-            self.move(self.player_heading)
+            if self.move_offset < self.max_moves:
+                self.transition_board(1/self.max_moves)
+                self.move_offset += 1
+            else:
+                self.move(self.player_heading)
+                self.move_offset = 0
+
+        else:
+            while self.move_offset < self.max_moves:
+                self.transition_board(1 / self.max_moves)
+                self.move_offset += 1
+
         if self.player_sprinting:
-            self.move(self.player_heading)
+            if self.move_offset < self.max_moves:
+                self.transition_board(1/self.max_moves)
+                self.move_offset += 1
+            else:
+                self.move(self.player_heading)
+                self.move_offset = 0
+
 
 
     def update_player_icon(self, dt=None):

@@ -10,7 +10,7 @@ from game_utils.Encounter import *
 from game_utils.Characters import *
 
 ##### INITIALIZATION #####
-REFRESH_RATE = 5 # denominator of FPS
+REFRESH_RATE = 40 # denominator of FPS, 5 * max_moves per animation
 
 is_loadscreen = False #True OVERRIDDEN FOR TESTING
 
@@ -24,6 +24,7 @@ window = pg.window.Window(width=24*TILE_WIDTH, height=16*TILE_HEIGHT, caption="B
 ##### HANDLERS #####
 @window.event
 def on_draw():
+    window.clear()
     if is_loadscreen:
         return
         # dispatch loadscreen
@@ -96,4 +97,5 @@ def on_mouse_release(x, y, button, modifiers):
 ##### EXECUTE GAME #####
 
 pg.clock.schedule_interval(BOARD.update_state, 1/REFRESH_RATE)
+#pg.clock.schedule_interval(BOARD.render_board, 4/REFRESH_RATE)
 pg.app.run()
