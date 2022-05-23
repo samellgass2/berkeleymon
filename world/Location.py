@@ -4,8 +4,9 @@ import numpy as np
 import pyglet as pg
 import pyglet.graphics as graphics
 import pyglet.gl as gl
+from game_utils.Encounter import *
 
-WILD_PKMN_CHANCE = 0.15
+WILD_PKMN_CHANCE = 1 #0.15
 
 class BoardTile:
     def __init__(self, sprite: pg.sprite.Sprite, enterable : list[bool], traversable : bool=False):
@@ -64,14 +65,17 @@ class WildTile(BoardTile):
     def trigger(self):
         if np.random.random() <= WILD_PKMN_CHANCE:
             print("Wild pokemon found!")
-            # self.location.encounter()
+            wild_pokemon = self.location.encounter()
+            print(wild_pokemon)
+            # TODO: implement battle to feed from HERE
+            # Battle(self.trainer, wild_pokemon) --> Battle should live in encounter
 
 
 
 
 class Location:
     """A representation of the entire location to be given to a GameBoard."""
-    def __init__(self, width: int, height: int, indoors: bool=False):
+    def __init__(self, width: int, height: int, indoors: bool=False, pkmn_generator: PokemonGenerator=None):
         """Initialize a game world location."""
         self.width = width
         self.height = height
@@ -80,10 +84,11 @@ class Location:
         for i in range(self.height):
             self._area.append([None for i in range(self.width)])
 
+        self.pkmn_generator = pkmn_generator
+
     def set(self, x: int, y: int, tile: BoardTile):
         """Set the tile at (x,y) to be tile."""
         self._area[y][x] = tile
-
         tile.location = self
 
     def get(self, x : int, y : int):
@@ -96,6 +101,13 @@ class Location:
     def in_bounds(self, x: int, y: int):
         """If some (x,y) is within the location-space."""
         return (x >= 0) and (x < self.width) and (y >= 0) and (y < self.height)
+
+    def encounter(self):
+        """Encounter a wild pokemon and triggers a battle."""
+        if self.pkmn_generator is not None:
+            wild_pkmn = self.pkmn_generator.encounter()
+            return wild_pkmn
+
 
 ####### PLAYER ANIMATIONS IMPORT #######
 walking_forward_1_img = pg.resource.image("sprites/lucas/lucas_walking_forward_1.png")
@@ -222,7 +234,12 @@ empty = pg.sprite.Sprite(empty_space_img)
 
 ### TEST LOC ###
 # TODO: the test location is a 50 x 50 grass patch with appropriate edges.
-TEST_LOCATION = Location(50, 50, False)
+
+# TODO: implement a few mons to test encounter behavior
+TEST_PKMN_AND_ODDS = [("Dragonite", 0.3), ("Magikarp", 0.2), ("Empoleon", 0.5)]
+TEST_GENERATOR = PokemonGenerator(TEST_PKMN_AND_ODDS, 0, 100)
+
+TEST_LOCATION = Location(50, 50, False, TEST_GENERATOR)
 
 # Define edges appropriately
 for i in range(1, 49):
