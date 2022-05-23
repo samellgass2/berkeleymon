@@ -12,10 +12,9 @@ TILE_HEIGHT = 32
 class GameBoard:
     """The Visible Area."""
 
-    def __init__(self, location : Location, player_x : int, player_y : int):
+    def __init__(self, location : Location, player_x : int, player_y : int, player_trainer: PokemonTrainer = None):
         self.width = 24
         self.height = 16
-        self.in_encounter = False
         self._board = []
         for i in range(self.height):
             self._board.append([None for i in range(self.width)])
@@ -27,6 +26,7 @@ class GameBoard:
 
         ### relationship to given location ###
         self.location = location
+        self.location.board = self
         # Player is centered relative to the screen
         self.bottom_left = (player_x - self.width // 2, player_y - self.height // 2)
 
@@ -37,12 +37,23 @@ class GameBoard:
         self.player_heading = -1
         self.player_sprinting = False
         self.player_icon = FACING_FORWARD
+        self.player_trainer = player_trainer
 
         ### animation params ###
         self.move_offset = 0
         self.max_moves = 8
 
+        # TODO: dispatch battle UI, keep track of player's mons as the TRAINER class
+
+        ### render mode boolean flags ###
+        self.in_overworld = True
+        self.current_encounter = None
+
         self.populate_board()
+
+    ### DISPATCH ENCOUNTER ###
+    def enter_encounter(self, wild_pokemon: Pokemon):
+        self.current_encounter = Battle(self.player_trainer, Pokemon)
 
     def get(self, x: int, y: int):
         """Get sprite at board (x,y)."""
@@ -252,10 +263,17 @@ class GameBoard:
 
 
     def update_state(self, dt):
+       if self.in_overworld:
+           self.overworld_update()
+       else:
+           self.current_encounter.update()
+
+
+    def overworld_update(self):
         # Case currently moving
         if self.player_heading > -1:
             if self.move_offset < self.max_moves:
-                self.transition_board(1/self.max_moves)
+                self.transition_board(1 / self.max_moves)
                 self.move_offset += 1
             else:
                 self.move(self.player_heading)
@@ -277,8 +295,6 @@ class GameBoard:
                 self.move_offset += 1
             self.move_offset = 0
             self.move(self.player_last_facing)
-
-
 
 
     def update_player_icon(self, dt=None):

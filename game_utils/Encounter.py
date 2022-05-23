@@ -1,6 +1,8 @@
 """Battle Interface, dispatched by GameBoard."""
 
 import numpy as np
+import pyglet as pg
+import pyglet.graphics as graphics
 
 class PokemonMove:
     def __init__(self, type: int, name: str, power: int, priority: bool=False):
@@ -20,6 +22,8 @@ class PokemonMove:
     def set_user(self, pkmn):
         """Sets user for use to know typing and speed."""
         self.user = pkmn
+
+    # TODO: implement as object that can be dispatched accurately in battle
 
 class Pokemon:
     """The general, archetypal Pokemon class to create most of the skeleton for actions."""
@@ -48,6 +52,10 @@ class Pokemon:
         self.stats["speed"] = speed
         self.hp = hp
 
+        # TODO: Implement archetype for attacking, taking damage
+
+        # TODO: implement archetype for leveling, displaying moves, learning new moves
+
 class PokemonGenerator:
     def __init__(self, pkmn_and_odds: list, min_level: int, max_level: int):
         self.encounter_table = pkmn_and_odds
@@ -75,3 +83,81 @@ class PokemonGenerator:
             i += 1
         return self.encounter_table[i][0]
 
+class Item:
+    """A usable in-game item."""
+    def __init__(self, kind: int, value: int, owner):
+        self.kind = kind
+        self.owner = owner
+
+    def use(self, target: Pokemon):
+        return
+
+    def sell(self):
+        self.owner.items.remove(self)
+
+
+
+# TODO: implement all items in subclasses of Item
+class KeyItem(Item):
+    def __init__(self, owner):
+        """A key item is type 0, has no value, and an owner."""
+        super().__init__(0, 0, owner)
+
+    def sell(self):
+        """A key item may not be sold"""
+        return
+
+class PokeballItem(Item):
+    def __init__(self, value, owner):
+        super().__init__(1, value, owner)
+
+    def use(self, target: Pokemon):
+        # Do self.owner.battle.catch() --> attempt catch
+        return
+
+
+# TODO: implement the TRAINER class, make it agnostic for use by an AGENT or by a PLAYER
+class PokemonTrainer:
+    """A container to keep track of a trainer's pokemon and items."""
+    def __init__(self, pokemon: list[Pokemon], items: dict[Item, int], money: int):
+        self.team = pokemon
+        self.items = items
+        self.money = money
+
+
+# TODO: implement the BATTLE class, figure out how to flag in main render loop --> do encounter UI
+class Battle:
+    """The renderer and logic for pokemon battles"""
+    def __init__(self, trainer: PokemonTrainer, opponent):
+        self.trainer = trainer
+        self.opponent = opponent
+        self.player_may_take_action = False
+        self.batch = graphics.Batch()
+
+    def intro_animation(self):
+        """Should start an intro animation that is unskippable and begins the battle."""
+        return
+
+    def initialize(self):
+        """Should set up all objects and important pointers as attributes of the Battle."""
+        # Set up HP bars
+
+        # Set up player action buttons
+
+        # Set up pokemon stage
+
+        # Set up pokemon themselves
+
+        # animate stuff
+        self.intro_animation()
+
+        # Allow player to move
+        self.player_may_take_action = True
+        return
+
+    def render(self):
+        self.batch.draw()
+
+    def update(self):
+        """Main update loop to process player actions"""
+        return

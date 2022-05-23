@@ -12,8 +12,6 @@ from game_utils.Characters import *
 ##### INITIALIZATION #####
 REFRESH_RATE = 40 # denominator of FPS, 5 * max_moves per animation
 
-is_loadscreen = False #True OVERRIDDEN FOR TESTING
-
 curr_location = TEST_LOCATION
 
 BOARD = GameBoard(TEST_LOCATION, TEST_LOCATION.width//2, TEST_LOCATION.height//2)
@@ -24,44 +22,40 @@ window = pg.window.Window(width=24*TILE_WIDTH, height=16*TILE_HEIGHT, caption="B
 ##### HANDLERS #####
 @window.event
 def on_draw():
-    window.clear()
-    if is_loadscreen:
-        return
-        # dispatch loadscreen
     """Main render loop for all frames."""
-    if not BOARD.in_encounter:
+    window.clear()
+    # dispatch loadscreen here where appropriate
+    if BOARD.in_overworld:
         BOARD.render_board()
-        # etc.
-    # else:
-        # ENCOUNTER.render()
-        # etc.
+    else:
+        BOARD.current_encounter.render()
     return
 
 @window.event
 def on_key_press(symbol, modifiers):
     """Event handler for ongoing movement: process player input."""
-    # if not in_encounter
-    if symbol == pg.window.key.W or symbol == pg.window.key.UP:
-        # set to travel up
-        BOARD.player_heading = 0
+    if BOARD.in_overworld:
+        if symbol == pg.window.key.W or symbol == pg.window.key.UP:
+            # set to travel up
+            BOARD.player_heading = 0
 
-    elif symbol == pg.window.key.D or symbol == pg.window.key.RIGHT:
-        # set to travel right
-        BOARD.player_heading = 1
+        elif symbol == pg.window.key.D or symbol == pg.window.key.RIGHT:
+            # set to travel right
+            BOARD.player_heading = 1
 
-    elif symbol == pg.window.key.S or symbol == pg.window.key.DOWN:
-        # set to travel down
-        BOARD.player_heading = 2
+        elif symbol == pg.window.key.S or symbol == pg.window.key.DOWN:
+            # set to travel down
+            BOARD.player_heading = 2
 
-    elif symbol == pg.window.key.A or symbol == pg.window.key.LEFT:
-        # set to travel left
-        BOARD.player_heading = 3
+        elif symbol == pg.window.key.A or symbol == pg.window.key.LEFT:
+            # set to travel left
+            BOARD.player_heading = 3
 
-    elif symbol == pg.window.key.SPACE:
-        # set sprint modifier
-        BOARD.player_sprinting = True
+        elif symbol == pg.window.key.SPACE:
+            # set sprint modifier
+            BOARD.player_sprinting = True
 
-    BOARD.update_player_icon()
+        BOARD.update_player_icon()
 
     # if in_encounter:
 
@@ -69,24 +63,24 @@ def on_key_press(symbol, modifiers):
 def on_key_release(symbol, modifiers):
     """Event handler for ending ongooing movement: process end of player input."""
     """Event handler; process player input."""
-    # if not in_encounter
-    if (symbol == pg.window.key.W or symbol == pg.window.key.UP) and BOARD.player_heading == 0:
-        # set to travel up
-        BOARD.player_last_facing = BOARD.player_heading
-        BOARD.player_heading = -1
-    elif (symbol == pg.window.key.D or symbol == pg.window.key.RIGHT) and BOARD.player_heading == 1:
-        BOARD.player_last_facing = BOARD.player_heading
-        BOARD.player_heading = -1
-    elif (symbol == pg.window.key.S or symbol == pg.window.key.DOWN) and BOARD.player_heading == 2:
-        BOARD.player_last_facing = BOARD.player_heading
-        BOARD.player_heading = -1
-    elif (symbol == pg.window.key.A or symbol == pg.window.key.LEFT) and BOARD.player_heading == 3:
-        BOARD.player_last_facing = BOARD.player_heading
-        BOARD.player_heading = -1
-    elif symbol == pg.window.key.SPACE:
-        # set sprint modifier
-        BOARD.player_sprinting = False
-    BOARD.update_player_icon()
+    if BOARD.in_overworld:
+        if (symbol == pg.window.key.W or symbol == pg.window.key.UP) and BOARD.player_heading == 0:
+            # set to travel up
+            BOARD.player_last_facing = BOARD.player_heading
+            BOARD.player_heading = -1
+        elif (symbol == pg.window.key.D or symbol == pg.window.key.RIGHT) and BOARD.player_heading == 1:
+            BOARD.player_last_facing = BOARD.player_heading
+            BOARD.player_heading = -1
+        elif (symbol == pg.window.key.S or symbol == pg.window.key.DOWN) and BOARD.player_heading == 2:
+            BOARD.player_last_facing = BOARD.player_heading
+            BOARD.player_heading = -1
+        elif (symbol == pg.window.key.A or symbol == pg.window.key.LEFT) and BOARD.player_heading == 3:
+            BOARD.player_last_facing = BOARD.player_heading
+            BOARD.player_heading = -1
+        elif symbol == pg.window.key.SPACE:
+            # set sprint modifier
+            BOARD.player_sprinting = False
+        BOARD.update_player_icon()
 
 
 def on_mouse_release(x, y, button, modifiers):
@@ -97,5 +91,4 @@ def on_mouse_release(x, y, button, modifiers):
 ##### EXECUTE GAME #####
 
 pg.clock.schedule_interval(BOARD.update_state, 1/REFRESH_RATE)
-#pg.clock.schedule_interval(BOARD.render_board, 4/REFRESH_RATE)
 pg.app.run()

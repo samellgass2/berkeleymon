@@ -6,6 +6,7 @@ import pyglet.graphics as graphics
 import pyglet.gl as gl
 from game_utils.Encounter import *
 
+#TODO: tune wild mons odd
 WILD_PKMN_CHANCE = 1 #0.15
 
 class BoardTile:
@@ -68,6 +69,8 @@ class WildTile(BoardTile):
             wild_pokemon = self.location.encounter()
             print(wild_pokemon)
             # TODO: implement battle to feed from HERE
+            self.location.board.in_overworld = False
+            self.location.board.enter_encounter(wild_pokemon)
             # Battle(self.trainer, wild_pokemon) --> Battle should live in encounter
 
 
@@ -85,6 +88,7 @@ class Location:
             self._area.append([None for i in range(self.width)])
 
         self.pkmn_generator = pkmn_generator
+        self.board = None
 
     def set(self, x: int, y: int, tile: BoardTile):
         """Set the tile at (x,y) to be tile."""
