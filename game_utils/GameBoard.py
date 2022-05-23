@@ -165,8 +165,12 @@ class GameBoard:
         for all directions:
             if moving there is a legal move,
             set player to face that way
-            if that tile is a door, enter new area.
-            if not, update player location, update screen location and repopulate board tiles.
+            if that tile is a door, enter new area
+            trigger any action corresponding to that tile
+            if outdoors:
+                Update player location, update screen location and repopulate board tiles, moving environment.
+            if indoors:
+                Update player location, do NOT update screen and repopulate, moving player.
         """
 
         # case up
@@ -174,11 +178,16 @@ class GameBoard:
             if self.can_move(self.player_loc[0], self.player_loc[1]+1, direction):
 
                 self.player_facing = direction
+                # Entering logic
                 if self.can_enter(self.player_loc[0], self.player_loc[1]+1, direction):
-                    self.get(self.player_loc[0], self.player_loc[1]+1).enter()
+                    self.location.get(self.player_loc[0], self.player_loc[1]+1).enter()
                 self.player_loc = (self.player_loc[0], self.player_loc[1]+1)
+                # If outdoors, move screen, else keep static
                 if not self.location.is_indoors:
                     self.bottom_left = (self.bottom_left[0], self.bottom_left[1]+1)
+                # Trigger any events relative to that tile
+                self.location.get(self.player_loc[0], self.player_loc[1]).trigger()
+                # Re-render
                 self.populate_board()
         # case left
         elif direction==1:
@@ -186,10 +195,11 @@ class GameBoard:
 
                 self.player_facing = direction
                 if self.can_enter(self.player_loc[0]+1, self.player_loc[1], direction):
-                    self.get(self.player_loc[0]+1, self.player_loc[1]).enter()
+                    self.location.get(self.player_loc[0]+1, self.player_loc[1]).enter()
                 self.player_loc = (self.player_loc[0]+1, self.player_loc[1])
                 if not self.location.is_indoors:
                     self.bottom_left = (self.bottom_left[0]+1, self.bottom_left[1])
+                self.location.get(self.player_loc[0], self.player_loc[1]).trigger()
                 self.populate_board()
         # case down
         if direction==2:
@@ -197,10 +207,11 @@ class GameBoard:
 
                 self.player_facing = direction
                 if self.can_enter(self.player_loc[0], self.player_loc[1]-1, direction):
-                    self.get(self.player_loc[0], self.player_loc[1]-1).enter()
+                    self.location.get(self.player_loc[0], self.player_loc[1]-1).enter()
                 self.player_loc = (self.player_loc[0], self.player_loc[1]-1)
                 if not self.location.is_indoors:
                     self.bottom_left = (self.bottom_left[0], self.bottom_left[1]-1)
+                self.location.get(self.player_loc[0], self.player_loc[1]).trigger()
                 self.populate_board()
         # case right
         if direction==3:
@@ -208,10 +219,11 @@ class GameBoard:
 
                 self.player_facing = direction
                 if self.can_enter(self.player_loc[0]-1, self.player_loc[1], direction):
-                    self.get(self.player_loc[0]-1, self.player_loc[1]).enter()
+                    self.location.get(self.player_loc[0]-1, self.player_loc[1]).enter()
                 self.player_loc = (self.player_loc[0]-1, self.player_loc[1])
                 if not self.location.is_indoors:
                     self.bottom_left = (self.bottom_left[0]-1, self.bottom_left[1])
+                self.location.get(self.player_loc[0], self.player_loc[1]).trigger()
                 self.populate_board()
 
 

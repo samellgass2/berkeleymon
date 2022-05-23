@@ -5,6 +5,8 @@ import pyglet as pg
 import pyglet.graphics as graphics
 import pyglet.gl as gl
 
+WILD_PKMN_CHANCE = 0.15
+
 class BoardTile:
     def __init__(self, sprite: pg.sprite.Sprite, enterable : list[bool], traversable : bool=False):
         """Initialize a board tile."""
@@ -15,8 +17,10 @@ class BoardTile:
         self.x = sprite.x
         self.y = sprite.y
 
+        self.location = None
+
     def update_pos(self, x, y):
-        """Update the tiles position by updating the underlying sprite."""
+        """Update the tiles position by updating the underlying sprites."""
         for icon in self.sprite:
             icon.x = x
             icon.y = y
@@ -24,6 +28,7 @@ class BoardTile:
         self.y = y
 
     def offset_pos(self, x, y):
+        """Offset the screen-space position of the sprites by (x,y)."""
         for icon in self.sprite:
             icon.x += x
             icon.y += y
@@ -31,6 +36,7 @@ class BoardTile:
         self.y += y
 
     def set_batch(self, batches: list[graphics.Batch]):
+        """Sets the batch of all sprites in ascending order of priority."""
         # Set it so that each sprite gets a higher priority batch up to the max number of batches.
         for i in range(len(self.sprite)):
             self.sprite[i].batch = batches[min(i, len(batches)-1)]
@@ -42,13 +48,31 @@ class BoardTile:
             return
 
     def add_sprite(self, sprite: pg.sprite.Sprite):
+        """Adds a sprite to the TOP layer by default."""
         self.sprite.append(sprite)
+
+    def trigger(self):
+        """Triggers the interaction related to stepping on the given tile."""
+        # If in view of trainer, trigger that behavior.
+        return
+
+class WildTile(BoardTile):
+    """A BoardTile that may trigger wild pokemon encounters."""
+    def __init__(self, sprite: pg.sprite.Sprite, enterable : list[bool], traversable : bool=False):
+        super().__init__(sprite, enterable, traversable)
+
+    def trigger(self):
+        if np.random.random() <= WILD_PKMN_CHANCE:
+            print("Wild pokemon found!")
+            # self.location.encounter()
+
 
 
 
 class Location:
     """A representation of the entire location to be given to a GameBoard."""
     def __init__(self, width: int, height: int, indoors: bool=False):
+        """Initialize a game world location."""
         self.width = width
         self.height = height
         self.is_indoors = indoors
@@ -56,16 +80,21 @@ class Location:
         for i in range(self.height):
             self._area.append([None for i in range(self.width)])
 
-    def set(self, x: int, y: int, tile):
+    def set(self, x: int, y: int, tile: BoardTile):
+        """Set the tile at (x,y) to be tile."""
         self._area[y][x] = tile
 
+        tile.location = self
+
     def get(self, x : int, y : int):
+        """SAFELY retrieve tile at (x,y) or EmptyTile if None."""
         if self.in_bounds(x,y):
             return self._area[y][x]
         else:
             return BoardTile(pg.sprite.Sprite(empty_space_img), enterable=[False, False, False, False], traversable=False)
 
     def in_bounds(self, x: int, y: int):
+        """If some (x,y) is within the location-space."""
         return (x >= 0) and (x < self.width) and (y >= 0) and (y < self.height)
 
 ####### PLAYER ANIMATIONS IMPORT #######
@@ -216,6 +245,10 @@ for i in range(1, 49):
                                     enterable=[False, False, False, False],
                                     traversable=True))
         if (i+j)>7 and (i + j) % 7 == 3 and i % 2 == 0 :
+            TEST_LOCATION.set(i, j,
+                              WildTile(pg.sprite.Sprite(gp_middle_middle_img),
+                                        enterable=[False, False, False, False],
+                                        traversable=True))
             TEST_LOCATION.get(i, j).add_sprite(pg.sprite.Sprite(wild_grass_img))
 
 ### TEST LOC ###
