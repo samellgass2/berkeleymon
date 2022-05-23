@@ -8,28 +8,41 @@ import pyglet.gl as gl
 class BoardTile:
     def __init__(self, sprite: pg.sprite.Sprite, enterable : list[bool], traversable : bool=False):
         """Initialize a board tile."""
-        self.sprite = sprite
+        self.sprite = [sprite]
         self.traversable = traversable
         # a list of length 4 representing enterable from all directions [up, left, down, right]
         self.enterable = enterable
+        self.x = sprite.x
+        self.y = sprite.y
 
     def update_pos(self, x, y):
         """Update the tiles position by updating the underlying sprite."""
-        self.sprite.x = x
-        self.sprite.y = y
+        for icon in self.sprite:
+            icon.x = x
+            icon.y = y
+        self.x = x
+        self.y = y
 
     def offset_pos(self, x, y):
-        self.sprite.x += x
-        self.sprite.y += y
+        for icon in self.sprite:
+            icon.x += x
+            icon.y += y
+        self.x += x
+        self.y += y
 
-    def set_batch(self, batch: graphics.Batch):
-        self.sprite.batch = batch
+    def set_batch(self, batches: list[graphics.Batch]):
+        # Set it so that each sprite gets a higher priority batch up to the max number of batches.
+        for i in range(len(self.sprite)):
+            self.sprite[i].batch = batches[min(i, len(batches)-1)]
 
     def enter(self, direction: int):
         """Attempt to enter the tile's area from direction"""
         if self.enterable[direction]:
             # dispatch to game board that a new area has been entered, call to Location
             return
+
+    def add_sprite(self, sprite: pg.sprite.Sprite):
+        self.sprite.append(sprite)
 
 
 
@@ -198,10 +211,12 @@ TEST_LOCATION.set(0, 49, BoardTile(pg.sprite.Sprite(top_left_gp_img), enterable=
 # Define rest of space as middle
 for i in range(1, 49):
     for j in range(1, 49):
+        TEST_LOCATION.set(i, j,
+                          BoardTile(pg.sprite.Sprite(gp_middle_middle_img),
+                                    enterable=[False, False, False, False],
+                                    traversable=True))
         if (i+j)>7 and (i + j) % 7 == 3 and i % 2 == 0 :
-            TEST_LOCATION.set(i, j, BoardTile(pg.sprite.Sprite(wild_grass_img), enterable=[False, False, False, False], traversable=True))
-        else:
-            TEST_LOCATION.set(i, j, BoardTile(pg.sprite.Sprite(gp_middle_middle_img), enterable=[False, False, False, False], traversable=True))
+            TEST_LOCATION.get(i, j).add_sprite(pg.sprite.Sprite(wild_grass_img))
 
 ### TEST LOC ###
 

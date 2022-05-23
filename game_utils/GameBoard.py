@@ -20,7 +20,10 @@ class GameBoard:
         for i in range(self.height):
             self._board.append([None for i in range(self.width)])
 
-        self.batch = graphics.Batch()
+        self.batches = []
+        self.back_batch = graphics.Batch()
+        self.front_batch = graphics.Batch()
+        self.batches.extend([self.back_batch, self.front_batch])
 
         ### relationship to given location ###
         self.location = location
@@ -53,7 +56,7 @@ class GameBoard:
         """Grabs the w x h tiles from Location necessary to fill screen."""
 
         # Else render environment dynamically
-        self.batch = graphics.Batch()
+        self.batches = [graphics.Batch() for i in range(len(self.batches))]
         for j in range(self.height):
             for i in range(self.width):
                 # Convert from screen space to location space
@@ -64,7 +67,7 @@ class GameBoard:
                 # Tell tile's sprite where it is
                 tile = self.get(i, j)
                 tile.update_pos(i * TILE_WIDTH, j * TILE_HEIGHT)
-                tile.set_batch(self.batch)
+                tile.set_batch(self.batches)
 
     def transition_board(self, offset: float):
         """Moves all tiles by offset parts of a tile."""
@@ -80,9 +83,9 @@ class GameBoard:
             for x in range(self.bottom_left[0],self.bottom_left[0] + self.width):
                 new_tile = self.location.get(x, self.bottom_left[1]+self.height)
                 sister_tile = self.get((x-self.bottom_left[0]), self.height-1)
-                new_tile.update_pos(sister_tile.sprite.x, sister_tile.sprite.y + TILE_HEIGHT)
+                new_tile.update_pos(sister_tile.x, sister_tile.y + TILE_HEIGHT)
 
-                new_tile.set_batch(self.batch)
+                new_tile.set_batch(self.batches)
                 extra_tiles.append(new_tile)
 
         elif self.player_heading == 1 and self.can_move(self.player_loc[0]+1, self.player_loc[1], 1):
@@ -91,9 +94,9 @@ class GameBoard:
             for y in range(self.bottom_left[1],self.bottom_left[1] + self.height):
                 new_tile = self.location.get(self.bottom_left[0]+self.width, y)
                 sister_tile = self.get(self.width - 1, (y-self.bottom_left[1]))
-                new_tile.update_pos(sister_tile.sprite.x + TILE_WIDTH, sister_tile.sprite.y)
+                new_tile.update_pos(sister_tile.x + TILE_WIDTH, sister_tile.y)
 
-                new_tile.set_batch(self.batch)
+                new_tile.set_batch(self.batches)
                 extra_tiles.append(new_tile)
 
         elif self.player_heading == 2 and self.can_move(self.player_loc[0], self.player_loc[1]-1, 2):
@@ -102,8 +105,8 @@ class GameBoard:
             for x in range(self.bottom_left[0],self.bottom_left[0] + self.width):
                 new_tile = self.location.get(x, self.bottom_left[1]-1)
                 sister_tile = self.get((x - self.bottom_left[0]), 0)
-                new_tile.update_pos(sister_tile.sprite.x, sister_tile.sprite.y - TILE_HEIGHT)
-                new_tile.set_batch(self.batch)
+                new_tile.update_pos(sister_tile.x, sister_tile.y - TILE_HEIGHT)
+                new_tile.set_batch(self.batches)
                 extra_tiles.append(new_tile)
 
         elif self.player_heading == 3 and self.can_move(self.player_loc[0]-1, self.player_loc[1], 3):
@@ -112,9 +115,9 @@ class GameBoard:
             for y in range(self.bottom_left[1],self.bottom_left[1] + self.height):
                 new_tile = self.location.get(self.bottom_left[0]-1, y)
                 sister_tile = self.get(0, y - self.bottom_left[1])
-                new_tile.update_pos(sister_tile.sprite.x - TILE_WIDTH, sister_tile.sprite.y)
+                new_tile.update_pos(sister_tile.x - TILE_WIDTH, sister_tile.y)
 
-                new_tile.set_batch(self.batch)
+                new_tile.set_batch(self.batches)
                 extra_tiles.append(new_tile)
 
         for j in range(self.height):
@@ -126,7 +129,8 @@ class GameBoard:
         for tile in extra_tiles:
             tile.offset_pos(offset_tup[0], offset_tup[1])
 
-        self.batch.draw()
+        for batch in self.batches:
+            batch.draw()
 
     def in_bounds(self, direction):
         """Bool, (x,y) in bounds of location."""
@@ -213,7 +217,8 @@ class GameBoard:
 
     def render_board(self, dt=None):
         """Draws the board's tiles to the screen"""
-        self.batch.draw()
+        for batch in self.batches:
+            batch.draw()
 
         if self.location.is_indoors:
             self.player_icon.x = (self.player_loc[0] - self.bottom_left[0]) * TILE_WIDTH
@@ -230,7 +235,8 @@ class GameBoard:
 
 
     def render_indoors(self, dt=None):
-        self.batch.draw()
+        for batch in self.batches:
+            batch.draw()
 
 
     def update_state(self, dt):
