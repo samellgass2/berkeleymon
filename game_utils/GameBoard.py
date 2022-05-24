@@ -5,9 +5,7 @@ import numpy as np
 import pyglet as pg
 import pyglet.graphics as graphics
 import pyglet.gl as gl
-
-TILE_WIDTH = 32
-TILE_HEIGHT = 32
+from data.Constants import *
 
 class GameBoard:
     """The Visible Area."""
@@ -52,8 +50,21 @@ class GameBoard:
         self.populate_board()
 
     ### DISPATCH ENCOUNTER ###
-    def enter_encounter(self, wild_pokemon: Pokemon):
-        self.current_encounter = Battle(self.player_trainer, Pokemon)
+    def enter_wild_encounter(self, wild_pokemon: Pokemon):
+        """Enters an encounter with a wild pokemon"""
+        self.in_overworld = False
+        self.current_encounter = Battle(self.player_trainer, wild_pokemon, self)
+
+    def enter_trainer_encounter(self, trainer: PokemonTrainer):
+        """Enters an encounter with a trainer"""
+        self.in_overworld = False
+        self.current_encounter = Battle(self.player_trainer, trainer, self)
+
+    def exit_encounter(self):
+        """Exits an encounter of either type"""
+        self.location.board.in_overworld = True
+        self.current_encounter = None
+
 
     def get(self, x: int, y: int):
         """Get sprite at board (x,y)."""

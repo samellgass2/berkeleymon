@@ -3,6 +3,7 @@
 import numpy as np
 import pyglet as pg
 import pyglet.graphics as graphics
+from data.Constants import *
 
 class PokemonMove:
     def __init__(self, type: int, name: str, power: int, priority: bool=False):
@@ -128,14 +129,22 @@ class PokemonTrainer:
 # TODO: implement the BATTLE class, figure out how to flag in main render loop --> do encounter UI
 class Battle:
     """The renderer and logic for pokemon battles"""
-    def __init__(self, trainer: PokemonTrainer, opponent):
+    def __init__(self, trainer: PokemonTrainer, opponent, board):
         self.trainer = trainer
         self.opponent = opponent
         self.player_may_take_action = False
-        self.batch = graphics.Batch()
+        self.batches = [graphics.Batch(), graphics.Batch(), graphics.Batch(), graphics.Batch()]
+        self.board = board
+        self.user_current_pkmn = trainer.team[0]
+        self.foe_current_pkmn = opponent[0]
+        self.plates = []
 
     def intro_animation(self):
         """Should start an intro animation that is unskippable and begins the battle."""
+        return
+
+    def outro_animation(self):
+        """Should execute an outro animation that is unskippable and ends the battle."""
         return
 
     def initialize(self):
@@ -156,8 +165,55 @@ class Battle:
         return
 
     def render(self):
-        self.batch.draw()
+        self.batches = [graphics.Batch(), graphics.Batch(), graphics.Batch(), graphics.Batch()]
+        background = pg.shapes.Rectangle(0,0, width=24*TILE_WIDTH, height=16*TILE_HEIGHT, color=(255,255,255), batch=self.batches[0])
+        menu = pg.shapes.Rectangle(0,0, width=24*TILE_WIDTH, height=6*TILE_HEIGHT, color=(255,255,255), batch=self.batches[2])
+        menu_divider = pg.shapes.Line(x=0, y=6*TILE_HEIGHT, x2=24*TILE_WIDTH, y2=6*TILE_HEIGHT, width=4, color=(0,0,0), batch=self.batches[2])
+
+        self.render_pkmn_plates()
+        self.render_hp_bars()
+        for batch in self.batches:
+            batch.draw()
+
+    def render_pkmn_plates(self):
+        # TODO: fill the plates
+        plate = pg.shapes.Ellipse(x=16.5*TILE_WIDTH, y=12*TILE_HEIGHT,
+                                  a=4*TILE_WIDTH, b=1.5*TILE_HEIGHT, color=(0,0,0), batch=self.batches[1])
+
+        friendly_plate = pg.shapes.Ellipse(x=6*TILE_WIDTH, y=5*TILE_HEIGHT,
+                                           a=6.5*TILE_WIDTH, b=3*TILE_HEIGHT, color=(0,0,0), batch=self.batches[1])
+        self.plates = [plate, friendly_plate]
+
+    def render_hp_bars(self):
+        return
 
     def update(self):
         """Main update loop to process player actions"""
         return
+
+    def run_action(self):
+        """When run is pressed"""
+        # if ... pokemon related conditions, for now just 1
+        escape_prob = 0
+        if np.random.random() >= escape_prob:
+            # TODO: send some text to screen
+            self.player_may_take_action = False
+            self.outro_animation()
+            self.board.exit_encounter()
+            self.player_may_take_action = True
+
+    def battle_action(self):
+        """When battle is pressed, open move menu"""
+        return
+
+    def items_action(self):
+        """When items is pressed, open items menu"""
+        return
+
+    def pokemon_action(self):
+        """When pokemon is pressed, open pokemon menu"""
+        return
+
+
+TEST_TRAINER = PokemonTrainer([Pokemon(None, None, None, None, None, None, None, None, None, None, None, None, None, None)],
+                              [Item(0, 0, None), KeyItem(None)], 0)

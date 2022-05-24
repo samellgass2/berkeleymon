@@ -14,7 +14,9 @@ REFRESH_RATE = 40 # denominator of FPS, 5 * max_moves per animation
 
 curr_location = TEST_LOCATION
 
-BOARD = GameBoard(TEST_LOCATION, TEST_LOCATION.width//2, TEST_LOCATION.height//2)
+player_trainer = TEST_TRAINER
+
+BOARD = GameBoard(TEST_LOCATION, TEST_LOCATION.width//2, TEST_LOCATION.height//2, player_trainer)
 
 
 window = pg.window.Window(width=24*TILE_WIDTH, height=16*TILE_HEIGHT, caption="Berkeleymon")
@@ -29,7 +31,6 @@ def on_draw():
         BOARD.render_board()
     else:
         BOARD.current_encounter.render()
-    return
 
 @window.event
 def on_key_press(symbol, modifiers):
@@ -57,7 +58,9 @@ def on_key_press(symbol, modifiers):
 
         BOARD.update_player_icon()
 
-    # if in_encounter:
+    elif BOARD.current_encounter.player_may_take_action:
+        # TODO: Legal key presses within encounter live here
+        return
 
 @window.event
 def on_key_release(symbol, modifiers):
@@ -82,9 +85,16 @@ def on_key_release(symbol, modifiers):
             BOARD.player_sprinting = False
         BOARD.update_player_icon()
 
+    elif BOARD.current_encounter.player_may_take_action:
+        # TODO: Legal key presses within encounter live here
+        return
+
 
 def on_mouse_release(x, y, button, modifiers):
     # if in_encounter OR is
+    if not BOARD.in_overworld and BOARD.current_encounter.player_may_take_action:
+        # Keep track of the bottom left and top right corner
+        return
     # Dispatch the correct actions within the Encounter, using the GUI loaded from encounter
     return
 
