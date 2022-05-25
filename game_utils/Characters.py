@@ -106,7 +106,7 @@ class HydroPump(PokemonMove):
         super().__init__(type=10, name="HYDRO PUMP", power=120, physical=False, accuracy=80)
 
 
-TEST_TRAINER = PokemonTrainer(pokemon=[Piplup(level=5)],
+TEST_TRAINER = PokemonTrainer(pokemon=[Piplup(level=100)],
                               items={Item(0, 0, None): 1, KeyItem(None): 1},
                               money=0)
 

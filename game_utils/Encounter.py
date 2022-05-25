@@ -4,6 +4,7 @@ import numpy as np
 import pyglet as pg
 import pyglet.graphics as graphics
 from data.Constants import *
+from game_utils.Cutscene import *
 import math
 
 class PokemonMove:
@@ -81,7 +82,8 @@ class Pokemon:
         level = self.level
         while level > 0 and len(self.moveset) < 4:
             if self.movetable.get(level) is not None:
-                self.moveset.append(self.movetable.get(level))
+                self.moveset.append(self.movetable.get(level)())
+                # TODO: set user for all moves to self
             level -= 1
 
     def calculate_stats(self):
@@ -225,6 +227,8 @@ class Battle:
 
     def intro_animation(self):
         """Should start an intro animation that is unskippable and begins the battle."""
+        intro_text = TextBox("A wild "+str(self.foe_current_pkmn.display_name)+" appeared!", overworld=False)
+        self.board.display_text(intro_text)
         return
 
     def outro_animation(self):
@@ -233,13 +237,7 @@ class Battle:
 
     def initialize(self):
         """Should set up all objects and important pointers as attributes of the Battle."""
-        # Set up HP bars
-
-        # Set up player action buttons
-
-        # Set up pokemon stage
-
-        # Set up pokemon themselves
+        self.render()
 
         # animate stuff
         self.intro_animation()
@@ -249,6 +247,7 @@ class Battle:
         return
 
     def render(self):
+        # TODO: optimize to ONLY make new objects when necessary (something changes)
         self.shapes = []
         self.batches = [graphics.Batch() for i in range(self.layers)]
         background = pg.shapes.Rectangle(0,0, width=24*TILE_WIDTH, height=16*TILE_HEIGHT, color=(255,255,255), batch=self.batches[0])
@@ -265,6 +264,7 @@ class Battle:
 
         for batch in self.batches:
             batch.draw()
+
 
     def render_pkmn_plates(self):
         # TODO: fill the plates

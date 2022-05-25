@@ -44,10 +44,26 @@ class GameBoard:
         # TODO: dispatch battle UI, keep track of player's mons as the TRAINER class
 
         ### render mode boolean flags ###
+        self.displaying_text = False
+        self.current_text = None
         self.in_overworld = True
         self.current_encounter = None
 
         self.populate_board()
+
+    ### DISPATCH TEXT EVENT ###
+    def display_text(self, textbox: TextBox):
+        self.player_heading = -1
+        self.player_sprinting = False
+        self.update_player_icon()
+
+        self.displaying_text = True
+        self.current_text = textbox
+        self.current_text.board = self
+
+    def end_text(self):
+        self.displaying_text = False
+        self.current_text = None
 
     ### DISPATCH ENCOUNTER ###
     def enter_wild_encounter(self, wild_pokemon: Pokemon):
@@ -62,6 +78,9 @@ class GameBoard:
 
     def exit_encounter(self):
         """Exits an encounter of either type"""
+        self.player_heading = -1
+        self.player_sprinting = False
+        self.update_player_icon()
         self.location.board.in_overworld = True
         self.current_encounter = None
 

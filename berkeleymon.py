@@ -29,13 +29,22 @@ def on_draw():
     # dispatch loadscreen here where appropriate
     if BOARD.in_overworld:
         BOARD.render_board()
+        if BOARD.displaying_text:
+            BOARD.current_text.render()
     else:
         BOARD.current_encounter.render()
+        if BOARD.displaying_text:
+            BOARD.current_text.render()
 
 @window.event
 def on_key_press(symbol, modifiers):
     """Event handler for ongoing movement: process player input."""
-    if BOARD.in_overworld:
+    # Case text box is being displayed
+    if BOARD.displaying_text:
+        return
+
+    # Case in overworld, no menus
+    elif BOARD.in_overworld:
         if symbol == pg.window.key.W or symbol == pg.window.key.UP:
             # set to travel up
             BOARD.player_heading = 0
@@ -58,15 +67,21 @@ def on_key_press(symbol, modifiers):
 
         BOARD.update_player_icon()
 
+    # Case in battle
     elif BOARD.current_encounter.player_may_take_action:
         # TODO: Legal key presses within encounter live here
+        # TODO: key press implementation within encounter
         return
 
 @window.event
 def on_key_release(symbol, modifiers):
     """Event handler for ending ongooing movement: process end of player input."""
-    """Event handler; process player input."""
-    if BOARD.in_overworld:
+    if BOARD.displaying_text:
+        if BOARD.current_text.complete:
+            if symbol == pg.window.key.SPACE or symbol == pg.window.key.A \
+                    or symbol == pg.window.key.S or symbol == pg.window.key.W or symbol == pg.window.key.D:
+                BOARD.end_text()
+    elif BOARD.in_overworld:
         if (symbol == pg.window.key.W or symbol == pg.window.key.UP) and BOARD.player_heading == 0:
             # set to travel up
             BOARD.player_last_facing = BOARD.player_heading
@@ -87,12 +102,16 @@ def on_key_release(symbol, modifiers):
 
     elif BOARD.current_encounter.player_may_take_action:
         # TODO: Legal key presses within encounter live here
+        # TODO: key press implementation within encounter
+
         return
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
-    # if in_encounter OR is
-    if not BOARD.in_overworld and BOARD.current_encounter.player_may_take_action:
+    if BOARD.displaying_text:
+        if BOARD.current_text.complete:
+            BOARD.end_text()
+    elif not BOARD.in_overworld and BOARD.current_encounter.player_may_take_action:
         # Keep track of the bottom left and top right corner
         BOARD.current_encounter.dispatch_mouse_click(x, y)
     # Dispatch the correct actions within the Encounter, using the GUI loaded from encounter
