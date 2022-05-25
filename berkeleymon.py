@@ -89,12 +89,12 @@ def on_key_release(symbol, modifiers):
         # TODO: Legal key presses within encounter live here
         return
 
-
+@window.event
 def on_mouse_release(x, y, button, modifiers):
     # if in_encounter OR is
     if not BOARD.in_overworld and BOARD.current_encounter.player_may_take_action:
         # Keep track of the bottom left and top right corner
-        return
+        BOARD.current_encounter.dispatch_mouse_click(x, y)
     # Dispatch the correct actions within the Encounter, using the GUI loaded from encounter
     return
 

@@ -53,7 +53,7 @@ class GameBoard:
     def enter_wild_encounter(self, wild_pokemon: Pokemon):
         """Enters an encounter with a wild pokemon"""
         self.in_overworld = False
-        self.current_encounter = Battle(self.player_trainer, wild_pokemon, self)
+        self.current_encounter = Battle(self.player_trainer, [wild_pokemon], self)
 
     def enter_trainer_encounter(self, trainer: PokemonTrainer):
         """Enters an encounter with a trainer"""

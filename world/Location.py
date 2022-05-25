@@ -6,6 +6,7 @@ import pyglet.graphics as graphics
 import pyglet.gl as gl
 from game_utils.Encounter import *
 from data.Constants import *
+from game_utils.Characters import *
 
 #TODO: tune wild mons odd
 
@@ -67,7 +68,7 @@ class WildTile(BoardTile):
         if np.random.random() <= WILD_PKMN_CHANCE:
             print("Wild pokemon found!")
             wild_pokemon = self.location.encounter()
-            print(wild_pokemon)
+            print(wild_pokemon.name)
             # TODO: implement battle to feed from HERE
             self.location.board.enter_wild_encounter(wild_pokemon)
 
@@ -237,8 +238,8 @@ empty = pg.sprite.Sprite(empty_space_img)
 # TODO: the test location is a 50 x 50 grass patch with appropriate edges.
 
 # TODO: implement a few mons to test encounter behavior
-TEST_PKMN_AND_ODDS = [("Dragonite", 0.3), ("Magikarp", 0.2), ("Empoleon", 0.5)]
-TEST_GENERATOR = PokemonGenerator(TEST_PKMN_AND_ODDS, 0, 100)
+TEST_PKMN_AND_ODDS = [(Piplup, 1)]
+TEST_GENERATOR = PokemonGenerator(TEST_PKMN_AND_ODDS, 1, 6)
 
 TEST_LOCATION = Location(50, 50, False, TEST_GENERATOR)
 
