@@ -8,7 +8,7 @@ from game_utils.Cutscene import *
 import math
 
 class PokemonMove:
-    def __init__(self, type: int, name: str, power: int, physical: bool, accuracy: int, priority: bool=False):
+    def __init__(self, type: int, name: str, power: int, physical: bool, accuracy: int, pp, priority: bool=False):
         """Initialize a pokemon move archetype."""
         self.user = None
         self.type = type
@@ -17,6 +17,8 @@ class PokemonMove:
         self.priority = priority
         self.physical = physical
         self.accuracy = accuracy
+        self.max_pp = pp
+        self.pp = pp
 
     def use(self, opponent):
         """Dispatches the given move on opponent from user."""
@@ -219,6 +221,9 @@ class Battle:
         self.pokemon_button_bottom_left = (17 * TILE_WIDTH, 2 * TILE_HEIGHT)
         self.pokemon_button_top_right = (22 * TILE_WIDTH, 4 * TILE_HEIGHT)
 
+        self.move_box_width = 8 * TILE_WIDTH
+        self.move_box_height = 2.5 * TILE_WIDTH
+
         self.curr_menu = 0
 
         self.shapes = []
@@ -257,10 +262,18 @@ class Battle:
         self.render_pkmn_plates()
         self.render_hp_bars()
         self.render_sprites()
-        self.render_buttons()
 
-        if self.curr_menu == 1:
+        if self.curr_menu == 0:
+            self.render_buttons()
+
+        elif self.curr_menu == 1:
             self.render_items_menu()
+
+        elif self.curr_menu == 2:
+            self.render_battle_menu()
+
+        elif self.curr_menu == 3:
+            self.render_pokemon_menu()
 
         for batch in self.batches:
             batch.draw()
@@ -424,7 +437,41 @@ class Battle:
             return
         # Case in battle menu
         elif self.curr_menu == 2:
-            return
+            # Case move one exists and is clicked
+            if 1 * TILE_WIDTH <= x <= 1 * TILE_WIDTH + self.move_box_width \
+                    and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.move_box_height \
+                    and len(self.user_current_pkmn.moveset)>=1:
+                move = self.user_current_pkmn.moveset[0]
+                print(move.name)
+            # Case move two exists and is clicked
+            elif 10 * TILE_WIDTH <= x <= 10 * TILE_WIDTH + self.move_box_width \
+                    and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.move_box_height \
+                    and len(self.user_current_pkmn.moveset)>=2:
+
+                move = self.user_current_pkmn.moveset[1]
+                print(move.name)
+            # case move three exists and is clicked
+            elif 1 * TILE_WIDTH <= x <= 1 * TILE_WIDTH + self.move_box_width \
+                    and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
+                    and len(self.user_current_pkmn.moveset)>=3:
+
+                move = self.user_current_pkmn.moveset[2]
+                print(move.name)
+            # case move four exists and is clicked
+            elif 10 * TILE_WIDTH <= x <= 10 * TILE_WIDTH + self.move_box_width \
+                    and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
+                    and len(self.user_current_pkmn.moveset)>=4:
+
+                move = self.user_current_pkmn.moveset[3]
+                print(move.name)
+            # case back button is clicked
+            elif 19 * TILE_WIDTH <= x <= 23 * TILE_WIDTH \
+                    and 1.5 * TILE_HEIGHT <= y <= 5 * TILE_HEIGHT:
+
+                print("BACK CLICKED")
+                self.curr_menu = 0
+
+
         # Case in pokemon menu
         elif self.curr_menu == 3:
             return
@@ -458,8 +505,74 @@ class Battle:
         return
 
     def render_battle_menu(self):
-        # TODO: make battle menu and corresponding mouse parsing
-        return
+
+        move_objects = []
+
+        num_moves = len(self.user_current_pkmn.moveset)
+        move_colors = [TYPE_TO_COLOR[move.type] for move in self.user_current_pkmn.moveset]
+
+        if num_moves >= 1:
+            move_box_one = pg.shapes.BorderedRectangle(x = 1 * TILE_WIDTH, y = 3.25 * TILE_HEIGHT,
+                                                       width=self.move_box_width, height=self.move_box_height,
+                                                       color=move_colors[0], border_color=(0,0,0), border=3,
+                                                       batch=self.batches[3])
+            text_one = self.user_current_pkmn.moveset[0].name+"\n"+str(self.user_current_pkmn.moveset[0].pp)+" / "+str(self.user_current_pkmn.moveset[0].max_pp)
+
+            move_title_one = pg.text.Label(text=text_one,
+                                           x = 1.5 * TILE_WIDTH + self.move_box_width/2, width = self.move_box_width,
+                                           y = 5 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                           color=(0,0,0,255), batch=self.batches[4])
+            move_objects.extend([move_box_one, move_title_one])
+        if num_moves >= 2:
+            move_box_two = pg.shapes.BorderedRectangle(x = 10 * TILE_WIDTH, y = 3.25 * TILE_HEIGHT,
+                                                       width=self.move_box_width, height=self.move_box_height,
+                                                       color=move_colors[1], border_color=(0,0,0), border=3,
+                                                       batch=self.batches[3])
+            text_two = self.user_current_pkmn.moveset[1].name+"\n"+str(self.user_current_pkmn.moveset[1].pp)+" / "+str(self.user_current_pkmn.moveset[1].max_pp)
+
+            move_title_two = pg.text.Label(text=text_two,
+                                            x = 10.5 * TILE_WIDTH + self.move_box_width/2, width = self.move_box_width,
+                                            y = 5 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                            color=(0,0,0,255), batch=self.batches[4])
+            move_objects.extend([move_box_two, move_title_two])
+        if num_moves >= 3:
+            move_box_three = pg.shapes.BorderedRectangle(x = 1 * TILE_WIDTH, y = 0.5 * TILE_HEIGHT,
+                                                       width=self.move_box_width, height=self.move_box_height,
+                                                       color=move_colors[2], border_color=(0,0,0), border=3,
+                                                         batch=self.batches[3])
+            text_three = self.user_current_pkmn.moveset[2].name+"\n"+str(self.user_current_pkmn.moveset[2].pp)+" / "+str(self.user_current_pkmn.moveset[2].max_pp)
+            move_title_three = pg.text.Label(text=text_three,
+                                           x = 1.5 * TILE_WIDTH + self.move_box_width/2, width = self.move_box_width,
+                                           y = 2 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                           color=(0,0,0,255), batch=self.batches[4])
+            move_objects.extend([move_box_three, move_title_three])
+        if num_moves == 4:
+            move_box_four = pg.shapes.BorderedRectangle(x = 10 * TILE_WIDTH, y = 0.5 * TILE_HEIGHT,
+                                                       width=self.move_box_width, height=self.move_box_height,
+                                                       color=move_colors[3], border_color=(0,0,0), border=3,
+                                                        batch=self.batches[3])
+            text_four = self.user_current_pkmn.moveset[3].name+"\n"+str(self.user_current_pkmn.moveset[3].pp)+" / "+str(self.user_current_pkmn.moveset[3].max_pp)
+            move_title_four = pg.text.Label(text=text_four,
+                                            x = 10.5 * TILE_WIDTH + self.move_box_width/2, width = self.move_box_width,
+                                            y = 2 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                            color=(0,0,0,255), batch=self.batches[4])
+            move_objects.extend([move_box_four, move_title_four])
+
+        back_button = pg.shapes.BorderedRectangle(x = 19 * TILE_WIDTH, y = 1.5 * TILE_HEIGHT,
+                                                       width=4 * TILE_WIDTH, height= 3.5 * TILE_HEIGHT,
+                                                       color=(128, 237, 68), border_color=(0,0,0), border=3,
+                                                        batch=self.batches[3])
+        back_button_title = pg.text.Label(text="BACK",
+                                            x = 21 * TILE_WIDTH, width = 4 * TILE_WIDTH,
+                                            y = 3 * TILE_HEIGHT, anchor_x="center",
+                                            color=(0,0,0,255), batch=self.batches[4])
+        move_objects.extend([back_button, back_button_title])
+        self.shapes.extend(move_objects)
+
+
+
+
+
 
     def render_pokemon_menu(self):
         # TODO: make pokemon menu and corresponding mouse parsing

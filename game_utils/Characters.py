@@ -33,77 +33,77 @@ class Piplup(Pokemon):
 class Pound(PokemonMove):
     """Pound."""
     def __init__(self):
-        super().__init__(type=10, name="POUND", power=40, physical=True, accuracy=100)
+        super().__init__(type=10, name="POUND", power=40, physical=True, accuracy=100, pp=35)
 
 class Growl(PokemonMove):
     """Growl."""
     def __init__(self):
-        super().__init__(type=0, name="GROWL", power=0, physical=False, accuracy=100)
+        super().__init__(type=0, name="GROWL", power=0, physical=False, accuracy=100, pp=40)
 
     # TODO: override attack for STATUS move type
 
 class Bubble(PokemonMove):
     """Bubble."""
     def __init__(self):
-        super().__init__(type=10, name="BUBBLE", power=20, physical=True, accuracy=100)
+        super().__init__(type=10, name="BUBBLE", power=20, physical=True, accuracy=100, pp=30)
 
 class WaterSport(PokemonMove):
     """Water Sport."""
     def __init__(self):
-        super().__init__(type=10, name="BUBBLE", power=0, physical=False, accuracy=100)
+        super().__init__(type=10, name="BUBBLE", power=0, physical=False, accuracy=100, pp=15)
 
 class Peck(PokemonMove):
     """Peck."""
     def __init__(self):
-        super().__init__(type=2, name="PECK", power=35, physical=True, accuracy=100)
+        super().__init__(type=2, name="PECK", power=35, physical=True, accuracy=100, pp=35)
 
 class Bide(PokemonMove):
     """Bide."""
     def __init__(self):
-        super().__init__(type=0, name="BIDE", power=50, physical=True, accuracy=100)
+        super().__init__(type=0, name="BIDE", power=50, physical=True, accuracy=100, pp=10)
 
     # TODO: override behavior for counting turns and forcing move to be bide
 
 class BubbleBeam(PokemonMove):
     """BubbleBeam."""
     def __init__(self):
-        super().__init__(type=10, name="BUBBLEBEAM", power=65, physical=False, accuracy=100)
+        super().__init__(type=10, name="BUBBLEBEAM", power=65, physical=False, accuracy=100, pp=20)
 
 class FuryAttack(PokemonMove):
     """Fury Attack."""
     def __init__(self):
-        super().__init__(type=0, name="FURY ATTACK", power=15, physical=True, accuracy=85)
+        super().__init__(type=0, name="FURY ATTACK", power=15, physical=True, accuracy=85, pp=20)
 
     # TODO: make multi-hit moves random
 
 class Brine(PokemonMove):
     """Brine."""
     def __init__(self):
-        super().__init__(type=10, name="BRINE", power=65, physical=False, accuracy=100)
+        super().__init__(type=10, name="BRINE", power=65, physical=False, accuracy=100, pp=10)
 
 class Whirlpool(PokemonMove):
     """Whirlpool."""
     def __init__(self):
-        super().__init__(type=10, name="WHIRLPOOL", power=15, physical=False, accuracy=15)
+        super().__init__(type=10, name="WHIRLPOOL", power=15, physical=False, accuracy=85, pp=15)
 
     # TODO: make lingering moves
 
 class Mist(PokemonMove):
     """Mist."""
     def __init__(self):
-        super().__init__(type=14, name="MIST", power=0, physical=False, accuracy=100)
+        super().__init__(type=14, name="MIST", power=0, physical=False, accuracy=100, pp=30)
 
     # TODO: do MIST
 
 class DrillPeck(PokemonMove):
     """Drill Peck."""
     def __init__(self):
-        super().__init__(type=2, name="DRILL PECK", power=80, physical=True, accuracy=100)
+        super().__init__(type=2, name="DRILL PECK", power=80, physical=True, accuracy=100, pp=20)
 
 class HydroPump(PokemonMove):
     """Hydro Pump."""
     def __init__(self):
-        super().__init__(type=10, name="HYDRO PUMP", power=120, physical=False, accuracy=80)
+        super().__init__(type=10, name="HYDRO PUMP", power=120, physical=False, accuracy=80, pp=5)
 
 
 TEST_TRAINER = PokemonTrainer(pokemon=[Piplup(level=100)],
