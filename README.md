@@ -37,3 +37,4 @@ An infinite, pseudorandom Pokemon-style top-down 2D game
   - Added fainting and ending of battle appropriately and with correct text pop ups 
   - Added switching menu and mandatory switch on current 'mon death
   - Started Item infrastructure, allowing AI to use items, and player item management
+  - Implemented correct user switch logic to penalize with a turn loss when chosen voluntarily

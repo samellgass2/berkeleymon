@@ -260,9 +260,19 @@ class Battle:
         self.layers = 6
         self.batches = [graphics.Batch() for i in range(self.layers)]
         self.board = board
-        self.user_current_pkmn = trainer.team[0]
+
+        # The active pokemon should be the first non-fainted mon
+        self.user_current_pkmn = None
+        i = 0
+        while i < len(trainer.team) and self.user_current_pkmn is None:
+            if not trainer.team[i].fainted:
+                self.user_current_pkmn = trainer.team[i]
+            else:
+                i+=1
+
         self.is_wild = wild
 
+        ##### GRAPHICS PARAMS #####
         self.battle_button_bottom_left = (9*TILE_WIDTH, 2*TILE_HEIGHT)
         self.battle_button_top_right = (15*TILE_WIDTH, 5*TILE_WIDTH)
 
@@ -281,6 +291,10 @@ class Battle:
         self.switch_box_width = 5 * TILE_WIDTH
         self.switch_box_height = 2.5 * TILE_HEIGHT
 
+        self.shapes = []
+        ##### END GRAPHICS PARAMS #####
+
+        ##### BATTLE VARS #####
         self.curr_menu = 0
         # 0 for player, 1 for agent
         self.curr_turn = None
@@ -297,9 +311,10 @@ class Battle:
         self.shown_effectiveness = False
         self.switch_forced = False
         self.user_switched_bool = False
+        ##### END BATTLE VARS #####
 
-        self.shapes = []
 
+        ##### INIT AGENT #####
         # If wild, 'opponent' is a list of 1 mon
         if self.is_wild:
             self.agent = self.board.wild_agent
@@ -315,6 +330,7 @@ class Battle:
 
         # Set the appropriate AI agent up
         self.agent.enter_battle(self.opponent, self)
+        ##### END INIT AGENT #####
 
         self.initialize()
 
@@ -525,7 +541,6 @@ class Battle:
                     and self.items_button_bottom_left[1] <= y <= self.items_button_top_right[1]:
                 print("ITEMS CLICKED")
                 self.curr_menu = 1
-                self.items_action()
             # Case clicked RUN
             elif self.run_button_bottom_left[0] <= x <= self.run_button_top_right[0] \
                     and self.run_button_bottom_left[1] <= y <= self.run_button_top_right[1]:
@@ -541,7 +556,6 @@ class Battle:
                     and self.pokemon_button_bottom_left[1] <= y <= self.pokemon_button_top_right[1]:
                 print("POKEMON CLICKED")
                 self.curr_menu = 3
-                self.pokemon_action()
         # Case in items menu
         elif self.curr_menu == 1:
             return
@@ -758,6 +772,8 @@ class Battle:
         # Prepare to display effectiveness
         self.shown_effectiveness = False
 
+        # TODO: ADD SECOND SET OF SELF.IS_CRIT, ETC. AND CORRESPONDING LOGIC IN EFFECTIVENESS --> ALLOW AI SWITCH OR ITEM TO MOVE FIRST
+
         # Player moves first
         self.turn_counter = 0
         self.curr_turn = order
@@ -879,14 +895,6 @@ class Battle:
         elif self.effectiveness == 1:
             self.board.display_text(TextBox("It's super effective!"+"\n"+crit_text))
         self.text_timer = REFRESH_RATE
-
-    def items_action(self):
-        """When items is pressed, open items menu"""
-        pass
-
-    def pokemon_action(self):
-        """When pokemon is pressed, open pokemon menu"""
-        pass
 
     def render_items_menu(self):
         # TODO: make items menu and corresponding mouse parsing
