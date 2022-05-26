@@ -8,6 +8,7 @@ from game_utils.GameBoard import *
 from game_utils.Cutscene import *
 from game_utils.Encounter import *
 from game_utils.Characters import *
+from agents.Pokemon_Agents import *
 
 ##### INITIALIZATION #####
 REFRESH_RATE = 40 # denominator of FPS, 5 * max_moves per animation
@@ -18,6 +19,8 @@ player_trainer = TEST_TRAINER
 
 BOARD = GameBoard(TEST_LOCATION, TEST_LOCATION.width//2, TEST_LOCATION.height//2, player_trainer)
 
+# For now, only implemented agent is 'easy' random agent
+BOARD.set_agents(RandomLegalAgent(BOARD))
 
 window = pg.window.Window(width=24*TILE_WIDTH, height=16*TILE_HEIGHT, caption="Berkeleymon")
 

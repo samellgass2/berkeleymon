@@ -45,6 +45,126 @@ TYPE_TO_COLOR = {
     16: (112, 87, 70)
 }
 
+# Effectiveness of type x on type y given as (x,y)
+def EFFECTIVENESS(x, y):
+    eff = 1
+    # Normal type
+    if x == 0:
+        if y in (5,8):
+            eff = 0.5
+        elif y == 7:
+            eff = 0
+    # Fighting type
+    elif x == 1:
+        if y in (2,3,6,13):
+            eff = 0.5
+        elif y == 7:
+            eff = 0
+        elif y in (0, 5, 8, 14, 16):
+            eff = 2
+    # Flying type
+    elif x == 2:
+        if y in (5, 8, 12):
+            eff = 0.5
+        elif y in (1, 6, 11):
+            eff = 2
+    # Poison type
+    elif x == 3:
+        if y in (3,4,5,7):
+            eff = 0.5
+        elif y == 8:
+            eff = 0
+        elif y == 11:
+            eff = 2
+    # Ground type
+    elif x == 4:
+        if y in (6, 11):
+            eff = 0.5
+        elif y == 2:
+            eff = 0
+        elif y in (3, 5, 8, 9, 12):
+            eff = 2
+    # Rock type
+    elif x == 5:
+        if y in (1, 4, 8):
+            eff = 0.5
+        elif y in (2, 6, 9, 14):
+            eff = 2
+    # Bug type
+    elif x == 6:
+        if y in (1,2,3,7,8,9):
+            eff = 0.5
+        elif y in (11, 13, 16):
+            eff = 2
+    # Ghost type
+    elif x == 7:
+        if y == 0:
+            eff = 0
+        elif y == 16:
+            eff = 0.5
+        elif y in (7,13):
+            eff = 2
+    # Steel type
+    elif x == 8:
+        if y in (8,9,10,12):
+            eff = 0.5
+        elif y in (5, 14):
+            eff = 2
+    # Fire type
+    elif x == 9:
+        if y in (5, 9, 10, 15):
+            eff = 0.5
+        elif y in (6, 8, 11, 14):
+            eff = 2
+    # Water type
+    elif x == 10:
+        if y in (10, 11, 15):
+            eff = 0.5
+        elif y in (4,5,9):
+            eff = 2
+    # Grass type
+    elif x == 11:
+        if y in (2,3,6,8,9,11,15):
+            eff = 0.5
+        elif y in (4,5,10):
+            eff = 2
+    # Electric type
+    elif x == 12:
+        if y == 4:
+            eff = 0
+        elif y in (11, 12, 15):
+            eff = 0.5
+        elif y in (2, 10):
+            eff = 2
+    # Psychic type
+    elif x == 13:
+        if y == 16:
+            eff = 0
+        elif y == 13:
+            eff = 0.5
+        elif y in (0,3):
+            eff = 2
+    # Ice type
+    elif x == 14:
+        if y in (8,9,10,14):
+            eff = 0.5
+        elif y in (2,4,11,15):
+            eff = 2
+    # Dragon type
+    elif x == 15:
+        if y == 8:
+            eff = 0.5
+        if y == 15:
+            eff = 2
+    # Dark type
+    elif x == 16:
+        if y in (1,16):
+            eff = 0.5
+        elif y in (7,13):
+            eff = 2
+
+    return eff
+
 # TODO: create dictionaries of stat tables as
     # move_table[pokemon] = dict[level, dict["stat", value]]
     # so that you can look up move_table[pokemon][level] to get the stat table

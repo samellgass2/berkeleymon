@@ -10,7 +10,8 @@ from data.Constants import *
 class GameBoard:
     """The Visible Area."""
 
-    def __init__(self, location : Location, player_x : int, player_y : int, player_trainer: PokemonTrainer = None):
+    def __init__(self, location : Location, player_x : int, player_y : int, player_trainer: PokemonTrainer = None,
+                 wild_agent = None, trainer_agent = None):
         self.width = 24
         self.height = 16
         self._board = []
@@ -37,6 +38,10 @@ class GameBoard:
         self.player_icon = FACING_FORWARD
         self.player_trainer = player_trainer
 
+        ### AI ###
+        self.wild_agent = wild_agent
+        self.trainer_agent = trainer_agent
+
         ### animation params ###
         self.move_offset = 0
         self.max_moves = 8
@@ -50,6 +55,16 @@ class GameBoard:
         self.current_encounter = None
 
         self.populate_board()
+
+    ### SET AI AGENTS ###
+    # TODO: allow for difficulty to be changed in game at any time - use this function
+    def set_agents(self, trainer_agent, wild_agent = None):
+        if wild_agent is None:
+            wild_agent = trainer_agent
+
+        self.wild_agent = wild_agent
+        self.trainer_agent = trainer_agent
+
 
     ### DISPATCH TEXT EVENT ###
     def display_text(self, textbox: TextBox):
@@ -69,12 +84,12 @@ class GameBoard:
     def enter_wild_encounter(self, wild_pokemon: Pokemon):
         """Enters an encounter with a wild pokemon"""
         self.in_overworld = False
-        self.current_encounter = Battle(self.player_trainer, [wild_pokemon], self)
+        self.current_encounter = Battle(self.player_trainer, [wild_pokemon], self, wild=True)
 
     def enter_trainer_encounter(self, trainer: PokemonTrainer):
         """Enters an encounter with a trainer"""
         self.in_overworld = False
-        self.current_encounter = Battle(self.player_trainer, trainer, self)
+        self.current_encounter = Battle(self.player_trainer, trainer, self, wild=False)
 
     def exit_encounter(self):
         """Exits an encounter of either type"""

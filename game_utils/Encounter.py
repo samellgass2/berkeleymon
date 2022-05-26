@@ -21,10 +21,49 @@ class PokemonMove:
         self.pp = pp
 
     def use(self, opponent):
-        """Dispatches the given move on opponent from user."""
-        multiplier = 1
-        # Do type math, multiply multiplier and physical + user stats
-        return
+        """Dispatches the given move on opponent from user - returns is_crit (bool) and is_super_eff in {-2, -1, 0, 1}."""
+        # TODO: implement "stages" of crits after focus energy, etc.
+        crit_multiplier = 1 + 0.5 * int(np.random.random() < (1/16))
+        if crit_multiplier > 1:
+            is_crit = True
+        else:
+            is_crit = False
+
+        super_eff_multiplier = math.prod([EFFECTIVENESS(self.type, other) for other in opponent.types])
+        if super_eff_multiplier == 0:
+            is_super_eff = -2
+        elif super_eff_multiplier < 1:
+            is_super_eff = -1
+        elif super_eff_multiplier == 1:
+            is_super_eff = 0
+        else:
+            is_super_eff = 1
+
+        STAB_multiplier = 1 + 0.5 * int(self.type in self.user.types)
+
+        rand_multiplier = np.random.choice(range(85, 101)) / 100
+
+        if self.physical:
+            attack_defense_ratio = self.user.stats["attack"] / opponent.stats["defense"]
+        else:
+            attack_defense_ratio = self.user.stats["special_attack"] / opponent.stats["special_defense"]
+
+        # TODO: implement other multipliers: weather, burn, specific 'other' cases
+
+        damage = (((2 * self.user.level / 5 + 2) * self.power * attack_defense_ratio / 50) + 2) * \
+                 crit_multiplier * rand_multiplier * STAB_multiplier * super_eff_multiplier
+
+        hit_prob = np.random.choice(range(0, 101))
+        if hit_prob <= self.accuracy:
+            is_hit = True
+            opponent.take_damage(math.floor(damage))
+        else:
+            is_hit = False
+
+        self.pp -= 1
+        # TODO: return if crit or not to print to screen and is not very / super effective, and missed or not
+        print(self.name, is_crit, is_super_eff, is_hit)
+        return is_crit, is_super_eff, is_hit
 
     def set_user(self, pkmn):
         """Sets user for use to know typing and speed."""
@@ -54,6 +93,9 @@ class Pokemon:
             self.moveset = []
             self.get_most_recent_moves()
 
+        for move in self.moveset:
+            move.set_user(self)
+
         self.name = name
         if nickname:
             self.display_name = nickname
@@ -79,6 +121,9 @@ class Pokemon:
         self.calculate_stats()
         self.hp = self.stats["max_hp"]
 
+        self.status = -1
+        self.fainted = False
+
     def get_most_recent_moves(self):
         """Retrieves the up to 4 most recent moves a Pokemon would have learned."""
         level = self.level
@@ -100,7 +145,12 @@ class Pokemon:
 
         # TODO: Implement archetype for attacking, taking damage
 
-    def take_damage(self, move: PokemonMove, opponent):
+    def take_damage(self, damage: int):
+        if damage < self.hp:
+            self.hp -= damage
+        else:
+            self.hp = 0
+            self.fainted = True
         return
 
     def level_up(self):
@@ -156,9 +206,10 @@ class PokemonGenerator:
 
 class Item:
     """A usable in-game item."""
-    def __init__(self, kind: int, value: int, owner):
+    def __init__(self, kind: int, value: int, owner, name):
         self.kind = kind
         self.owner = owner
+        self.name = name
 
     def use(self, target: Pokemon):
         return
@@ -170,17 +221,17 @@ class Item:
 
 # TODO: implement all items in subclasses of Item
 class KeyItem(Item):
-    def __init__(self, owner):
+    def __init__(self, owner, name):
         """A key item is type 0, has no value, and an owner."""
-        super().__init__(0, 0, owner)
+        super().__init__(0, 0, owner, name)
 
     def sell(self):
         """A key item may not be sold"""
         return
 
 class PokeballItem(Item):
-    def __init__(self, value, owner):
-        super().__init__(1, value, owner)
+    def __init__(self, value, owner, name):
+        super().__init__(1, value, owner, name)
 
     def use(self, target: Pokemon):
         # Do self.owner.battle.catch() --> attempt catch
@@ -195,19 +246,24 @@ class PokemonTrainer:
         self.items = items
         self.money = money
 
+    def use_item(self, item_name: str):
+        """Use a given item from inventory. *NOT SAFE*"""
+        self.items[item_name].use()
+        if self.items[item_name] == 0:
+            self.items.pop(item_name)
+
 
 # TODO: implement the BATTLE class, figure out how to flag in main render loop --> do encounter UI
 class Battle:
     """The renderer and logic for pokemon battles"""
-    def __init__(self, trainer: PokemonTrainer, opponent, board):
+    def __init__(self, trainer: PokemonTrainer, opponent, board, wild):
         self.trainer = trainer
-        self.opponent = opponent
         self.player_may_take_action = False
         self.layers = 5
         self.batches = [graphics.Batch() for i in range(self.layers)]
         self.board = board
         self.user_current_pkmn = trainer.team[0]
-        self.foe_current_pkmn = opponent[0]
+        self.is_wild = wild
 
         self.battle_button_bottom_left = (9*TILE_WIDTH, 2*TILE_HEIGHT)
         self.battle_button_top_right = (15*TILE_WIDTH, 5*TILE_WIDTH)
@@ -227,6 +283,22 @@ class Battle:
         self.curr_menu = 0
 
         self.shapes = []
+
+        # If wild, 'opponent' is a list of 1 mon
+        if self.is_wild:
+            self.agent = self.board.wild_agent
+            ai_trainer = PokemonTrainer(opponent, items={}, money=0)
+
+        # If trainer, 'opponent' is a set PokemonTrainer object
+        else:
+            self.agent = self.board.trainer_agent
+            ai_trainer = opponent
+
+        self.opponent = ai_trainer
+        self.foe_current_pkmn = self.opponent.team[0]
+
+        # Set the appropriate AI agent up
+        self.agent.enter_battle(self.opponent, self)
 
         self.initialize()
 
@@ -425,7 +497,6 @@ class Battle:
                     and self.battle_button_bottom_left[1] <= y <= self.battle_button_top_right[1]:
                 print("BATTLE CLICKED")
                 self.curr_menu = 2
-                self.battle_action()
             # Case clicked POKEMON
             elif self.pokemon_button_bottom_left[0] <= x <= self.pokemon_button_top_right[0] \
                     and self.pokemon_button_bottom_left[1] <= y <= self.pokemon_button_top_right[1]:
@@ -443,6 +514,7 @@ class Battle:
                     and len(self.user_current_pkmn.moveset)>=1:
                 move = self.user_current_pkmn.moveset[0]
                 print(move.name)
+                self.battle_action(move)
             # Case move two exists and is clicked
             elif 10 * TILE_WIDTH <= x <= 10 * TILE_WIDTH + self.move_box_width \
                     and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.move_box_height \
@@ -450,6 +522,7 @@ class Battle:
 
                 move = self.user_current_pkmn.moveset[1]
                 print(move.name)
+                self.battle_action(move)
             # case move three exists and is clicked
             elif 1 * TILE_WIDTH <= x <= 1 * TILE_WIDTH + self.move_box_width \
                     and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
@@ -457,6 +530,7 @@ class Battle:
 
                 move = self.user_current_pkmn.moveset[2]
                 print(move.name)
+                self.battle_action(move)
             # case move four exists and is clicked
             elif 10 * TILE_WIDTH <= x <= 10 * TILE_WIDTH + self.move_box_width \
                     and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
@@ -464,6 +538,7 @@ class Battle:
 
                 move = self.user_current_pkmn.moveset[3]
                 print(move.name)
+                self.battle_action(move)
             # case back button is clicked
             elif 19 * TILE_WIDTH <= x <= 23 * TILE_WIDTH \
                     and 1.5 * TILE_HEIGHT <= y <= 5 * TILE_HEIGHT:
@@ -483,26 +558,112 @@ class Battle:
         escape_prob = 0
         if np.random.random() >= escape_prob:
             # TODO: send some text to screen
+            self.board.display_text(TextBox("You got away safely!"))
             self.player_may_take_action = False
             self.outro_animation()
             self.board.exit_encounter()
             self.player_may_take_action = True
 
-    def battle_action(self):
-        """When battle is pressed, open move menu"""
-        return
+    def ended_action(self):
+        self.player_may_take_action = False
+        self.outro_animation()
+        self.board.exit_encounter()
+        self.player_may_take_action = True
+
+
+    def battle_action(self, user_move: PokemonMove):
+        """When a move is picked, take turn"""
+        # Determine turn order by speed
+        if self.user_current_pkmn.stats["speed"] == self.foe_current_pkmn.stats["speed"]:
+            order = np.random.choice(range(0,2))
+        elif self.user_current_pkmn.stats["speed"] > self.foe_current_pkmn.stats["speed"]:
+            order = 0
+        else:
+            order = 1
+
+        # Player moves first
+        if order == 0:
+            is_crit, is_super_eff, is_hit = user_move.use(self.foe_current_pkmn)
+            # TODO: print corresponding messages
+            if not self.foe_current_pkmn.fainted:
+                self.opponent_turn()
+            else:
+                self.opponent_fainted()
+
+            if self.user_current_pkmn.fainted:
+                self.user_fainted()
+                # TODO: force user to do switch menu
+                return
+
+        # Agent moves first
+        else:
+            self.opponent_turn()
+            if not self.user_current_pkmn.fainted:
+                is_crit, is_super_eff, is_hit = user_move.use(self.foe_current_pkmn)
+                # TODO: print corresponding messages
+            else:
+                self.opponent_fainted()
+
+            if self.foe_current_pkmn.fainted:
+                self.opponent_fainted()
+
+
+    def opponent_turn(self):
+        """Allow the opponent agent to take an action."""
+        ai_action = self.agent.action()
+        # Case AI attacked
+        if isinstance(ai_action, PokemonMove):
+            is_crit, is_super_eff, is_hit = ai_action.use(self.user_current_pkmn)
+            # TODO: print corresponding messages
+        # Case AI switched
+        elif isinstance(ai_action, Pokemon):
+            self.opponent_switched(self.opponent.team.index(ai_action))
+        # Case AI used item
+        elif isinstance(ai_action, Item):
+            self.opponent.use_item(ai_action.name)
+
+
+    def opponent_fainted(self):
+        message = TextBox(self.foe_current_pkmn.name+str(" fainted!"))
+        self.board.display_text(message)
+        living_mons = len([mon for mon in self.opponent.team if not mon.fainted])
+        if living_mons == 0:
+            self.battle_ended(player_won=True)
+
+    def user_fainted(self):
+        message = TextBox(self.user_current_pkmn.name+str(" fainted!"))
+        self.board.display_text(message)
+        living_mons = len([mon for mon in self.trainer.team if not mon.fainted])
+        if living_mons == 0:
+            self.battle_ended(player_won=False)
+
+
+    def opponent_switched(self, ind: int):
+        # TODO: PRINT MESSAGE
+        self.foe_current_pkmn = self.opponent.team[ind]
+
+    def user_switched(self, ind: int):
+        # TODO: switch logic
+        pass
+
+    def battle_ended(self, player_won=True):
+        # TODO: CALCULATE HOW MUCH $$ TO ADD TO PLAYER WALLET
+        # TODO: PRINT MESSAGE
+        self.ended_action()
+
+
 
     def items_action(self):
         """When items is pressed, open items menu"""
-        return
+        pass
 
     def pokemon_action(self):
         """When pokemon is pressed, open pokemon menu"""
-        return
+        pass
 
     def render_items_menu(self):
         # TODO: make items menu and corresponding mouse parsing
-        return
+        pass
 
     def render_battle_menu(self):
 
