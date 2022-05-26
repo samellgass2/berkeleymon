@@ -8,7 +8,7 @@ from game_utils.Cutscene import *
 import math
 
 class PokemonMove:
-    def __init__(self, type: int, name: str, power: int, physical: bool, accuracy: int, pp, priority: bool=False):
+    def __init__(self, type: int, name: str, power: int, physical: bool, accuracy: int, pp, priority: bool=False, is_status=False):
         """Initialize a pokemon move archetype."""
         self.user = None
         self.type = type
@@ -19,6 +19,7 @@ class PokemonMove:
         self.accuracy = accuracy
         self.max_pp = pp
         self.pp = pp
+        self.is_status = is_status
 
     def use(self, opponent):
         """Dispatches the given move on opponent from user - returns is_crit (bool) and is_super_eff in {-2, -1, 0, 1}."""
@@ -27,7 +28,7 @@ class PokemonMove:
         if crit_multiplier > 1:
             is_crit = True
         else:
-            is_crit = False
+            is_crit = True # TODO: FIX AFTER DEBUGGING
 
         super_eff_multiplier = math.prod([EFFECTIVENESS(self.type, other) for other in opponent.types])
         if super_eff_multiplier == 0:
@@ -56,14 +57,15 @@ class PokemonMove:
         hit_prob = np.random.choice(range(0, 101))
         if hit_prob <= self.accuracy:
             is_hit = True
-            opponent.take_damage(math.floor(damage))
+            total_damage = damage
         else:
             is_hit = False
+            total_damage = 0
 
         self.pp -= 1
         # TODO: return if crit or not to print to screen and is not very / super effective, and missed or not
-        print(self.name, is_crit, is_super_eff, is_hit)
-        return is_crit, is_super_eff, is_hit
+        print(self.name, is_crit, is_super_eff, is_hit, total_damage)
+        return is_crit, is_super_eff, is_hit, total_damage
 
     def set_user(self, pkmn):
         """Sets user for use to know typing and speed."""
@@ -281,6 +283,19 @@ class Battle:
         self.move_box_height = 2.5 * TILE_WIDTH
 
         self.curr_menu = 0
+        # 0 for player, 1 for agent
+        self.curr_turn = None
+        self.curr_user_move = None
+        self.curr_agent_move = None
+        self.is_hit = None
+        self.is_crit = None
+        self.effectiveness = None
+        self.curr_total_damage = None
+        self.curr_damage = None
+        self.turn_counter = 0
+        self.text_timer = 0
+        self.battle_ended_bool = False
+        self.shown_effectiveness = False
 
         self.shapes = []
 
@@ -335,6 +350,19 @@ class Battle:
         self.render_hp_bars()
         self.render_sprites()
 
+        # If text is being displayed, update NONE of the battle params
+        if self.text_timer > 0:
+            self.player_may_take_action = False
+            self.text_timer -= 1
+
+        else:
+            self.player_may_take_action = True
+            if self.battle_ended_bool:
+                self.battle_ended()
+
+            if not self.battle_ended_bool and self.curr_turn is not None:
+                self.animate_turn()
+
         if self.curr_menu == 0:
             self.render_buttons()
 
@@ -349,6 +377,9 @@ class Battle:
 
         for batch in self.batches:
             batch.draw()
+
+
+
 
 
     def render_pkmn_plates(self):
@@ -384,7 +415,7 @@ class Battle:
         friendly_level = pg.text.Label(text="Lv. "+str(self.user_current_pkmn.level), font_size=10, x=21.5*TILE_WIDTH, y=8.3*TILE_HEIGHT,
                                   color=(0,0,0,255), batch=self.batches[2])
 
-        health_counter = pg.text.Label(text=str(self.user_current_pkmn.hp) + " / "+str(self.user_current_pkmn.stats["max_hp"]), font_size=10, x=19*TILE_WIDTH, y=7.08*TILE_HEIGHT,
+        health_counter = pg.text.Label(text=str(math.ceil(self.user_current_pkmn.hp)) + " / "+str(self.user_current_pkmn.stats["max_hp"]), font_size=10, x=19*TILE_WIDTH, y=7.08*TILE_HEIGHT,
                                   color=(0,0,0,255), batch=self.batches[2])
 
         enemy_health_bar1 = pg.shapes.Line(x=0.5*TILE_WIDTH, y=13.5*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=13.5*TILE_HEIGHT, width=2,
@@ -473,11 +504,6 @@ class Battle:
                             items_button, items_button_label,
                             pokemon_button, pokemon_button_label])
 
-
-    def update(self):
-        """Main update loop to process player actions"""
-        return
-
     def dispatch_mouse_click(self, x, y):
         # Case in main menu
         if self.curr_menu == 0:
@@ -557,22 +583,106 @@ class Battle:
         # if ... pokemon related conditions, for now just 1
         escape_prob = 0
         if np.random.random() >= escape_prob:
-            # TODO: send some text to screen
             self.board.display_text(TextBox("You got away safely!"))
-            self.player_may_take_action = False
-            self.outro_animation()
-            self.board.exit_encounter()
-            self.player_may_take_action = True
+            self.battle_ended_bool = True
+            self.text_timer = 2 * REFRESH_RATE
 
     def ended_action(self):
+        """Begins end of battle sequence."""
         self.player_may_take_action = False
         self.outro_animation()
         self.board.exit_encounter()
-        self.player_may_take_action = True
+        self.board.end_text()
+
+
+    def animate_turn(self):
+        """Lower HP by the correct proportional amount, dispatch all else to switch_turn."""
+
+        # Case turn should be over
+        if self.turn_counter == 2 or self.shown_effectiveness:
+            self.switch_turn()
+            return
+
+        if self.curr_turn == 0:
+            self.foe_current_pkmn.take_damage(self.curr_total_damage / (1.5 * REFRESH_RATE))
+            self.curr_damage += self.curr_total_damage / ( 1.5 * REFRESH_RATE)
+            if self.foe_current_pkmn.fainted:
+                self.opponent_fainted()
+                self.switch_turn()
+        else:
+            self.user_current_pkmn.take_damage(self.curr_total_damage / ( 1.5 * REFRESH_RATE))
+            self.curr_damage += self.curr_total_damage / ( 1.5 * REFRESH_RATE)
+            if self.user_current_pkmn.fainted:
+                self.user_fainted()
+                self.switch_turn()
+
+        # If move is complete
+        # For status moves, keep curr_damage as a timer
+        if self.curr_total_damage == 0:
+            self.curr_damage += 1
+            if self.curr_damage == (1.5 * REFRESH_RATE):
+                self.switch_turn()
+
+        # For attacks, keep the tick as a timer
+        elif self.curr_damage >= self.curr_total_damage:
+            self.switch_turn()
+
+
+    def switch_turn(self):
+        """Swap turn, display outcome, and set up for next turn"""
+        # A player has just finished a turn or wrap up
+
+        ### First, check if entire turn or battle has ended ###
+        if self.battle_ended_bool or self.turn_counter is None:
+            return
+
+        ### Then, display effectivenss of user move ###
+        if not self.shown_effectiveness:
+            self.display_effectiveness()
+            self.shown_effectiveness = True
+            return
+        else:
+            self.shown_effectiveness = False
+            self.turn_counter += 1
+
+        ### If turn has reached 2, dispatch back to renderer to wrap up ###
+        if self.turn_counter == 2:
+            self.turn_counter = None
+            self.curr_turn = None
+            self.curr_damage = 0
+            return
+
+
+        ### If user move has ended, begin agent turn ###
+        if self.curr_turn == 0:
+            self.is_crit, self.effectiveness, self.is_hit, self.curr_total_damage = self.opponent_turn()
+            # Case item or switch
+            if self.is_crit is None:
+                # TODO: dispatch item or switch HERE, not earlier
+                self.turn_counter = 2
+                return
+            # Case opponent attacked
+            else:
+                self.curr_turn = 1
+                self.curr_damage = 0
+                if self.is_wild:
+                    self.board.display_text(TextBox("The wild " + self.user_current_pkmn.name + str(
+                        " used ") + self.curr_agent_move.name + "!"))
+                else:
+                    self.board.display_text(TextBox("The foe's " + self.user_current_pkmn.name + str(
+                        " used ") + self.curr_user_move.name + "!"))
+
+        ### If agent move has ended, begin user turn ###
+        elif self.curr_turn == 1:
+            self.is_crit, self.effectiveness, self.is_hit, self.curr_total_damage = self.curr_user_move.use(self.foe_current_pkmn)
+            self.curr_damage = 0
+            self.curr_turn = 0
+            self.board.display_text(TextBox(self.user_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"))
+
 
 
     def battle_action(self, user_move: PokemonMove):
-        """When a move is picked, take turn"""
+        """When a move is picked, begin turn cycle"""
         # Determine turn order by speed
         if self.user_current_pkmn.stats["speed"] == self.foe_current_pkmn.stats["speed"]:
             order = np.random.choice(range(0,2))
@@ -581,31 +691,31 @@ class Battle:
         else:
             order = 1
 
-        # Player moves first
-        if order == 0:
-            is_crit, is_super_eff, is_hit = user_move.use(self.foe_current_pkmn)
-            # TODO: print corresponding messages
-            if not self.foe_current_pkmn.fainted:
-                self.opponent_turn()
-            else:
-                self.opponent_fainted()
+        # Prepare to display effectiveness
+        self.shown_effectiveness = False
 
-            if self.user_current_pkmn.fainted:
-                self.user_fainted()
-                # TODO: force user to do switch menu
-                return
+        # Player moves first
+        self.turn_counter = 0
+        self.curr_turn = order
+        self.curr_user_move = user_move
+        if order == 0:
+            self.is_crit, self.effectiveness, self.is_hit, self.curr_total_damage = user_move.use(self.foe_current_pkmn)
+            self.curr_damage = 0
+            self.board.display_text(TextBox(self.user_current_pkmn.name+str(" used ")+user_move.name+"!"))
 
         # Agent moves first
         else:
-            self.opponent_turn()
-            if not self.user_current_pkmn.fainted:
-                is_crit, is_super_eff, is_hit = user_move.use(self.foe_current_pkmn)
-                # TODO: print corresponding messages
+            self.is_crit, self.effectiveness, self.is_hit, self.curr_total_damage = self.opponent_turn()
+            if self.is_crit is None:
+                # Case item or switch
+                return
+            # Case agent used move
+            self.curr_damage = 0
+            if self.is_wild:
+                self.board.display_text(TextBox("The wild "+self.user_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"))
             else:
-                self.opponent_fainted()
+                self.board.display_text(TextBox("The foe's "+self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"))
 
-            if self.foe_current_pkmn.fainted:
-                self.opponent_fainted()
 
 
     def opponent_turn(self):
@@ -613,29 +723,35 @@ class Battle:
         ai_action = self.agent.action()
         # Case AI attacked
         if isinstance(ai_action, PokemonMove):
-            is_crit, is_super_eff, is_hit = ai_action.use(self.user_current_pkmn)
-            # TODO: print corresponding messages
+            self.curr_agent_move = ai_action
+            return ai_action.use(self.user_current_pkmn)
+
         # Case AI switched
         elif isinstance(ai_action, Pokemon):
             self.opponent_switched(self.opponent.team.index(ai_action))
+            # TODO: print corresponding messages
         # Case AI used item
         elif isinstance(ai_action, Item):
             self.opponent.use_item(ai_action.name)
+            # TODO: print corresponding messages
+        return None, None, None, None
 
 
     def opponent_fainted(self):
         message = TextBox(self.foe_current_pkmn.name+str(" fainted!"))
         self.board.display_text(message)
+        self.text_timer = REFRESH_RATE
         living_mons = len([mon for mon in self.opponent.team if not mon.fainted])
         if living_mons == 0:
-            self.battle_ended(player_won=True)
+            self.battle_ended_bool = True
 
     def user_fainted(self):
         message = TextBox(self.user_current_pkmn.name+str(" fainted!"))
         self.board.display_text(message)
+        self.text_timer = REFRESH_RATE
         living_mons = len([mon for mon in self.trainer.team if not mon.fainted])
         if living_mons == 0:
-            self.battle_ended(player_won=False)
+            self.battle_ended_bool = True
 
 
     def opponent_switched(self, ind: int):
@@ -646,10 +762,28 @@ class Battle:
         # TODO: switch logic
         pass
 
-    def battle_ended(self, player_won=True):
+    def battle_ended(self):
         # TODO: CALCULATE HOW MUCH $$ TO ADD TO PLAYER WALLET
         # TODO: PRINT MESSAGE
         self.ended_action()
+
+    def display_effectiveness(self):
+        crit_text = ""
+        if self.is_crit:
+            crit_text = "A critical hit!"
+        if self.effectiveness == 0 or (self.curr_turn == 0 and self.curr_user_move.is_status) \
+                or (self.curr_turn == 1 and self.curr_agent_move.is_status):
+            if self.is_crit:
+                self.board.display_text(TextBox(crit_text))
+                self.text_timer = REFRESH_RATE
+            return
+        if self.effectiveness == -2:
+            self.board.display_text(TextBox("It doesn't affect "+self.foe_current_pkmn.name+"..."))
+        elif self.effectiveness == -1:
+            self.board.display_text(TextBox("It's not very effective..."+"\n"+crit_text))
+        elif self.effectiveness == 1:
+            self.board.display_text(TextBox("It's super effective!"+"\n"+crit_text))
+        self.text_timer = REFRESH_RATE
 
 
 

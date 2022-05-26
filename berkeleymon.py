@@ -11,7 +11,6 @@ from game_utils.Characters import *
 from agents.Pokemon_Agents import *
 
 ##### INITIALIZATION #####
-REFRESH_RATE = 40 # denominator of FPS, 5 * max_moves per animation
 
 curr_location = TEST_LOCATION
 
@@ -33,6 +32,7 @@ def on_draw():
     if BOARD.in_overworld:
         BOARD.render_board()
         if BOARD.displaying_text:
+            print("we're in the board displaying text zone")
             BOARD.current_text.render()
     else:
         BOARD.current_encounter.render()

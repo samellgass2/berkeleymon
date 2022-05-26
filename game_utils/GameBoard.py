@@ -98,6 +98,7 @@ class GameBoard:
         self.update_player_icon()
         self.location.board.in_overworld = True
         self.current_encounter = None
+        self.end_text()
 
 
     def get(self, x: int, y: int):
@@ -310,8 +311,6 @@ class GameBoard:
     def update_state(self, dt):
        if self.in_overworld:
            self.overworld_update()
-       else:
-           self.current_encounter.update()
 
 
     def overworld_update(self):

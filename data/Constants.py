@@ -1,5 +1,7 @@
 """Key constants across the game."""
 
+REFRESH_RATE = 40 # denominator of FPS, 5 * max_moves per animation
+
 TILE_WIDTH = 32
 TILE_HEIGHT = 32
 

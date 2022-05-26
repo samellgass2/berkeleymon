@@ -33,15 +33,15 @@ class Piplup(Pokemon):
 class Pound(PokemonMove):
     """Pound."""
     def __init__(self):
-        super().__init__(type=10, name="POUND", power=40, physical=True, accuracy=100, pp=35)
+        super().__init__(type=0, name="POUND", power=40, physical=True, accuracy=100, pp=35)
 
 class Growl(PokemonMove):
     """Growl."""
     def __init__(self):
-        super().__init__(type=0, name="GROWL", power=0, physical=False, accuracy=100, pp=40)
+        super().__init__(type=0, name="GROWL", power=0, physical=False, accuracy=100, pp=40, is_status=True)
 
     def use(self, opponent):
-        return False, -1, False
+        return False, -1, False, 0
 
     # TODO: override attack for STATUS move type
 
