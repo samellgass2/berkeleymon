@@ -41,7 +41,7 @@ class Growl(PokemonMove):
         super().__init__(type=0, name="GROWL", power=0, physical=False, accuracy=100, pp=40, is_status=True)
 
     def use(self, opponent):
-        return False, -1, False, 0
+        return False, 0, True, 0
 
     # TODO: override attack for STATUS move type
 
@@ -109,7 +109,7 @@ class HydroPump(PokemonMove):
         super().__init__(type=10, name="HYDRO PUMP", power=120, physical=False, accuracy=80, pp=5)
 
 
-TEST_TRAINER = PokemonTrainer(pokemon=[Piplup(level=5)],
+TEST_TRAINER = PokemonTrainer(pokemon=[Piplup(level=1), Piplup(level=5), Piplup(level=10), Piplup(level=10), Piplup(level=100)],
                               items={Item(0, 0, None, name="Empty"): 1, KeyItem(None, name="Empty"): 1},
                               money=0)
 

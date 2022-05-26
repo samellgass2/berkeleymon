@@ -28,7 +28,7 @@ class PokemonMove:
         if crit_multiplier > 1:
             is_crit = True
         else:
-            is_crit = True # TODO: FIX AFTER DEBUGGING
+            is_crit = False
 
         super_eff_multiplier = math.prod([EFFECTIVENESS(self.type, other) for other in opponent.types])
         if super_eff_multiplier == 0:
@@ -64,7 +64,6 @@ class PokemonMove:
 
         self.pp -= 1
         # TODO: return if crit or not to print to screen and is not very / super effective, and missed or not
-        print(self.name, is_crit, is_super_eff, is_hit, total_damage)
         return is_crit, is_super_eff, is_hit, total_damage
 
     def set_user(self, pkmn):
@@ -136,30 +135,28 @@ class Pokemon:
             level -= 1
 
     def calculate_stats(self):
-        """Calculate a pokemon's functional stats at a given level."""
+        """Update in place a pokemon's functional stats at a given level."""
         self.stats["max_hp"] = math.floor(0.01 * (2 * self.base_stats["max_hp"] * self.level)) + self.level + 10
 
         for stat in self.base_stats:
             self.stats[stat] = math.floor(0.01 * (2 * self.base_stats[stat]) * self.level) + 5
 
-    def attack(self, move: PokemonMove, opponent):
-        return
-
-        # TODO: Implement archetype for attacking, taking damage
-
     def take_damage(self, damage: int):
+        """Logic to take damage and note if the user is fainted."""
         if damage < self.hp:
             self.hp -= damage
         else:
             self.hp = 0
             self.fainted = True
-        return
 
     def level_up(self):
+        """Called on level, automatically updates stats."""
         self.level += 1
         self.calculate_stats()
+        # TODO: check if new_move exists and send text out if so
 
     def new_move(self, move: PokemonMove):
+        """Begins the dialogue for learning a new move."""
         return
         # TODO: implement archetype for leveling, displaying moves, learning new moves
 
@@ -187,12 +184,11 @@ class PokemonGenerator:
 
     def encounter(self):
         """Generate a wild pokemon to pass out to Location --> tile --> Board to fight."""
-        print("Debugging for now: a wild pokemon was encountered!")
-
         pokemon = self.choose_wild_pkmn()
         # Then, from this, choose an appropriate level based on distribution
         level = np.random.choice(np.arange(self.min_level, self.max_level+1))
         # Then, generate the pokemon's correct stats by keeping a big lookup table
+        # TODO: randomly assign a gender and nature when nature is done
         return pokemon(level = level)
 
 
@@ -261,7 +257,7 @@ class Battle:
     def __init__(self, trainer: PokemonTrainer, opponent, board, wild):
         self.trainer = trainer
         self.player_may_take_action = False
-        self.layers = 5
+        self.layers = 6
         self.batches = [graphics.Batch() for i in range(self.layers)]
         self.board = board
         self.user_current_pkmn = trainer.team[0]
@@ -280,7 +276,10 @@ class Battle:
         self.pokemon_button_top_right = (22 * TILE_WIDTH, 4 * TILE_HEIGHT)
 
         self.move_box_width = 8 * TILE_WIDTH
-        self.move_box_height = 2.5 * TILE_WIDTH
+        self.move_box_height = 2.5 * TILE_HEIGHT
+
+        self.switch_box_width = 5 * TILE_WIDTH
+        self.switch_box_height = 2.5 * TILE_HEIGHT
 
         self.curr_menu = 0
         # 0 for player, 1 for agent
@@ -296,6 +295,8 @@ class Battle:
         self.text_timer = 0
         self.battle_ended_bool = False
         self.shown_effectiveness = False
+        self.switch_forced = False
+        self.user_switched_bool = False
 
         self.shapes = []
 
@@ -319,16 +320,18 @@ class Battle:
 
     def intro_animation(self):
         """Should start an intro animation that is unskippable and begins the battle."""
+        # TODO: make the animation
         intro_text = TextBox("A wild "+str(self.foe_current_pkmn.display_name)+" appeared!", overworld=False)
         self.board.display_text(intro_text)
         return
 
     def outro_animation(self):
         """Should execute an outro animation that is unskippable and ends the battle."""
+        # TODO: make the animation
         return
 
     def initialize(self):
-        """Should set up all objects and important pointers as attributes of the Battle."""
+        """Sets up all objects and important pointers as attributes of the Battle."""
         self.render()
 
         # animate stuff
@@ -339,6 +342,7 @@ class Battle:
         return
 
     def render(self):
+        """Main battle update look called at every frame."""
         # TODO: optimize to ONLY make new objects when necessary (something changes)
         self.shapes = []
         self.batches = [graphics.Batch() for i in range(self.layers)]
@@ -363,6 +367,14 @@ class Battle:
             if not self.battle_ended_bool and self.curr_turn is not None:
                 self.animate_turn()
 
+            if self.user_switched_bool:
+                # TODO: dispatch AI in response by calling switch turn with appropriate params
+                self.user_switched_bool = False
+                self.curr_turn = 0
+                self.turn_counter = 0
+                self.shown_effectiveness = True
+                self.switch_turn()
+
         if self.curr_menu == 0:
             self.render_buttons()
 
@@ -378,11 +390,8 @@ class Battle:
         for batch in self.batches:
             batch.draw()
 
-
-
-
-
     def render_pkmn_plates(self):
+        """Renders plates beneath Pokemon."""
         # TODO: fill the plates
         plate = pg.shapes.Ellipse(x=16.5*TILE_WIDTH, y=12*TILE_HEIGHT,
                                   a=4*TILE_WIDTH, b=1.5*TILE_HEIGHT, color=(0,0,0), batch=self.batches[1])
@@ -392,6 +401,7 @@ class Battle:
         self.shapes.extend([plate, friendly_plate])
 
     def render_hp_bars(self):
+        """Renders the HP bars correctly with respect to current health."""
         main_bar = pg.shapes.Rectangle(x=0, y=13*TILE_HEIGHT, width=7*TILE_WIDTH, height=2*TILE_HEIGHT,
                                        batch=self.batches[1], color=(200,200,200))
         f_triangle = pg.shapes.Triangle(x=7*TILE_WIDTH, y=13*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=15*TILE_HEIGHT, x3=8*TILE_WIDTH, y3=15*TILE_HEIGHT,
@@ -452,6 +462,7 @@ class Battle:
                             friendly_level, enemy_level, health_counter])
 
     def render_sprites(self):
+        """Draws the front of the opponent and the back of the user."""
         friendly_mon = self.user_current_pkmn.back_sprite
         friendly_mon.batch = self.batches[2]
         friendly_mon.x = 4*TILE_WIDTH
@@ -463,6 +474,7 @@ class Battle:
         foe_mon.y = 11*TILE_HEIGHT
 
     def render_buttons(self):
+        """Main menu button renderer."""
         battle_button = pg.shapes.BorderedRectangle(x= self.battle_button_bottom_left[0], y=self.battle_button_bottom_left[1],
                                      width=self.battle_button_top_right[0] - self.battle_button_bottom_left[0],
                                      height=self.battle_button_top_right[1] - self.battle_button_bottom_left[1],
@@ -505,6 +517,7 @@ class Battle:
                             pokemon_button, pokemon_button_label])
 
     def dispatch_mouse_click(self, x, y):
+        """Process mouse click based on current menus."""
         # Case in main menu
         if self.curr_menu == 0:
             # Case clicked ITEMS
@@ -536,35 +549,36 @@ class Battle:
         elif self.curr_menu == 2:
             # Case move one exists and is clicked
             if 1 * TILE_WIDTH <= x <= 1 * TILE_WIDTH + self.move_box_width \
-                    and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.move_box_height \
-                    and len(self.user_current_pkmn.moveset)>=1:
-                move = self.user_current_pkmn.moveset[0]
-                print(move.name)
-                self.battle_action(move)
+                and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.move_box_height \
+                and len(self.user_current_pkmn.moveset)>=1:
+
+                    move = self.user_current_pkmn.moveset[0]
+                    print(move.name)
+                    self.battle_action(move)
             # Case move two exists and is clicked
             elif 10 * TILE_WIDTH <= x <= 10 * TILE_WIDTH + self.move_box_width \
-                    and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.move_box_height \
-                    and len(self.user_current_pkmn.moveset)>=2:
+                and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.move_box_height \
+                and len(self.user_current_pkmn.moveset)>=2:
 
-                move = self.user_current_pkmn.moveset[1]
-                print(move.name)
-                self.battle_action(move)
+                    move = self.user_current_pkmn.moveset[1]
+                    print(move.name)
+                    self.battle_action(move)
             # case move three exists and is clicked
             elif 1 * TILE_WIDTH <= x <= 1 * TILE_WIDTH + self.move_box_width \
-                    and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
-                    and len(self.user_current_pkmn.moveset)>=3:
+                and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
+                and len(self.user_current_pkmn.moveset)>=3:
 
-                move = self.user_current_pkmn.moveset[2]
-                print(move.name)
-                self.battle_action(move)
+                    move = self.user_current_pkmn.moveset[2]
+                    print(move.name)
+                    self.battle_action(move)
             # case move four exists and is clicked
             elif 10 * TILE_WIDTH <= x <= 10 * TILE_WIDTH + self.move_box_width \
-                    and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
-                    and len(self.user_current_pkmn.moveset)>=4:
+                and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
+                and len(self.user_current_pkmn.moveset)>=4:
 
-                move = self.user_current_pkmn.moveset[3]
-                print(move.name)
-                self.battle_action(move)
+                    move = self.user_current_pkmn.moveset[3]
+                    print(move.name)
+                    self.battle_action(move)
             # case back button is clicked
             elif 19 * TILE_WIDTH <= x <= 23 * TILE_WIDTH \
                     and 1.5 * TILE_HEIGHT <= y <= 5 * TILE_HEIGHT:
@@ -575,12 +589,59 @@ class Battle:
 
         # Case in pokemon menu
         elif self.curr_menu == 3:
-            return
+            # Case mon 1 exists and may be switched to and is switched to
+            if 1 * TILE_WIDTH <= x <= 1 * TILE_WIDTH + self.switch_box_width \
+                and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.switch_box_height \
+                and len(self.trainer.team) >= 1 and not self.trainer.team[0].fainted and self.user_current_pkmn is not self.trainer.team[0]:
+                    print("User switched to 0")
+                    self.user_switched(0)
 
+            # Case mon 2 exists and may be switched to and is switched to
+            elif 1 * TILE_WIDTH <= x <= 1 * TILE_WIDTH + self.switch_box_width \
+                and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.switch_box_height \
+                and len(self.trainer.team) >= 2 and not self.trainer.team[1].fainted and self.user_current_pkmn is not self.trainer.team[1]:
+                    print("User switched to 1")
+                    self.user_switched(1)
+
+            # Case mon 3 exists and may be switched to and is switched to
+            elif 7 * TILE_WIDTH <= x <= 7 * TILE_WIDTH + self.switch_box_width \
+                and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.switch_box_height \
+                and len(self.trainer.team) >= 3 and not self.trainer.team[2].fainted and self.user_current_pkmn is not self.trainer.team[2]:
+                    print("User switched to 2")
+                    self.user_switched(2)
+
+            # Case mon 4 exists and may be switched to and is switched to
+            elif 7 * TILE_WIDTH <= x <= 7 * TILE_WIDTH + self.switch_box_width \
+                and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.switch_box_height \
+                and len(self.trainer.team) >= 4 and not self.trainer.team[3].fainted and self.user_current_pkmn is not self.trainer.team[3]:
+                    print("User switched to 3")
+                    self.user_switched(3)
+
+            # Case mon 5 exists and may be switched to and is switched to
+            elif 13 * TILE_WIDTH <= x <= 13 * TILE_WIDTH + self.switch_box_width \
+                and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.switch_box_height \
+                and len(self.trainer.team) >= 5 and not self.trainer.team[4].fainted and self.user_current_pkmn is not self.trainer.team[4]:
+                    print("User switched to 4")
+                    self.user_switched(4)
+
+            # Case mon 6 exists and may be switched to and is switched to
+            elif 13 * TILE_WIDTH <= x <= 13 * TILE_WIDTH + self.switch_box_width \
+                and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.switch_box_height \
+                and len(self.trainer.team) >= 6 and not self.trainer.team[5].fainted and self.user_current_pkmn is not self.trainer.team[5]:
+                    print("User switched to 4")
+                    self.user_switched(4)
+
+            # case back button is clicked
+            elif 19 * TILE_WIDTH <= x <= 23 * TILE_WIDTH \
+                    and 1.5 * TILE_HEIGHT <= y <= 5 * TILE_HEIGHT:
+
+                print("BACK CLICKED")
+                self.curr_menu = 0
+            return
 
     def run_action(self):
         """When run is pressed"""
-        # if ... pokemon related conditions, for now just 1
+        # if ... pokemon related conditions, for now just let escape occur
         escape_prob = 0
         if np.random.random() >= escape_prob:
             self.board.display_text(TextBox("You got away safely!"))
@@ -594,9 +655,8 @@ class Battle:
         self.board.exit_encounter()
         self.board.end_text()
 
-
     def animate_turn(self):
-        """Lower HP by the correct proportional amount, dispatch all else to switch_turn."""
+        """Lower HP by the correct proportional amount for one frame, dispatch all else to switch_turn."""
 
         # Case turn should be over
         if self.turn_counter == 2 or self.shown_effectiveness:
@@ -627,7 +687,6 @@ class Battle:
         elif self.curr_damage >= self.curr_total_damage:
             self.switch_turn()
 
-
     def switch_turn(self):
         """Swap turn, display outcome, and set up for next turn"""
         # A player has just finished a turn or wrap up
@@ -656,33 +715,38 @@ class Battle:
         ### If user move has ended, begin agent turn ###
         if self.curr_turn == 0:
             self.is_crit, self.effectiveness, self.is_hit, self.curr_total_damage = self.opponent_turn()
-            # Case item or switch
+            # Case item or switch, both would already have taken place
             if self.is_crit is None:
-                # TODO: dispatch item or switch HERE, not earlier
                 self.turn_counter = 2
                 return
             # Case opponent attacked
             else:
                 self.curr_turn = 1
                 self.curr_damage = 0
-                if self.is_wild:
-                    self.board.display_text(TextBox("The wild " + self.user_current_pkmn.name + str(
-                        " used ") + self.curr_agent_move.name + "!"))
+                if self.is_hit:
+                    hit_str = ""
                 else:
-                    self.board.display_text(TextBox("The foe's " + self.user_current_pkmn.name + str(
-                        " used ") + self.curr_user_move.name + "!"))
+                    hit_str = "\n" + self.foe_current_pkmn.name+" missed!"
+                if self.is_wild:
+                    self.board.display_text(TextBox("The wild " + self.foe_current_pkmn.name + str(
+                        " used ") + self.curr_agent_move.name + "!"+hit_str))
+                else:
+                    self.board.display_text(TextBox("The foe's " + self.foe_current_pkmn.name + str(
+                        " used ") + self.curr_user_move.name + "!"+hit_str))
 
         ### If agent move has ended, begin user turn ###
         elif self.curr_turn == 1:
             self.is_crit, self.effectiveness, self.is_hit, self.curr_total_damage = self.curr_user_move.use(self.foe_current_pkmn)
             self.curr_damage = 0
             self.curr_turn = 0
-            self.board.display_text(TextBox(self.user_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"))
-
-
+            if self.is_hit:
+                hit_str = ""
+            else:
+                hit_str = "\n" + self.user_current_pkmn.name + " missed!"
+            self.board.display_text(TextBox(self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str))
 
     def battle_action(self, user_move: PokemonMove):
-        """When a move is picked, begin turn cycle"""
+        """When a move is picked, set up one turn cycle."""
         # Determine turn order by speed
         if self.user_current_pkmn.stats["speed"] == self.foe_current_pkmn.stats["speed"]:
             order = np.random.choice(range(0,2))
@@ -701,7 +765,11 @@ class Battle:
         if order == 0:
             self.is_crit, self.effectiveness, self.is_hit, self.curr_total_damage = user_move.use(self.foe_current_pkmn)
             self.curr_damage = 0
-            self.board.display_text(TextBox(self.user_current_pkmn.name+str(" used ")+user_move.name+"!"))
+            if self.is_hit:
+                hit_str = ""
+            else:
+                hit_str = "\n" + self.user_current_pkmn.name + " missed!"
+            self.board.display_text(TextBox(self.user_current_pkmn.name+str(" used ")+user_move.name+"!"+hit_str))
 
         # Agent moves first
         else:
@@ -711,12 +779,16 @@ class Battle:
                 return
             # Case agent used move
             self.curr_damage = 0
-            if self.is_wild:
-                self.board.display_text(TextBox("The wild "+self.user_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"))
+            if self.is_hit:
+                hit_str = ""
             else:
-                self.board.display_text(TextBox("The foe's "+self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"))
+                hit_str = "\n" + self.foe_current_pkmn.name + " missed!"
+            if self.is_wild:
+                self.board.display_text(TextBox("The wild "+self.user_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"+hit_str))
+            else:
+                self.board.display_text(TextBox("The foe's "+self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str))
 
-
+        self.curr_menu = 0
 
     def opponent_turn(self):
         """Allow the opponent agent to take an action."""
@@ -729,45 +801,68 @@ class Battle:
         # Case AI switched
         elif isinstance(ai_action, Pokemon):
             self.opponent_switched(self.opponent.team.index(ai_action))
-            # TODO: print corresponding messages
         # Case AI used item
         elif isinstance(ai_action, Item):
             self.opponent.use_item(ai_action.name)
             # TODO: print corresponding messages
         return None, None, None, None
 
-
     def opponent_fainted(self):
-        message = TextBox(self.foe_current_pkmn.name+str(" fainted!"))
+        """Ends current turn and forces agent switch."""
+        if self.is_wild:
+            wild_str = "The wild "
+        else:
+            wild_str = ""
+        message = TextBox(wild_str+self.foe_current_pkmn.name+str(" fainted!"))
         self.board.display_text(message)
         self.text_timer = REFRESH_RATE
         living_mons = len([mon for mon in self.opponent.team if not mon.fainted])
         if living_mons == 0:
             self.battle_ended_bool = True
+        else:
+            self.curr_turn = None
+            new_mon = self.agent.switch()
+            self.opponent_switched(new_mon)
 
     def user_fainted(self):
+        """Ends current turn and forces user switch"""
         message = TextBox(self.user_current_pkmn.name+str(" fainted!"))
         self.board.display_text(message)
         self.text_timer = REFRESH_RATE
         living_mons = len([mon for mon in self.trainer.team if not mon.fainted])
         if living_mons == 0:
             self.battle_ended_bool = True
-
+        else:
+            self.switch_forced = True
+            self.curr_turn = None
+            self.curr_menu = 3
 
     def opponent_switched(self, ind: int):
-        # TODO: PRINT MESSAGE
+        """Helper method to set fields with new foe pokemon."""
         self.foe_current_pkmn = self.opponent.team[ind]
+        self.board.display_text(TextBox("Opponent sent out "+self.foe_current_pkmn.name+"!"))
+        self.text_timer = REFRESH_RATE
 
     def user_switched(self, ind: int):
-        # TODO: switch logic
-        pass
+        """Helper method to set fields and flags for new user pokemon."""
+        self.user_current_pkmn = self.trainer.team[ind]
+        self.board.display_text(TextBox("Go, " + self.foe_current_pkmn.name + "!"))
+        self.text_timer = REFRESH_RATE
+        if not self.switch_forced:
+            self.user_switched_bool = True
+        else:
+            self.switch_forced = False
+
+        self.curr_menu = 0
 
     def battle_ended(self):
+        """Dispatch needed logic and close encounter."""
         # TODO: CALCULATE HOW MUCH $$ TO ADD TO PLAYER WALLET
         # TODO: PRINT MESSAGE
         self.ended_action()
 
     def display_effectiveness(self):
+        """Send to screen the effectiveness and critical hit outcome of a move."""
         crit_text = ""
         if self.is_crit:
             crit_text = "A critical hit!"
@@ -784,8 +879,6 @@ class Battle:
         elif self.effectiveness == 1:
             self.board.display_text(TextBox("It's super effective!"+"\n"+crit_text))
         self.text_timer = REFRESH_RATE
-
-
 
     def items_action(self):
         """When items is pressed, open items menu"""
@@ -864,14 +957,157 @@ class Battle:
         move_objects.extend([back_button, back_button_title])
         self.shapes.extend(move_objects)
 
-
-
-
-
-
     def render_pokemon_menu(self):
-        # TODO: make pokemon menu and corresponding mouse parsing
-        return
+        """Rendering logic for switch menu."""
+
+        pkmn_objects = []
+
+        # Let mon colors be their primary type unless fainted
+        mon_colors = [TYPE_TO_COLOR[mon.types[0]] for mon in self.trainer.team]
+        for i in range(len(mon_colors)):
+            if self.trainer.team[i].fainted:
+                mon_colors[i] = (203, 203, 203)
+
+        num_mons = len(self.trainer.team)
+
+
+        back_button = pg.shapes.BorderedRectangle(x=19 * TILE_WIDTH, y=1.5 * TILE_HEIGHT,
+                                                  width=4 * TILE_WIDTH, height=3.5 * TILE_HEIGHT,
+                                                  color=(128, 237, 68), border_color=(0, 0, 0), border=3,
+                                                  batch=self.batches[3])
+        back_button_title = pg.text.Label(text="BACK",
+                                          x=21 * TILE_WIDTH, width=4 * TILE_WIDTH,
+                                          y=3 * TILE_HEIGHT, anchor_x="center",
+                                          color=(0, 0, 0, 255), batch=self.batches[4])
+        pkmn_objects.extend([back_button, back_button_title])
+
+        # If there is at least one mon
+        if num_mons >= 1:
+            curr_mon = self.trainer.team[0]
+            switch_box_one = pg.shapes.BorderedRectangle(x = 1 * TILE_WIDTH, y = 3.25 * TILE_HEIGHT,
+                                                       width=self.switch_box_width, height=self.switch_box_height,
+                                                       color=mon_colors[0], border_color=(0,0,0), border=3,
+                                                       batch=self.batches[3])
+            text_one = curr_mon.name+" Lv."+str(curr_mon.level) + "\n" + str(math.ceil(curr_mon.hp)) + " / " + str(curr_mon.stats["max_hp"])
+
+            mon_label_one = pg.text.Label(text=text_one,
+                                           x = 1.5 * TILE_WIDTH + self.move_box_width/2, width = self.move_box_width,
+                                           y = 5 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                           color=(0,0,0,255), batch=self.batches[4])
+            pkmn_objects.extend([switch_box_one, mon_label_one])
+
+        # If there are at least 2 mons
+        if num_mons >= 2:
+            curr_mon = self.trainer.team[1]
+            switch_box_two = pg.shapes.BorderedRectangle(x = 1 * TILE_WIDTH, y = 0.5 * TILE_HEIGHT,
+                                                       width=self.switch_box_width, height=self.switch_box_height,
+                                                       color=mon_colors[1], border_color=(0,0,0), border=3,
+                                                       batch=self.batches[3])
+            text_two = curr_mon.name+" Lv."+str(curr_mon.level) + "\n" + str(math.ceil(curr_mon.hp)) + " / " + str(curr_mon.stats["max_hp"])
+
+            mon_label_two = pg.text.Label(text=text_two,
+                                           x = 1.5 * TILE_WIDTH + self.move_box_width/2, width = self.move_box_width,
+                                           y = 2 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                           color=(0,0,0,255), batch=self.batches[4])
+            pkmn_objects.extend([switch_box_two, mon_label_two])
+        else:
+            switch_box_two = pg.shapes.BorderedRectangle(x = 1 * TILE_WIDTH, y = 0.5 * TILE_HEIGHT,
+                                                       width=self.switch_box_width, height=self.switch_box_height,
+                                                       color=(255,255,255), border_color=(0,0,0), border=3,
+                                                       batch=self.batches[3])
+            pkmn_objects.extend([switch_box_two])
+
+        # If there are at least 3 mons
+        if num_mons >= 3:
+            curr_mon = self.trainer.team[2]
+            switch_box_three = pg.shapes.BorderedRectangle(x=7 * TILE_WIDTH, y=3.25 * TILE_HEIGHT,
+                                                         width=self.switch_box_width, height=self.switch_box_height,
+                                                         color=mon_colors[2], border_color=(0, 0, 0), border=3,
+                                                         batch=self.batches[3])
+            text_three = curr_mon.name + " Lv." + str(curr_mon.level) + "\n" + str(math.ceil(curr_mon.hp)) + " / " + str(
+                curr_mon.stats["max_hp"])
+
+            mon_label_three = pg.text.Label(text=text_three,
+                                          x=7.5 * TILE_WIDTH + self.move_box_width / 2, width=self.move_box_width,
+                                          y=5 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                          color=(0, 0, 0, 255), batch=self.batches[4])
+            pkmn_objects.extend([switch_box_three, mon_label_three])
+        else:
+            switch_box_three = pg.shapes.BorderedRectangle(x=7 * TILE_WIDTH, y=3.25 * TILE_HEIGHT,
+                                                         width=self.switch_box_width, height=self.switch_box_height,
+                                                         color=(255, 255, 255), border_color=(0, 0, 0), border=3,
+                                                         batch=self.batches[3])
+            pkmn_objects.extend([switch_box_three])
+
+        # If there are at least 4 mons
+        if num_mons >= 4:
+            curr_mon = self.trainer.team[3]
+            switch_box_four = pg.shapes.BorderedRectangle(x=7 * TILE_WIDTH, y=0.5 * TILE_HEIGHT,
+                                                         width=self.switch_box_width, height=self.switch_box_height,
+                                                         color=mon_colors[3], border_color=(0, 0, 0), border=3,
+                                                         batch=self.batches[3])
+            text_four = curr_mon.name + " Lv." + str(curr_mon.level) + "\n" + str(math.ceil(curr_mon.hp)) + " / " + str(
+                curr_mon.stats["max_hp"])
+
+            mon_label_four = pg.text.Label(text=text_four,
+                                          x=7.5 * TILE_WIDTH + self.move_box_width / 2, width=self.move_box_width,
+                                          y=2 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                          color=(0, 0, 0, 255), batch=self.batches[4])
+            pkmn_objects.extend([switch_box_four, mon_label_four])
+        else:
+            switch_box_four = pg.shapes.BorderedRectangle(x=7 * TILE_WIDTH, y=0.5 * TILE_HEIGHT,
+                                                         width=self.switch_box_width, height=self.switch_box_height,
+                                                         color=(255, 255, 255), border_color=(0, 0, 0), border=3,
+                                                         batch=self.batches[3])
+            pkmn_objects.extend([switch_box_four])
+
+        # If there are at least 5 mons
+        if num_mons >= 5:
+            curr_mon = self.trainer.team[4]
+            switch_box_five = pg.shapes.BorderedRectangle(x=13 * TILE_WIDTH, y=3.25 * TILE_HEIGHT,
+                                                         width=self.switch_box_width, height=self.switch_box_height,
+                                                         color=mon_colors[2], border_color=(0, 0, 0), border=3,
+                                                         batch=self.batches[3])
+            text_five = curr_mon.name + " Lv." + str(curr_mon.level) + "\n" + str(math.ceil(curr_mon.hp)) + " / " + str(
+                curr_mon.stats["max_hp"])
+
+            mon_label_five = pg.text.Label(text=text_five,
+                                          x=13.5 * TILE_WIDTH + self.move_box_width / 2, width=self.move_box_width,
+                                          y=5 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                          color=(0, 0, 0, 255), batch=self.batches[4])
+            pkmn_objects.extend([switch_box_five, mon_label_five])
+        else:
+            switch_box_five = pg.shapes.BorderedRectangle(x=13 * TILE_WIDTH, y=3.25 * TILE_HEIGHT,
+                                                         width=self.switch_box_width, height=self.switch_box_height,
+                                                         color=(255, 255, 255), border_color=(0, 0, 0), border=3,
+                                                         batch=self.batches[3])
+            pkmn_objects.extend([switch_box_five])
+
+        # If there are 6 mons
+        if num_mons == 6:
+            curr_mon = self.trainer.team[5]
+            switch_box_six = pg.shapes.BorderedRectangle(x=13 * TILE_WIDTH, y=0.5 * TILE_HEIGHT,
+                                                          width=self.switch_box_width, height=self.switch_box_height,
+                                                          color=mon_colors[3], border_color=(0, 0, 0), border=3,
+                                                          batch=self.batches[3])
+            text_six = curr_mon.name + " Lv." + str(curr_mon.level) + "\n" + str(math.ceil(curr_mon.hp)) + " / " + str(
+                curr_mon.stats["max_hp"])
+
+            mon_label_six = pg.text.Label(text=text_six,
+                                           x=7.5 * TILE_WIDTH + self.move_box_width / 2, width=self.move_box_width,
+                                           y=2 * TILE_HEIGHT, anchor_x="center", multiline=True,
+                                           color=(0, 0, 0, 255), batch=self.batches[4])
+            pkmn_objects.extend([switch_box_six, mon_label_six])
+        else:
+            switch_box_six = pg.shapes.BorderedRectangle(x=13 * TILE_WIDTH, y=0.5 * TILE_HEIGHT,
+                                                          width=self.switch_box_width, height=self.switch_box_height,
+                                                          color=(255, 255, 255), border_color=(0, 0, 0), border=3,
+                                                          batch=self.batches[3])
+            pkmn_objects.extend([switch_box_six])
+
+        self.shapes.extend(pkmn_objects)
+
+
 
 
 

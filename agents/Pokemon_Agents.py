@@ -19,7 +19,7 @@ class PokemonAgent:
         """Returns all valid actions the agent may take."""
         curr_mon = self.encounter.foe_current_pkmn
         valid_moves = [move for move in curr_mon.moveset if move.pp > 0]
-        valid_switches = [mon for mon in self.trainer.team if mon is not curr_mon]
+        valid_switches = [mon for mon in self.trainer.team if mon is not curr_mon and not mon.fainted]
         valid_items = [item for item in self.trainer.items if self.trainer.items[item] > 0]
 
         all_actions = valid_moves
@@ -31,6 +31,11 @@ class PokemonAgent:
         """Based on AI policy, take a legal action."""
         all_actions = self.get_valid_actions()
         return np.random.choice(all_actions)
+
+    def switch(self):
+        """Based on AI policy, make a legal switch."""
+        valid_switches = [mon for mon in self.trainer.team if not mon.fainted]
+        return np.random.choice(valid_switches)
 
 class RandomLegalAgent(PokemonAgent):
     """The default agent with no methods overriden."""
