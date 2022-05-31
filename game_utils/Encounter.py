@@ -8,7 +8,7 @@ from game_utils.Cutscene import *
 import math
 
 class PokemonMove:
-    def __init__(self, type: int, name: str, power: int, physical: bool, accuracy: int, pp, priority: bool=False, is_status=False):
+    def __init__(self, type: int, name: str, power: int, physical: bool, accuracy: int, pp: int, priority: bool=False, is_status=False):
         """Initialize a pokemon move archetype."""
         self.user = None
         self.type = type
@@ -70,13 +70,14 @@ class PokemonMove:
         """Sets user for use to know typing and speed."""
         self.user = pkmn
 
+
     # TODO: implement as object that can be dispatched accurately in battle
 
 class Pokemon:
     """The general, archetypal Pokemon class to create most of the skeleton for actions."""
-    def __init__(self, name: str, nickname: str, types: list[int], level: int, xp: float, movetable: dict[int, PokemonMove], moveset: list[PokemonMove],
+    def __init__(self, name: str, nickname: str, types: [int], level: int, xp: float, movetable: {int, PokemonMove}, moveset: [PokemonMove],
                  defense: int, attack: int, special_defense: int, special_attack: int, hp: int, speed: int, gender: int,
-                 front_sprite: pg.sprite.Sprite, back_sprite: pg.sprite.Sprite):
+                 front_sprite: pg.sprite.Sprite, back_sprite: pg.sprite.Sprite, exp_yield: int):
 
         # To allow for generation of a mon by either total xp OR level, the other is filled in if not provided.
         if level is None:
@@ -105,6 +106,7 @@ class Pokemon:
 
         self.types = types
         self.gender = gender
+        self.exp_yield = exp_yield
 
 
         self.base_stats = {}
@@ -124,6 +126,8 @@ class Pokemon:
 
         self.status = -1
         self.fainted = False
+        self.seen = []
+        self.move_queue = []
 
     def get_most_recent_moves(self):
         """Retrieves the up to 4 most recent moves a Pokemon would have learned."""
@@ -157,8 +161,10 @@ class Pokemon:
 
     def new_move(self, move: PokemonMove):
         """Begins the dialogue for learning a new move."""
-        return
-        # TODO: implement archetype for leveling, displaying moves, learning new moves
+        if len(self.moveset) < 4:
+            self.moveset.append(move)
+        else:
+            self.move_queue.append(move)
 
     ##### TODO: NOTE ONLY THE FAST EXPERIENCE FAMILY IS IMPLEMENTED #####
     def xp_to_level(self, xp: int=None):
@@ -175,6 +181,30 @@ class Pokemon:
             return math.floor(4 * (self.level ** 3) / 5)
         else:
             return math.floor(4 * (level ** 3) / 5)
+
+    def gain_xp(self, xp: int) -> bool:
+        """Gain xp, update appropriate params."""
+        leveled = False
+        if self.level == 100:
+            return leveled
+        self.xp += xp
+        new_level = self.xp_to_level(self.xp)
+        while new_level > self.level:
+            self.level_up()
+            leveled = True
+            if self.movetable.get(self.level) is not None:
+                self.new_move(self.movetable.get(self.level)())
+
+        return leveled
+
+    def replace_move(self, old_move: str):
+        """Replaces the given move with the most recent new move learned"""
+        new_move = self.move_queue.pop()
+        i = 0
+        while i < len(self.moveset):
+            if self.moveset[i].name == old_move:
+                self.moveset[i] = new_move
+            i += 1
 
 class PokemonGenerator:
     def __init__(self, pkmn_and_odds: list, min_level: int, max_level: int):
@@ -239,16 +269,16 @@ class PokeballItem(Item):
 # TODO: implement the TRAINER class, make it agnostic for use by an AGENT or by a PLAYER
 class PokemonTrainer:
     """A container to keep track of a trainer's pokemon and items."""
-    def __init__(self, pokemon: list[Pokemon], items: dict[Item, int], money: int):
+    def __init__(self, pokemon: [Pokemon], items: {Item, int}, money: int):
         self.team = pokemon
         self.items = items
         self.money = money
 
-    def use_item(self, item_name: str):
+    def use_item(self, item: Item):
         """Use a given item from inventory. *NOT SAFE*"""
-        self.items[item_name].use()
-        if self.items[item_name] == 0:
-            self.items.pop(item_name)
+        self.items[item].use()
+        if self.items[item] == 0:
+            self.items.pop(item)
 
 
 # TODO: implement the BATTLE class, figure out how to flag in main render loop --> do encounter UI
@@ -311,6 +341,8 @@ class Battle:
         self.switch_forced = False
         self.user_switched_bool = False
         self.mid_switch = False
+        self.recently_deceased = None
+        self.mon_learning_new_move = None
         ##### END BATTLE VARS #####
 
 
@@ -331,6 +363,8 @@ class Battle:
         # Set the appropriate AI agent up
         self.agent.enter_battle(self.opponent, self)
         ##### END INIT AGENT #####
+
+        self.user_current_pkmn.seen.append(self.foe_current_pkmn)
 
         self.initialize()
 
@@ -389,7 +423,14 @@ class Battle:
 
     def battle_update_logic(self):
         """Contains the hierarchical logical structure of the within a turn in battle."""
+        # If a move is being learned or another interactive dialogue is open, handle that before all else
+        if self.board.last_choice is not None:
+            self.handle_interactive_dialogue()
+            return
 
+        # Edge case multiple new moves at once
+        if self.user_current_pkmn is not None and self.user_current_pkmn.move_queue:
+            self.new_move_dialogue(self.user_current_pkmn)
 
         # If skippable text is being displayed, update NONE of the battle params
         if self.board.text_timer > 0:
@@ -402,10 +443,9 @@ class Battle:
                     self.user_switched(-1)
                 else:
                     self.opponent_switched(-1)
-                return
 
             # Case battle ended
-            if self.battle_ended_bool:
+            if self.battle_ended_bool and self.board.current_text is None:
                 self.battle_ended()
 
             # Case move animation
@@ -413,7 +453,7 @@ class Battle:
                 self.animate_turn()
 
             # Case user switched, turn has ended
-            if self.user_switched_bool:
+            if self.user_switched_bool and not self.switch_forced:
                 self.user_switched_bool = False
                 self.curr_turn = 0
                 self.turn_counter = 0
@@ -428,6 +468,77 @@ class Battle:
         else:
             self.player_may_take_action = False
 
+    def award_xp(self):
+        """Dispatch xp gains to all """
+        participants = sum([1 for mon in self.trainer.team if not mon.fainted and self.recently_deceased in mon.seen])
+
+        for mon in self.trainer.team:
+            old_level = mon.level
+            if not mon.fainted and self.recently_deceased in mon.seen:
+                mon.seen.remove(self.recently_deceased)
+                xp = self.calculate_xp(self.recently_deceased, participants)
+                leveled_up = mon.gain_xp(xp)
+                got_xp = True
+            elif self.recently_deceased in mon.seen:
+                mon.seen.remove(self.recently_deceased)
+                got_xp = False
+                leveled_up = False
+            else:
+                leveled_up = False
+                got_xp = False
+
+            if got_xp:
+                message = mon.name+" gained "+str(xp)+" xp"
+                self.board.display_text(TextBox(message, overworld=False, unskippable=False))
+
+            if leveled_up:
+                for new_level in range(old_level+1, mon.level+1):
+                    message = mon.name+" grew to level "+str(new_level)+"!"
+                    self.board.display_text(TextBox(message, overworld=False, unskippable=False))
+
+            if mon.move_queue:
+                self.new_move_dialogue(mon)
+
+    def handle_interactive_dialogue(self):
+        print("mon:", self.mon_learning_new_move)
+        # Case ready to forget a move
+        if self.board.last_choice == "Forget an old move":
+            options = [move.name for move in self.mon_learning_new_move.moveset]
+            options.append("GIVE UP?")
+            self.board.display_text(DialogueBox("Which move should be forgotten?", options, overworld=False), skip_queue=True)
+            self.board.last_choice = None
+
+        # Case not forgetting a move
+        elif self.mon_learning_new_move is not None and ("Give up on learning" in self.board.last_choice or "GIVE UP?" in self.board.last_choice):
+            message = self.mon_learning_new_move.name+" gave up on learning "+self.mon_learning_new_move.move_queue[-1].name+"."
+            self.board.display_text(TextBox(message, overworld=False, unskippable=False), skip_queue=True)
+            self.mon_learning_new_move = None
+            self.board.last_choice = None
+
+        # Case a move has been chosen
+        elif self.mon_learning_new_move is not None and self.board.last_choice in [move.name for move in self.mon_learning_new_move.moveset]:
+            forgotten = self.board.last_choice
+            message = self.mon_learning_new_move.name + " forgot how to use " + forgotten + " and learned " +self.mon_learning_new_move.move_queue[-1].name+" instead!"
+            self.mon_learning_new_move.replace_move(forgotten)
+            self.board.display_text(TextBox(message, overworld=False, unskippable=False), skip_queue=True)
+            self.board.last_choice = None
+
+    def new_move_dialogue(self, mon: Pokemon):
+        """Trigger dialogue for learning a new move"""
+        new_move = mon.move_queue[-1]
+        self.mon_learning_new_move = mon
+        message = mon.name+" wants to learn "+new_move.name+", but it already knows 4 moves. Should it forget another to learn "+new_move.name+"?"
+        self.board.display_text(DialogueBox(message, options=["Forget an old move", "Give up on learning "+new_move.name], overworld=False))
+        self.board.last_choice = None
+
+    def calculate_xp(self, foe_mon: Pokemon, participants: int):
+        a = 1 + 0.5 * int(self.is_wild)
+        b = foe_mon.exp_yield
+        e = 1 # TODO: + 0.5 * int(user_mon.item.name == "Lucky Egg")
+        f = 1 # TODO: + 0.2 * int(user_mon.affection >= x)
+        L = foe_mon.level
+
+        return math.floor(a * b * e * L * f / (7 * participants))
 
     def render_pkmn_plates(self):
         """Renders plates beneath Pokemon."""
@@ -470,9 +581,16 @@ class Battle:
                                             x3=15 * TILE_WIDTH, y3=9 * TILE_HEIGHT,
                                             batch=self.batches[1], color=(200,200,200))
 
+            ### XP BAR ###
+            xp_floor = self.user_current_pkmn.level_to_xp(self.user_current_pkmn.level)
+            xp_to_next_lvl = self.user_current_pkmn.level_to_xp(self.user_current_pkmn.level + 1)
+            percent_to_next_lvl = (self.user_current_pkmn.xp - xp_floor) / (xp_to_next_lvl - xp_floor)
+            xp_bar = pg.shapes.Rectangle(x=16.5*TILE_WIDTH, y=7*TILE_HEIGHT, height=0.1*TILE_HEIGHT, width=6.5*TILE_WIDTH*percent_to_next_lvl,
+                                                color=(50, 175, 244), batch=self.batches[1])
+
             self.shapes.extend([main_bar, f_triangle,
                             health_bar1, health_bar2, health_bar3, health_bar4,
-                            pkmn_name, healthbarfill, health_counter, friendly_level])
+                            pkmn_name, healthbarfill, health_counter, friendly_level, xp_bar])
 
         if self.foe_current_pkmn is not None:
             enemy_health_bar1 = pg.shapes.Line(x=0.5*TILE_WIDTH, y=13.5*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=13.5*TILE_HEIGHT, width=2,
@@ -673,16 +791,15 @@ class Battle:
             elif 13 * TILE_WIDTH <= x <= 13 * TILE_WIDTH + self.switch_box_width \
                 and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.switch_box_height \
                 and len(self.trainer.team) >= 6 and not self.trainer.team[5].fainted and self.user_current_pkmn is not self.trainer.team[5]:
-                    print("User switched to 4")
-                    self.user_switched(4)
+                    print("User switched to 5")
+                    self.user_switched(5)
 
             # case back button is clicked
             elif 19 * TILE_WIDTH <= x <= 23 * TILE_WIDTH \
-                    and 1.5 * TILE_HEIGHT <= y <= 5 * TILE_HEIGHT:
+                    and 1.5 * TILE_HEIGHT <= y <= 5 * TILE_HEIGHT and self.user_current_pkmn is not None:
 
                 print("BACK CLICKED")
                 self.curr_menu = 0
-            return
 
     def run_action(self):
         """When run is pressed"""
@@ -869,7 +986,9 @@ class Battle:
             new_mon = self.agent.switch()
             self.opponent_switched(new_mon)
 
+        self.recently_deceased = self.foe_current_pkmn
         self.foe_current_pkmn = None
+        self.award_xp()
 
     def user_fainted(self):
         """Ends current turn and forces user switch"""
@@ -901,6 +1020,9 @@ class Battle:
             self.board.display_text(TextBox("Opponent sent out "+self.foe_current_pkmn.name+"!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
             self.mid_switch = False
 
+            # User has battled current foe
+            self.user_current_pkmn.seen.append(self.foe_current_pkmn)
+
     def user_switched(self, ind: int):
         """Helper method to set fields and flags for new user pokemon."""
         ### FIRST HALF ###
@@ -917,9 +1039,12 @@ class Battle:
             self.board.display_text(TextBox("Go, " + self.user_current_pkmn.name + "!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
             self.mid_switch = False
 
-        if not self.switch_forced and self.curr_turn is not None:
+            # Has battled current foe
+            self.user_current_pkmn.seen.append(self.foe_current_pkmn)
+
+        if not self.switch_forced:
             self.user_switched_bool = True
-        else:
+        elif not self.mid_switch:
             self.switch_forced = False
 
         self.curr_menu = 0
@@ -1029,16 +1154,16 @@ class Battle:
 
         num_mons = len(self.trainer.team)
 
-
-        back_button = pg.shapes.BorderedRectangle(x=19 * TILE_WIDTH, y=1.5 * TILE_HEIGHT,
-                                                  width=4 * TILE_WIDTH, height=3.5 * TILE_HEIGHT,
-                                                  color=(128, 237, 68), border_color=(0, 0, 0), border=3,
-                                                  batch=self.batches[3])
-        back_button_title = pg.text.Label(text="BACK",
-                                          x=21 * TILE_WIDTH, width=4 * TILE_WIDTH,
-                                          y=3 * TILE_HEIGHT, anchor_x="center",
-                                          color=(0, 0, 0, 255), batch=self.batches[4])
-        pkmn_objects.extend([back_button, back_button_title])
+        if self.user_current_pkmn is not None:
+            back_button = pg.shapes.BorderedRectangle(x=19 * TILE_WIDTH, y=1.5 * TILE_HEIGHT,
+                                                      width=4 * TILE_WIDTH, height=3.5 * TILE_HEIGHT,
+                                                      color=(128, 237, 68), border_color=(0, 0, 0), border=3,
+                                                      batch=self.batches[3])
+            back_button_title = pg.text.Label(text="BACK",
+                                              x=21 * TILE_WIDTH, width=4 * TILE_WIDTH,
+                                              y=3 * TILE_HEIGHT, anchor_x="center",
+                                              color=(0, 0, 0, 255), batch=self.batches[4])
+            pkmn_objects.extend([back_button, back_button_title])
 
         # If there is at least one mon
         if num_mons >= 1:

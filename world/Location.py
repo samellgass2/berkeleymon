@@ -239,7 +239,7 @@ empty = pg.sprite.Sprite(empty_space_img)
 
 # TODO: implement a few mons to test encounter behavior
 TEST_PKMN_AND_ODDS = [(Piplup, 1)]
-TEST_GENERATOR = PokemonGenerator(TEST_PKMN_AND_ODDS, 5, 10)
+TEST_GENERATOR = PokemonGenerator(TEST_PKMN_AND_ODDS, 40, 50)
 
 TEST_LOCATION = Location(50, 50, False, TEST_GENERATOR)
 

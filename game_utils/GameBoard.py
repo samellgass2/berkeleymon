@@ -54,6 +54,8 @@ class GameBoard:
         self.text_timer = 0
         self.current_text = None
         self.text_queue = queue.Queue()
+        self.last_choice = None
+
         self.in_overworld = True
         self.current_encounter = None
 
@@ -74,7 +76,7 @@ class GameBoard:
         """Clears text queue and destroys all queued text."""
         self.text_queue = queue.Queue()
 
-    def display_text(self, textbox: TextBox, texttime: int = None):
+    def display_text(self, textbox: TextBox, texttime: int = None, skip_queue: bool=False):
         """Puts a textbox, texttime pair into the text queue and pops off the queue."""
         # If no texttime is given, it will be the length of time required to display the textbox.
         if texttime is None:
@@ -84,7 +86,17 @@ class GameBoard:
         self.player_sprinting = False
         self.update_player_icon()
 
-        self.text_queue.put((textbox, texttime))
+        # If the queue should be skipped, a new queue is formed with all members behind the new entry
+        if skip_queue:
+            new_queue = queue.Queue()
+            new_queue.put((textbox, texttime))
+            while not self.text_queue.empty():
+                new_queue.put(self.text_queue.get())
+
+            self.text_queue = new_queue
+
+        else:
+            self.text_queue.put((textbox, texttime))
 
         if self.text_timer <= 0:
             self.displaying_text = True
@@ -93,6 +105,11 @@ class GameBoard:
 
     def end_text(self):
         """End current text, dispatch next text if one exists."""
+        if self.current_text is not None and self.current_text.interactive:
+            self.last_choice = self.current_text.options[self.current_text.pointer_ind]
+            print("Dialogue box closed with option=", self.last_choice)
+        else:
+            self.last_choice = None
         self.displaying_text = False
         self.current_text = None
         self.text_timer = 0

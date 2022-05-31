@@ -5,6 +5,7 @@ import pyglet as pg
 import pyglet.graphics as graphics
 import pyglet.gl as gl
 from data.Constants import *
+import math
 
 class TextBox():
     def __init__(self, text: str, overworld: bool=True, unskippable: bool=False):
@@ -26,6 +27,8 @@ class TextBox():
         self.carrot_dir = -1
         self.carrot_offset = - self.max_offset
         self.unskippable = unskippable
+
+        self.interactive = False
 
         self.define_box()
 
@@ -89,6 +92,89 @@ class TextBox():
         # Handle timer in container
         if self.board.text_timer > 0:
             self.board.text_timer -= 1
+
+class DialogueBox(TextBox):
+    def __init__(self, text: str, options: [str], overworld: bool = True):
+        super().__init__(text, overworld, unskippable=True)
+        self.options = options
+        self.interactive = True
+        self.pointer_ind = 0
+        self.choice = None
+        self.shapes = []
+        self.height_per_option = [math.ceil((10 * len(option))/(6 * TILE_WIDTH)) for option in self.options]
+        print(self.height_per_option)
+
+    def increment_cursor(self):
+        if self.pointer_ind == 0:
+            self.pointer_ind = len(self.options) - 1
+        else:
+            self.pointer_ind -= 1
+
+        print(self.pointer_ind)
+
+    def decrement_cursor(self):
+        self.pointer_ind = (self.pointer_ind + 1) % len(self.options)
+        print(self.pointer_ind)
+
+    def choose_option(self):
+        self.choice = self.pointer_ind
+
+    def draw_options_box(self):
+        base_height = 0.3 * TILE_HEIGHT
+        box_height = base_height + 0.5 * sum(self.height_per_option) * TILE_HEIGHT
+
+        if self.overworld:
+            options_box = pg.shapes.BorderedRectangle(x= 18 * TILE_WIDTH, y= 2.5 * TILE_HEIGHT,
+                                         width= TILE_WIDTH * 6,
+                                         height= box_height,
+                                         color=(255, 255, 255), border_color=(0, 0, 0), batch = self.batches[0], border=4)
+            self.shapes.append(options_box)
+            i = 1
+            for option in self.options:
+                curr_offset = sum(self.height_per_option[:i])
+                text = pg.text.Label(text=option, font_size=12, x = 18.5 * TILE_WIDTH, y = 2.5 * TILE_HEIGHT + box_height - 0.1 - 0.5 * curr_offset * TILE_HEIGHT,
+                                             width = 5.5 * TILE_WIDTH, multiline=True, color=(0,0,0,255), batch=self.batches[1], anchor_y="bottom")
+                self.shapes.append(text)
+                i += 1
+        else:
+            options_box = pg.shapes.BorderedRectangle(x= 18 * TILE_WIDTH, y= 6 * TILE_HEIGHT,
+                                         width= TILE_WIDTH * 6,
+                                         height= box_height,
+                                         color=(255, 255, 255), border_color=(0, 0, 0), batch = self.batches[0], border=4)
+            self.shapes.append(options_box)
+            i = 1
+            for option in self.options:
+                curr_offset = sum(self.height_per_option[:i])
+                text = pg.text.Label(text=option, font_size=12, x = 18.5 * TILE_WIDTH, y = (6 * TILE_HEIGHT) + box_height - 0.1 - 0.5 * curr_offset * TILE_HEIGHT,
+                                             width = 5.5 * TILE_WIDTH, multiline=True, color=(0,0,0,255), batch=self.batches[1], anchor_y="bottom")
+                self.shapes.append(text)
+                i += 1
+
+    def draw_pointer(self):
+        base_height = 0.3 * TILE_HEIGHT
+        box_height = base_height + 0.5 * sum(self.height_per_option) * TILE_HEIGHT
+
+        wild_offset = 2.5 * TILE_HEIGHT + (3.5 * TILE_HEIGHT * int(not self.overworld))
+        curr_offset = sum(self.height_per_option[:self.pointer_ind])
+        pointer = pg.shapes.Triangle(x=18.2 * TILE_WIDTH, y= box_height - 0.1 * TILE_HEIGHT - 0.5 * (curr_offset) * TILE_HEIGHT + wild_offset,
+                           x2=18.2 * TILE_WIDTH, y2= box_height - 0.3 * TILE_HEIGHT - 0.5 * (curr_offset) * TILE_HEIGHT + wild_offset,
+                           x3=18.45 * TILE_WIDTH, y3= box_height - 0.2 * TILE_HEIGHT - 0.5 * (curr_offset) * TILE_HEIGHT + wild_offset,
+                           color=(0, 0, 0))
+        pointer.draw()
+
+
+    def render(self):
+        super().render()
+
+        if self.complete and not self.shapes:
+            self.draw_options_box()
+
+        if self.complete:
+            self.draw_pointer()
+
+
+
+
 
 
 

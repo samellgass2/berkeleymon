@@ -77,11 +77,24 @@ def on_key_press(symbol, modifiers):
 @window.event
 def on_key_release(symbol, modifiers):
     """Event handler for ending ongooing movement: process end of player input."""
-    if BOARD.displaying_text:
+    # Case text may be dismissed
+    if BOARD.displaying_text and not BOARD.current_text.interactive:
         if BOARD.text_timer <= 0:
             if symbol == pg.window.key.SPACE or symbol == pg.window.key.A \
                     or symbol == pg.window.key.S or symbol == pg.window.key.W or symbol == pg.window.key.D:
                 BOARD.end_text()
+    # Case text requires interaction
+    elif BOARD.displaying_text and BOARD.current_text.interactive and BOARD.current_text.complete:
+        # Move cursor up
+        if (symbol == pg.window.key.W or symbol == pg.window.key.UP):
+            BOARD.current_text.increment_cursor()
+        # Move cursor down
+        elif (symbol == pg.window.key.S or symbol == pg.window.key.DOWN):
+            BOARD.current_text.decrement_cursor()
+        # Finalize choice
+        elif (symbol == pg.window.key.SPACE or symbol == pg.window.key.ENTER):
+            BOARD.current_text.choose_option()
+            BOARD.end_text()
     elif BOARD.in_overworld:
         if (symbol == pg.window.key.W or symbol == pg.window.key.UP) and BOARD.player_heading == 0:
             # set to travel up
@@ -109,7 +122,8 @@ def on_key_release(symbol, modifiers):
 
 @window.event
 def on_mouse_release(x, y, button, modifiers):
-    if BOARD.displaying_text:
+    # Case text may be dismissed
+    if BOARD.displaying_text and not BOARD.current_text.interactive:
         if BOARD.text_timer <= 0:
             BOARD.end_text()
     elif not BOARD.in_overworld and BOARD.current_encounter.player_may_take_action:
@@ -119,6 +133,7 @@ def on_mouse_release(x, y, button, modifiers):
     return
 
 ##### EXECUTE GAME #####
+BOARD.display_text(DialogueBox(" On a scale of 1 to 10 how attractive is it to literally code pokemon all day?", options=["a long one to start us off just to see what breaks", "0", "-10", "bro r u ok", "refuse to answer because that's a terrible question you fucking frog"]))
 
 pg.clock.schedule_interval(BOARD.update_state, 1/REFRESH_RATE)
 pg.app.run()
