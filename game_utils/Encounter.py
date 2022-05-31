@@ -57,7 +57,7 @@ class PokemonMove:
         hit_prob = np.random.choice(range(0, 101))
         if hit_prob <= self.accuracy:
             is_hit = True
-            total_damage = damage
+            total_damage = min(damage, opponent.hp)
         else:
             is_hit = False
             total_damage = 0
@@ -306,11 +306,11 @@ class Battle:
         self.curr_total_damage = None
         self.curr_damage = None
         self.turn_counter = 0
-        self.text_timer = 0
         self.battle_ended_bool = False
         self.shown_effectiveness = False
         self.switch_forced = False
         self.user_switched_bool = False
+        self.mid_switch = False
         ##### END BATTLE VARS #####
 
 
@@ -370,26 +370,7 @@ class Battle:
         self.render_hp_bars()
         self.render_sprites()
 
-        # If text is being displayed, update NONE of the battle params
-        if self.text_timer > 0:
-            self.player_may_take_action = False
-            self.text_timer -= 1
-
-        else:
-            self.player_may_take_action = True
-            if self.battle_ended_bool:
-                self.battle_ended()
-
-            if not self.battle_ended_bool and self.curr_turn is not None:
-                self.animate_turn()
-
-            if self.user_switched_bool:
-                # TODO: dispatch AI in response by calling switch turn with appropriate params
-                self.user_switched_bool = False
-                self.curr_turn = 0
-                self.turn_counter = 0
-                self.shown_effectiveness = True
-                self.switch_turn()
+        self.battle_update_logic()
 
         if self.curr_menu == 0:
             self.render_buttons()
@@ -406,6 +387,48 @@ class Battle:
         for batch in self.batches:
             batch.draw()
 
+    def battle_update_logic(self):
+        """Contains the hierarchical logical structure of the within a turn in battle."""
+
+
+        # If skippable text is being displayed, update NONE of the battle params
+        if self.board.text_timer > 0:
+            self.player_may_take_action = False
+
+        else:
+            # If a switch is underway, allow it to continue:
+            if self.mid_switch:
+                if self.user_current_pkmn is None:
+                    self.user_switched(-1)
+                else:
+                    self.opponent_switched(-1)
+                return
+
+            # Case battle ended
+            if self.battle_ended_bool:
+                self.battle_ended()
+
+            # Case move animation
+            if not self.battle_ended_bool and self.curr_turn is not None:
+                self.animate_turn()
+
+            # Case user switched, turn has ended
+            if self.user_switched_bool:
+                self.user_switched_bool = False
+                self.curr_turn = 0
+                self.turn_counter = 0
+                self.shown_effectiveness = True
+                self.switch_turn()
+
+        # If the turn has come to an end, force the text to end and let the player move
+        if self.curr_turn is None:
+            # if not self.user_switched_bool:
+            #     self.board.end_text()
+            self.player_may_take_action = True
+        else:
+            self.player_may_take_action = False
+
+
     def render_pkmn_plates(self):
         """Renders plates beneath Pokemon."""
         # TODO: fill the plates
@@ -418,76 +441,84 @@ class Battle:
 
     def render_hp_bars(self):
         """Renders the HP bars correctly with respect to current health."""
-        main_bar = pg.shapes.Rectangle(x=0, y=13*TILE_HEIGHT, width=7*TILE_WIDTH, height=2*TILE_HEIGHT,
-                                       batch=self.batches[1], color=(200,200,200))
-        f_triangle = pg.shapes.Triangle(x=7*TILE_WIDTH, y=13*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=15*TILE_HEIGHT, x3=8*TILE_WIDTH, y3=15*TILE_HEIGHT,
-                                        batch=self.batches[1], color=(200,200,200))
+        if self.user_current_pkmn is not None:
 
-        health_bar1 = pg.shapes.Line(x=16.5*TILE_WIDTH, y=7.5*TILE_HEIGHT, x2=23*TILE_WIDTH, y2=7.5*TILE_HEIGHT, width=2,
-                                     color=(0,0,0), batch=self.batches[2])
-        health_bar2 = pg.shapes.Line(x=16.5*TILE_WIDTH, y=8*TILE_HEIGHT, x2=23*TILE_WIDTH, y2=8*TILE_HEIGHT, width=2,
-                                     color=(0,0,0), batch=self.batches[2])
-        health_bar3 = pg.shapes.Line(x=16.5*TILE_WIDTH, y=7.5*TILE_HEIGHT, x2=16.5*TILE_WIDTH, y2=8*TILE_HEIGHT, width=2,
-                                     color=(0,0,0), batch=self.batches[2])
-        health_bar4 = pg.shapes.Line(x=23*TILE_WIDTH, y=7.5*TILE_HEIGHT, x2=23*TILE_WIDTH, y2=8*TILE_HEIGHT, width=2,
-                                     color=(0,0,0), batch=self.batches[2])
-        pkmn_name = pg.text.Label(text=self.user_current_pkmn.display_name, font_size=10, x=16.5*TILE_WIDTH, y=8.3*TILE_HEIGHT,
-                                  color=(0,0,0,255), batch=self.batches[2])
+            health_bar1 = pg.shapes.Line(x=16.5*TILE_WIDTH, y=7.5*TILE_HEIGHT, x2=23*TILE_WIDTH, y2=7.5*TILE_HEIGHT, width=2,
+                                         color=(0,0,0), batch=self.batches[2])
+            health_bar2 = pg.shapes.Line(x=16.5*TILE_WIDTH, y=8*TILE_HEIGHT, x2=23*TILE_WIDTH, y2=8*TILE_HEIGHT, width=2,
+                                         color=(0,0,0), batch=self.batches[2])
+            health_bar3 = pg.shapes.Line(x=16.5*TILE_WIDTH, y=7.5*TILE_HEIGHT, x2=16.5*TILE_WIDTH, y2=8*TILE_HEIGHT, width=2,
+                                         color=(0,0,0), batch=self.batches[2])
+            health_bar4 = pg.shapes.Line(x=23*TILE_WIDTH, y=7.5*TILE_HEIGHT, x2=23*TILE_WIDTH, y2=8*TILE_HEIGHT, width=2,
+                                         color=(0,0,0), batch=self.batches[2])
+            pkmn_name = pg.text.Label(text=self.user_current_pkmn.display_name, font_size=10, x=16.5*TILE_WIDTH, y=8.3*TILE_HEIGHT,
+                                      color=(0,0,0,255), batch=self.batches[2])
 
-        friendly_mon_percent = self.user_current_pkmn.hp / self.user_current_pkmn.stats["max_hp"]
-        healthbarfill = pg.shapes.Rectangle(x=16.5*TILE_WIDTH, y=7.5*TILE_HEIGHT, height=0.5*TILE_HEIGHT, width=6.5*TILE_WIDTH*friendly_mon_percent,
-                                            color=(0, 255, 0), batch=self.batches[3])
+            friendly_mon_percent = self.user_current_pkmn.hp / self.user_current_pkmn.stats["max_hp"]
+            healthbarfill = pg.shapes.Rectangle(x=16.5*TILE_WIDTH, y=7.5*TILE_HEIGHT, height=0.5*TILE_HEIGHT, width=6.5*TILE_WIDTH*friendly_mon_percent,
+                                                color=(0, 255, 0), batch=self.batches[3])
 
-        friendly_level = pg.text.Label(text="Lv. "+str(self.user_current_pkmn.level), font_size=10, x=21.5*TILE_WIDTH, y=8.3*TILE_HEIGHT,
-                                  color=(0,0,0,255), batch=self.batches[2])
+            friendly_level = pg.text.Label(text="Lv. "+str(self.user_current_pkmn.level), font_size=10, x=21.5*TILE_WIDTH, y=8.3*TILE_HEIGHT,
+                                      color=(0,0,0,255), batch=self.batches[2])
 
-        health_counter = pg.text.Label(text=str(math.ceil(self.user_current_pkmn.hp)) + " / "+str(self.user_current_pkmn.stats["max_hp"]), font_size=10, x=19*TILE_WIDTH, y=7.08*TILE_HEIGHT,
-                                  color=(0,0,0,255), batch=self.batches[2])
+            health_counter = pg.text.Label(text=str(math.ceil(self.user_current_pkmn.hp)) + " / "+str(self.user_current_pkmn.stats["max_hp"]), font_size=10, x=19*TILE_WIDTH, y=7.08*TILE_HEIGHT,
+                                      color=(0,0,0,255), batch=self.batches[2])
 
-        enemy_health_bar1 = pg.shapes.Line(x=0.5*TILE_WIDTH, y=13.5*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=13.5*TILE_HEIGHT, width=2,
-                                     color=(0,0,0), batch=self.batches[2])
-        enemy_health_bar2 = pg.shapes.Line(x=0.5*TILE_WIDTH, y=14*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=14*TILE_HEIGHT, width=2,
-                                     color=(0,0,0), batch=self.batches[2])
-        enemy_health_bar3 = pg.shapes.Line(x=0.5*TILE_WIDTH, y=13.5*TILE_HEIGHT, x2=0.5*TILE_WIDTH, y2=14*TILE_HEIGHT, width=2,
-                                     color=(0,0,0), batch=self.batches[2])
-        enemy_health_bar4 = pg.shapes.Line(x=7*TILE_WIDTH, y=13.5*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=14*TILE_HEIGHT, width=2,
-                                     color=(0,0,0), batch=self.batches[2])
-        enemy_pkmn_name = pg.text.Label(text=self.foe_current_pkmn.display_name, font_size=10, x=0.5*TILE_WIDTH, y=14.3*TILE_HEIGHT,
-                                  color=(0,0,0,255), batch=self.batches[2])
+            main_bar = pg.shapes.Rectangle(x=16*TILE_WIDTH, y=7 * TILE_HEIGHT, width=8 * TILE_WIDTH, height=2 * TILE_HEIGHT,
+                                           batch=self.batches[1], color=(200,200,200))
+            f_triangle = pg.shapes.Triangle(x=16 * TILE_WIDTH, y=7 * TILE_HEIGHT, x2=16 * TILE_WIDTH, y2=9 * TILE_HEIGHT,
+                                            x3=15 * TILE_WIDTH, y3=9 * TILE_HEIGHT,
+                                            batch=self.batches[1], color=(200,200,200))
 
-        enemy_mon_percent = self.foe_current_pkmn.hp / self.foe_current_pkmn.stats["max_hp"]
-        enemy_healthbarfill = pg.shapes.Rectangle(x=0.5*TILE_WIDTH, y=13.5*TILE_HEIGHT, height=0.5*TILE_HEIGHT, width=6.5*TILE_WIDTH*enemy_mon_percent,
-                                            color=(0, 255, 0), batch=self.batches[3])
-
-        enemy_level = pg.text.Label(text="Lv. " + str(self.foe_current_pkmn.level), font_size=10, x=6 * TILE_WIDTH,
-                                       y=14.3 * TILE_HEIGHT,
-                                       color=(0, 0, 0, 255), batch=self.batches[2])
-
-
-
-        enemy_bar = pg.shapes.Rectangle(x=16*TILE_WIDTH, y=7 * TILE_HEIGHT, width=8 * TILE_WIDTH, height=2 * TILE_HEIGHT,
-                                       batch=self.batches[1], color=(200,200,200))
-        enemy_triangle = pg.shapes.Triangle(x=16 * TILE_WIDTH, y=7 * TILE_HEIGHT, x2=16 * TILE_WIDTH, y2=9 * TILE_HEIGHT,
-                                        x3=15 * TILE_WIDTH, y3=9 * TILE_HEIGHT,
-                                        batch=self.batches[1], color=(200,200,200))
-
-        self.shapes.extend([main_bar, f_triangle, enemy_bar, enemy_triangle,
+            self.shapes.extend([main_bar, f_triangle,
                             health_bar1, health_bar2, health_bar3, health_bar4,
-                            pkmn_name, healthbarfill, enemy_health_bar1, enemy_health_bar2,
-                            enemy_health_bar3, enemy_health_bar4, enemy_pkmn_name, enemy_healthbarfill,
-                            friendly_level, enemy_level, health_counter])
+                            pkmn_name, healthbarfill, health_counter, friendly_level])
+
+        if self.foe_current_pkmn is not None:
+            enemy_health_bar1 = pg.shapes.Line(x=0.5*TILE_WIDTH, y=13.5*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=13.5*TILE_HEIGHT, width=2,
+                                         color=(0,0,0), batch=self.batches[2])
+            enemy_health_bar2 = pg.shapes.Line(x=0.5*TILE_WIDTH, y=14*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=14*TILE_HEIGHT, width=2,
+                                         color=(0,0,0), batch=self.batches[2])
+            enemy_health_bar3 = pg.shapes.Line(x=0.5*TILE_WIDTH, y=13.5*TILE_HEIGHT, x2=0.5*TILE_WIDTH, y2=14*TILE_HEIGHT, width=2,
+                                         color=(0,0,0), batch=self.batches[2])
+            enemy_health_bar4 = pg.shapes.Line(x=7*TILE_WIDTH, y=13.5*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=14*TILE_HEIGHT, width=2,
+                                         color=(0,0,0), batch=self.batches[2])
+            enemy_pkmn_name = pg.text.Label(text=self.foe_current_pkmn.display_name, font_size=10, x=0.5*TILE_WIDTH, y=14.3*TILE_HEIGHT,
+                                      color=(0,0,0,255), batch=self.batches[2])
+
+            enemy_mon_percent = self.foe_current_pkmn.hp / self.foe_current_pkmn.stats["max_hp"]
+            enemy_healthbarfill = pg.shapes.Rectangle(x=0.5*TILE_WIDTH, y=13.5*TILE_HEIGHT, height=0.5*TILE_HEIGHT, width=6.5*TILE_WIDTH*enemy_mon_percent,
+                                                color=(0, 255, 0), batch=self.batches[3])
+
+            enemy_level = pg.text.Label(text="Lv. " + str(self.foe_current_pkmn.level), font_size=10, x=6 * TILE_WIDTH,
+                                           y=14.3 * TILE_HEIGHT,
+                                           color=(0, 0, 0, 255), batch=self.batches[2])
+
+            enemy_bar = pg.shapes.Rectangle(x=0, y=13*TILE_HEIGHT, width=7*TILE_WIDTH, height=2*TILE_HEIGHT,
+                                           batch=self.batches[1], color=(200,200,200))
+            enemy_triangle = pg.shapes.Triangle(x=7*TILE_WIDTH, y=13*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=15*TILE_HEIGHT, x3=8*TILE_WIDTH, y3=15*TILE_HEIGHT,
+                                            batch=self.batches[1], color=(200,200,200))
+
+
+
+
+            self.shapes.extend([enemy_health_bar1, enemy_health_bar2, enemy_bar, enemy_triangle,
+                                enemy_health_bar3, enemy_health_bar4, enemy_pkmn_name, enemy_healthbarfill,
+                                 enemy_level])
 
     def render_sprites(self):
         """Draws the front of the opponent and the back of the user."""
-        friendly_mon = self.user_current_pkmn.back_sprite
-        friendly_mon.batch = self.batches[2]
-        friendly_mon.x = 4*TILE_WIDTH
-        friendly_mon.y = 6*TILE_HEIGHT
+        friendly_mon = self.user_current_pkmn
+        if friendly_mon is not None:
+            friendly_mon.back_sprite.batch = self.batches[2]
+            friendly_mon.back_sprite.x = 4*TILE_WIDTH
+            friendly_mon.back_sprite.y = 6*TILE_HEIGHT
 
-        foe_mon = self.foe_current_pkmn.front_sprite
-        foe_mon.batch = self.batches[2]
-        foe_mon.x = 15*TILE_WIDTH
-        foe_mon.y = 11*TILE_HEIGHT
+        foe_mon = self.foe_current_pkmn
+        if foe_mon is not None:
+            foe_mon.front_sprite.batch = self.batches[2]
+            foe_mon.front_sprite.x = 15*TILE_WIDTH
+            foe_mon.front_sprite.y = 11*TILE_HEIGHT
 
     def render_buttons(self):
         """Main menu button renderer."""
@@ -658,9 +689,8 @@ class Battle:
         # if ... pokemon related conditions, for now just let escape occur
         escape_prob = 0
         if np.random.random() >= escape_prob:
-            self.board.display_text(TextBox("You got away safely!"))
+            self.board.display_text(TextBox("You got away safely!"), 2 * REFRESH_RATE)
             self.battle_ended_bool = True
-            self.text_timer = 2 * REFRESH_RATE
 
     def ended_action(self):
         """Begins end of battle sequence."""
@@ -743,10 +773,10 @@ class Battle:
                     hit_str = "\n" + self.foe_current_pkmn.name+" missed!"
                 if self.is_wild:
                     self.board.display_text(TextBox("The wild " + self.foe_current_pkmn.name + str(
-                        " used ") + self.curr_agent_move.name + "!"+hit_str))
+                        " used ") + self.curr_agent_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
                 else:
                     self.board.display_text(TextBox("The foe's " + self.foe_current_pkmn.name + str(
-                        " used ") + self.curr_user_move.name + "!"+hit_str))
+                        " used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
 
         ### If agent move has ended, begin user turn ###
         elif self.curr_turn == 1:
@@ -757,7 +787,7 @@ class Battle:
                 hit_str = ""
             else:
                 hit_str = "\n" + self.user_current_pkmn.name + " missed!"
-            self.board.display_text(TextBox(self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str))
+            self.board.display_text(TextBox(self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
 
     def battle_action(self, user_move: PokemonMove):
         """When a move is picked, set up one turn cycle."""
@@ -785,7 +815,7 @@ class Battle:
                 hit_str = ""
             else:
                 hit_str = "\n" + self.user_current_pkmn.name + " missed!"
-            self.board.display_text(TextBox(self.user_current_pkmn.name+str(" used ")+user_move.name+"!"+hit_str))
+            self.board.display_text(TextBox(self.user_current_pkmn.name+str(" used ")+user_move.name+"!"+hit_str, overworld=False, unskippable=True), 0)
 
         # Agent moves first
         else:
@@ -800,9 +830,9 @@ class Battle:
             else:
                 hit_str = "\n" + self.foe_current_pkmn.name + " missed!"
             if self.is_wild:
-                self.board.display_text(TextBox("The wild "+self.user_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"+hit_str))
+                self.board.display_text(TextBox("The wild "+self.user_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
             else:
-                self.board.display_text(TextBox("The foe's "+self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str))
+                self.board.display_text(TextBox("The foe's "+self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
 
         self.curr_menu = 0
 
@@ -829,9 +859,8 @@ class Battle:
             wild_str = "The wild "
         else:
             wild_str = ""
-        message = TextBox(wild_str+self.foe_current_pkmn.name+str(" fainted!"))
-        self.board.display_text(message)
-        self.text_timer = REFRESH_RATE
+        message = TextBox(wild_str+self.foe_current_pkmn.name+str(" fainted!"), unskippable=True, overworld=False)
+        self.board.display_text(message, 1 * REFRESH_RATE)
         living_mons = len([mon for mon in self.opponent.team if not mon.fainted])
         if living_mons == 0:
             self.battle_ended_bool = True
@@ -840,11 +869,12 @@ class Battle:
             new_mon = self.agent.switch()
             self.opponent_switched(new_mon)
 
+        self.foe_current_pkmn = None
+
     def user_fainted(self):
         """Ends current turn and forces user switch"""
-        message = TextBox(self.user_current_pkmn.name+str(" fainted!"))
-        self.board.display_text(message)
-        self.text_timer = REFRESH_RATE
+        message = TextBox(self.user_current_pkmn.name+str(" fainted!"), overworld=False, unskippable=False)
+        self.board.display_text(message, 1 * REFRESH_RATE)
         living_mons = len([mon for mon in self.trainer.team if not mon.fainted])
         if living_mons == 0:
             self.battle_ended_bool = True
@@ -853,18 +883,41 @@ class Battle:
             self.curr_turn = None
             self.curr_menu = 3
 
+        self.user_current_pkmn = None
+
     def opponent_switched(self, ind: int):
         """Helper method to set fields with new foe pokemon."""
-        self.foe_current_pkmn = self.opponent.team[ind]
-        self.board.display_text(TextBox("Opponent sent out "+self.foe_current_pkmn.name+"!"))
-        self.text_timer = REFRESH_RATE
+        ### FIRST HALF ###
+        if not self.mid_switch:
+            if self.foe_current_pkmn is not None:
+                self.board.display_text(TextBox(self.agent.trainer.name+" withdrew "+self.foe_current_pkmn.name+"!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
+                self.foe_current_pkmn = None
+            self.mid_switch = True
+            self.ind_to_switch_to = ind
+
+        ### SECOND HALF ###
+        else:
+            self.foe_current_pkmn = self.opponent.team[self.ind_to_switch_to]
+            self.board.display_text(TextBox("Opponent sent out "+self.foe_current_pkmn.name+"!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
+            self.mid_switch = False
 
     def user_switched(self, ind: int):
         """Helper method to set fields and flags for new user pokemon."""
-        self.user_current_pkmn = self.trainer.team[ind]
-        self.board.display_text(TextBox("Go, " + self.foe_current_pkmn.name + "!"))
-        self.text_timer = REFRESH_RATE
-        if not self.switch_forced:
+        ### FIRST HALF ###
+        if not self.mid_switch:
+            if self.user_current_pkmn is not None:
+                self.board.display_text(TextBox("That's enough, come back " + self.user_current_pkmn.name + "!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
+                self.user_current_pkmn = None
+            self.mid_switch = True
+            self.ind_to_switch_to = ind
+
+        ### SECOND HALF ###
+        else:
+            self.user_current_pkmn = self.trainer.team[self.ind_to_switch_to]
+            self.board.display_text(TextBox("Go, " + self.user_current_pkmn.name + "!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
+            self.mid_switch = False
+
+        if not self.switch_forced and self.curr_turn is not None:
             self.user_switched_bool = True
         else:
             self.switch_forced = False
@@ -885,16 +938,14 @@ class Battle:
         if self.effectiveness == 0 or (self.curr_turn == 0 and self.curr_user_move.is_status) \
                 or (self.curr_turn == 1 and self.curr_agent_move.is_status):
             if self.is_crit:
-                self.board.display_text(TextBox(crit_text))
-                self.text_timer = REFRESH_RATE
+                self.board.display_text(TextBox(crit_text, overworld=False, unskippable=True), 1 * REFRESH_RATE)
             return
         if self.effectiveness == -2:
-            self.board.display_text(TextBox("It doesn't affect "+self.foe_current_pkmn.name+"..."))
+            self.board.display_text(TextBox("It doesn't affect "+self.foe_current_pkmn.name+"...", overworld=False, unskippable=True), 1 * REFRESH_RATE)
         elif self.effectiveness == -1:
-            self.board.display_text(TextBox("It's not very effective..."+"\n"+crit_text))
+            self.board.display_text(TextBox("It's not very effective..."+"\n"+crit_text, overworld=False, unskippable=True), 1 * REFRESH_RATE)
         elif self.effectiveness == 1:
-            self.board.display_text(TextBox("It's super effective!"+"\n"+crit_text))
-        self.text_timer = REFRESH_RATE
+            self.board.display_text(TextBox("It's super effective!"+"\n"+crit_text, overworld=False, unskippable=True), 1 * REFRESH_RATE)
 
     def render_items_menu(self):
         # TODO: make items menu and corresponding mouse parsing

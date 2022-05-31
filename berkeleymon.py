@@ -31,13 +31,11 @@ def on_draw():
     # dispatch loadscreen here where appropriate
     if BOARD.in_overworld:
         BOARD.render_board()
-        if BOARD.displaying_text:
-            print("we're in the board displaying text zone")
-            BOARD.current_text.render()
     else:
         BOARD.current_encounter.render()
-        if BOARD.displaying_text:
-            BOARD.current_text.render()
+
+    if BOARD.displaying_text:
+        BOARD.current_text.render()
 
 @window.event
 def on_key_press(symbol, modifiers):
@@ -80,7 +78,7 @@ def on_key_press(symbol, modifiers):
 def on_key_release(symbol, modifiers):
     """Event handler for ending ongooing movement: process end of player input."""
     if BOARD.displaying_text:
-        if BOARD.current_text.complete:
+        if BOARD.text_timer <= 0:
             if symbol == pg.window.key.SPACE or symbol == pg.window.key.A \
                     or symbol == pg.window.key.S or symbol == pg.window.key.W or symbol == pg.window.key.D:
                 BOARD.end_text()
@@ -112,7 +110,7 @@ def on_key_release(symbol, modifiers):
 @window.event
 def on_mouse_release(x, y, button, modifiers):
     if BOARD.displaying_text:
-        if BOARD.current_text.complete:
+        if BOARD.text_timer <= 0:
             BOARD.end_text()
     elif not BOARD.in_overworld and BOARD.current_encounter.player_may_take_action:
         # Keep track of the bottom left and top right corner

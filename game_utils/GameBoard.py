@@ -6,6 +6,7 @@ import pyglet as pg
 import pyglet.graphics as graphics
 import pyglet.gl as gl
 from data.Constants import *
+import queue
 
 class GameBoard:
     """The Visible Area."""
@@ -50,7 +51,9 @@ class GameBoard:
 
         ### render mode boolean flags ###
         self.displaying_text = False
+        self.text_timer = 0
         self.current_text = None
+        self.text_queue = queue.Queue()
         self.in_overworld = True
         self.current_encounter = None
 
@@ -67,18 +70,36 @@ class GameBoard:
 
 
     ### DISPATCH TEXT EVENT ###
-    def display_text(self, textbox: TextBox):
+    def clear_text_queue(self):
+        """Clears text queue and destroys all queued text."""
+        self.text_queue = queue.Queue()
+
+    def display_text(self, textbox: TextBox, texttime: int = None):
+        """Puts a textbox, texttime pair into the text queue and pops off the queue."""
+        # If no texttime is given, it will be the length of time required to display the textbox.
+        if texttime is None:
+            texttime = len(textbox.text_buffer)
+
         self.player_heading = -1
         self.player_sprinting = False
         self.update_player_icon()
 
-        self.displaying_text = True
-        self.current_text = textbox
-        self.current_text.board = self
+        self.text_queue.put((textbox, texttime))
+
+        if self.text_timer <= 0:
+            self.displaying_text = True
+            self.current_text, self.text_timer = self.text_queue.get()
+            self.current_text.board = self
 
     def end_text(self):
+        """End current text, dispatch next text if one exists."""
         self.displaying_text = False
         self.current_text = None
+        self.text_timer = 0
+        if not self.text_queue.empty():
+            self.displaying_text = True
+            self.current_text, self.text_timer = self.text_queue.get()
+            self.current_text.board = self
 
     ### DISPATCH ENCOUNTER ###
     def enter_wild_encounter(self, wild_pokemon: Pokemon):
