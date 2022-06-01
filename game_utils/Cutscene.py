@@ -110,11 +110,8 @@ class DialogueBox(TextBox):
         else:
             self.pointer_ind -= 1
 
-        print(self.pointer_ind)
-
     def decrement_cursor(self):
         self.pointer_ind = (self.pointer_ind + 1) % len(self.options)
-        print(self.pointer_ind)
 
     def choose_option(self):
         self.choice = self.pointer_ind
@@ -161,7 +158,6 @@ class DialogueBox(TextBox):
                            x3=18.45 * TILE_WIDTH, y3= box_height - 0.2 * TILE_HEIGHT - 0.5 * (curr_offset) * TILE_HEIGHT + wild_offset,
                            color=(0, 0, 0))
         pointer.draw()
-
 
     def render(self):
         super().render()

@@ -77,7 +77,7 @@ class Pokemon:
     """The general, archetypal Pokemon class to create most of the skeleton for actions."""
     def __init__(self, name: str, nickname: str, types: [int], level: int, xp: float, movetable: {int, PokemonMove}, moveset: [PokemonMove],
                  defense: int, attack: int, special_defense: int, special_attack: int, hp: int, speed: int, gender: int,
-                 front_sprite: pg.sprite.Sprite, back_sprite: pg.sprite.Sprite, exp_yield: int):
+                 front_sprite: pg.sprite.Sprite, back_sprite: pg.sprite.Sprite, exp_yield: int, evolutions: {int, any}):
 
         # To allow for generation of a mon by either total xp OR level, the other is filled in if not provided.
         if level is None:
@@ -107,6 +107,8 @@ class Pokemon:
         self.types = types
         self.gender = gender
         self.exp_yield = exp_yield
+        self.tier = 'NA'
+        self.number = -1
 
 
         self.base_stats = {}
@@ -500,7 +502,6 @@ class Battle:
                 self.new_move_dialogue(mon)
 
     def handle_interactive_dialogue(self):
-        print("mon:", self.mon_learning_new_move)
         # Case ready to forget a move
         if self.board.last_choice == "Forget an old move":
             options = [move.name for move in self.mon_learning_new_move.moveset]
@@ -1036,7 +1037,7 @@ class Battle:
         ### SECOND HALF ###
         else:
             self.user_current_pkmn = self.trainer.team[self.ind_to_switch_to]
-            self.board.display_text(TextBox("Go, " + self.user_current_pkmn.name + "!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
+            self.board.display_text(TextBox("Go, " + self.user_current_pkmn.name + "!", overworld=False, unskippable=True))
             self.mid_switch = False
 
             # Has battled current foe
@@ -1250,7 +1251,7 @@ class Battle:
             curr_mon = self.trainer.team[4]
             switch_box_five = pg.shapes.BorderedRectangle(x=13 * TILE_WIDTH, y=3.25 * TILE_HEIGHT,
                                                          width=self.switch_box_width, height=self.switch_box_height,
-                                                         color=mon_colors[2], border_color=(0, 0, 0), border=3,
+                                                         color=mon_colors[4], border_color=(0, 0, 0), border=3,
                                                          batch=self.batches[3])
             text_five = curr_mon.name + " Lv." + str(curr_mon.level) + "\n" + str(math.ceil(curr_mon.hp)) + " / " + str(
                 curr_mon.stats["max_hp"])
@@ -1272,13 +1273,13 @@ class Battle:
             curr_mon = self.trainer.team[5]
             switch_box_six = pg.shapes.BorderedRectangle(x=13 * TILE_WIDTH, y=0.5 * TILE_HEIGHT,
                                                           width=self.switch_box_width, height=self.switch_box_height,
-                                                          color=mon_colors[3], border_color=(0, 0, 0), border=3,
+                                                          color=mon_colors[5], border_color=(0, 0, 0), border=3,
                                                           batch=self.batches[3])
             text_six = curr_mon.name + " Lv." + str(curr_mon.level) + "\n" + str(math.ceil(curr_mon.hp)) + " / " + str(
                 curr_mon.stats["max_hp"])
 
             mon_label_six = pg.text.Label(text=text_six,
-                                           x=7.5 * TILE_WIDTH + self.move_box_width / 2, width=self.move_box_width,
+                                           x=13.5 * TILE_WIDTH + self.move_box_width / 2, width=self.move_box_width,
                                            y=2 * TILE_HEIGHT, anchor_x="center", multiline=True,
                                            color=(0, 0, 0, 255), batch=self.batches[4])
             pkmn_objects.extend([switch_box_six, mon_label_six])

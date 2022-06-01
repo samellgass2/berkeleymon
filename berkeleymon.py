@@ -133,7 +133,7 @@ def on_mouse_release(x, y, button, modifiers):
     return
 
 ##### EXECUTE GAME #####
-BOARD.display_text(DialogueBox(" On a scale of 1 to 10 how attractive is it to literally code pokemon all day?", options=["a long one to start us off just to see what breaks", "0", "-10", "bro r u ok", "refuse to answer because that's a terrible question you fucking frog"]))
+#BOARD.display_text(DialogueBox(" On a scale of 1 to 10 how attractive is it to literally code pokemon all day?", options=["a long one to start us off just to see what breaks", "0", "-10", "bro r u ok", "refuse to answer because that's a terrible question you fucking frog"]))
 
 pg.clock.schedule_interval(BOARD.update_state, 1/REFRESH_RATE)
 pg.app.run()

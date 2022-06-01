@@ -238,7 +238,8 @@ empty = pg.sprite.Sprite(empty_space_img)
 # TODO: the test location is a 50 x 50 grass patch with appropriate edges.
 
 # TODO: implement a few mons to test encounter behavior
-TEST_PKMN_AND_ODDS = [(Piplup, 1)]
+mon_odd = 1 / len(POKEDEX_MAP)
+TEST_PKMN_AND_ODDS = [(mon, mon_odd) for mon in POKEDEX_MAP.values()]
 TEST_GENERATOR = PokemonGenerator(TEST_PKMN_AND_ODDS, 40, 50)
 
 TEST_LOCATION = Location(50, 50, False, TEST_GENERATOR)
