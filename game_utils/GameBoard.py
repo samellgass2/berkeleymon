@@ -135,6 +135,7 @@ class GameBoard:
         self.player_sprinting = False
         self.update_player_icon()
         self.location.board.in_overworld = True
+        del self.current_encounter
         self.current_encounter = None
         self.end_text()
 

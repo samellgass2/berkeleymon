@@ -24,6 +24,9 @@ class PokemonMove:
     def use(self, opponent):
         """Dispatches the given move on opponent from user - returns is_crit (bool) and is_super_eff in {-2, -1, 0, 1}."""
         # TODO: implement "stages" of crits after focus energy, etc.
+        if self.is_status:
+            return False, 0, True, 0
+
         crit_multiplier = 1 + 0.5 * int(np.random.random() < (1/16))
         if crit_multiplier > 1:
             is_crit = True
@@ -476,7 +479,7 @@ class Battle:
 
         for mon in self.trainer.team:
             old_level = mon.level
-            if not mon.fainted and self.recently_deceased in mon.seen:
+            if not mon.fainted and self.recently_deceased in mon.seen and mon.level < 100:
                 mon.seen.remove(self.recently_deceased)
                 xp = self.calculate_xp(self.recently_deceased, participants)
                 leveled_up = mon.gain_xp(xp)
@@ -807,7 +810,7 @@ class Battle:
         # if ... pokemon related conditions, for now just let escape occur
         escape_prob = 0
         if np.random.random() >= escape_prob:
-            self.board.display_text(TextBox("You got away safely!"), 2 * REFRESH_RATE)
+            self.board.display_text(TextBox("You got away safely!"), 1 * REFRESH_RATE)
             self.battle_ended_bool = True
 
     def ended_action(self):
@@ -948,9 +951,9 @@ class Battle:
             else:
                 hit_str = "\n" + self.foe_current_pkmn.name + " missed!"
             if self.is_wild:
-                self.board.display_text(TextBox("The wild "+self.user_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
+                self.board.display_text(TextBox("The wild "+self.foe_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
             else:
-                self.board.display_text(TextBox("The foe's "+self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
+                self.board.display_text(TextBox("The foe's "+self.foe_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
 
         self.curr_menu = 0
 
@@ -1058,20 +1061,20 @@ class Battle:
 
     def display_effectiveness(self):
         """Send to screen the effectiveness and critical hit outcome of a move."""
-        crit_text = ""
-        if self.is_crit:
-            crit_text = "A critical hit!"
-        if self.effectiveness == 0 or (self.curr_turn == 0 and self.curr_user_move.is_status) \
-                or (self.curr_turn == 1 and self.curr_agent_move.is_status):
-            if self.is_crit:
-                self.board.display_text(TextBox(crit_text, overworld=False, unskippable=True), 1 * REFRESH_RATE)
+        if not self.is_hit:
             return
+
+        # Display how effective if not normally effective (0)
         if self.effectiveness == -2:
             self.board.display_text(TextBox("It doesn't affect "+self.foe_current_pkmn.name+"...", overworld=False, unskippable=True), 1 * REFRESH_RATE)
         elif self.effectiveness == -1:
-            self.board.display_text(TextBox("It's not very effective..."+"\n"+crit_text, overworld=False, unskippable=True), 1 * REFRESH_RATE)
+            self.board.display_text(TextBox("It's not very effective...", overworld=False, unskippable=True), 1 * REFRESH_RATE)
         elif self.effectiveness == 1:
-            self.board.display_text(TextBox("It's super effective!"+"\n"+crit_text, overworld=False, unskippable=True), 1 * REFRESH_RATE)
+            self.board.display_text(TextBox("It's super effective!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
+
+        # Display if crit if affects opponent
+        if self.is_crit and self.effectiveness != -2:
+            self.board.display_text(TextBox("A critical hit!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
 
     def render_items_menu(self):
         # TODO: make items menu and corresponding mouse parsing
