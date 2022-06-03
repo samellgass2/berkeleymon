@@ -78,6 +78,7 @@ def on_key_press(symbol, modifiers):
 def on_key_release(symbol, modifiers):
     """Event handler for ending ongooing movement: process end of player input."""
     # Case text may be dismissed
+    # TODO: make system s.t. while turn is in play, text may not be skipped
     if BOARD.displaying_text and not BOARD.current_text.interactive:
         if BOARD.text_timer <= 0:
             if symbol == pg.window.key.SPACE or symbol == pg.window.key.A \
@@ -123,6 +124,7 @@ def on_key_release(symbol, modifiers):
 @window.event
 def on_mouse_release(x, y, button, modifiers):
     # Case text may be dismissed
+    # TODO: make system s.t. while turn is in play, text may not be skipped
     if BOARD.displaying_text and not BOARD.current_text.interactive:
         if BOARD.text_timer <= 0:
             BOARD.end_text()

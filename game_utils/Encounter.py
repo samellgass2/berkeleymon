@@ -49,18 +49,21 @@ class PokemonMove:
 
         if self.physical:
             attack_defense_ratio = self.user.stats["attack"] / opponent.stats["defense"]
+            effectiveness_multiplier = STAT_MULTIPLIERS.get(self.user.attack_stage) * STAT_MULTIPLIERS.get(opponent.defense_stage)
         else:
             attack_defense_ratio = self.user.stats["special_attack"] / opponent.stats["special_defense"]
+            effectiveness_multiplier = STAT_MULTIPLIERS.get(self.user.special_attack_stage) * STAT_MULTIPLIERS.get(
+                opponent.special_defense_stage)
 
         # TODO: implement other multipliers: weather, burn, specific 'other' cases
 
         damage = (((2 * self.user.level / 5 + 2) * self.power * attack_defense_ratio / 50) + 2) * \
-                 crit_multiplier * rand_multiplier * STAB_multiplier * super_eff_multiplier
+                 crit_multiplier * rand_multiplier * STAB_multiplier * super_eff_multiplier * effectiveness_multiplier
 
         hit_prob = np.random.choice(range(0, 101))
         if hit_prob <= self.accuracy:
             is_hit = True
-            total_damage = min(damage, opponent.hp)
+            total_damage = min(damage, opponent.hp+1)
         else:
             is_hit = False
             total_damage = 0
@@ -131,8 +134,21 @@ class Pokemon:
 
         self.status = -1
         self.fainted = False
+        self.attack_stage = 0
+        self.defense_stage = 0
+        self.special_attack_stage = 0
+        self.special_defense_stage = 0
+        self.speed_stage = 0
+
         self.seen = []
         self.move_queue = []
+
+    def reset_stat_stages(self):
+        self.attack_stage = 0
+        self.defense_stage = 0
+        self.special_attack_stage = 0
+        self.special_defense_stage = 0
+        self.speed_stage = 0
 
     def get_most_recent_moves(self):
         """Retrieves the up to 4 most recent moves a Pokemon would have learned."""
@@ -162,7 +178,6 @@ class Pokemon:
         """Called on level, automatically updates stats."""
         self.level += 1
         self.calculate_stats()
-        # TODO: check if new_move exists and send text out if so
 
     def new_move(self, move: PokemonMove):
         """Begins the dialogue for learning a new move."""
@@ -991,6 +1006,7 @@ class Battle:
             self.opponent_switched(new_mon)
 
         self.recently_deceased = self.foe_current_pkmn
+        self.foe_current_pkmn.reset_stat_stages()
         self.foe_current_pkmn = None
         self.award_xp()
 
@@ -1006,6 +1022,7 @@ class Battle:
             self.curr_turn = None
             self.curr_menu = 3
 
+        self.user_current_pkmn.reset_stat_stages()
         self.user_current_pkmn = None
 
     def opponent_switched(self, ind: int):
@@ -1014,6 +1031,7 @@ class Battle:
         if not self.mid_switch:
             if self.foe_current_pkmn is not None:
                 self.board.display_text(TextBox(self.agent.trainer.name+" withdrew "+self.foe_current_pkmn.name+"!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
+                self.foe_current_pkmn.reset_stat_stages()
                 self.foe_current_pkmn = None
             self.mid_switch = True
             self.ind_to_switch_to = ind
@@ -1033,6 +1051,7 @@ class Battle:
         if not self.mid_switch:
             if self.user_current_pkmn is not None:
                 self.board.display_text(TextBox("That's enough, come back " + self.user_current_pkmn.name + "!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
+                self.user_current_pkmn.reset_stat_stages()
                 self.user_current_pkmn = None
             self.mid_switch = True
             self.ind_to_switch_to = ind
@@ -1055,9 +1074,17 @@ class Battle:
 
     def battle_ended(self):
         """Dispatch needed logic and close encounter."""
-        # TODO: CALCULATE HOW MUCH $$ TO ADD TO PLAYER WALLET
-        # TODO: PRINT MESSAGE
-        self.ended_action()
+        # STAGE 1: SHOW MONEY
+        if not self.is_wild and self.agent.trainer.money > 0:
+            self.board.display_text(TextBox("You got $"+str(self.agent.trainer.money)+" for winning!", overworld=False, unskippable=False), 1 * REFRESH_RATE)
+            self.trainer.money += self.agent.trainer.money
+            self.agent.trainer.money = 0
+
+        # STAGE 2: RESET AND EXIT
+        else:
+            for mon in self.trainer.team:
+                mon.reset_stat_stages()
+            self.ended_action()
 
     def display_effectiveness(self):
         """Send to screen the effectiveness and critical hit outcome of a move."""

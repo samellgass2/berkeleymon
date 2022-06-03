@@ -15,6 +15,9 @@ class Turtwig(Pokemon):
     tier = 'F'
     number = 1
     exp_yield = 64
+    types = [11]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
@@ -29,13 +32,27 @@ class Turtwig(Pokemon):
         super().__init__(self.name, nickname=nickname,
                          hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
                          special_defense=self.special_defense, speed=self.speed,
-                         types=[11], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/turtwig_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/turtwig_back.png")),
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
                          exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Grotle(Pokemon):
     """Grotle."""
+    name = "GROTLE"
+    hp = 75
+    attack = 89
+    special_attack = 55
+    defense = 85
+    special_defense = 65
+    speed = 36
+    tier = 'D'
+    number = 2
+    exp_yield = 141
+    types = [11]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -45,18 +62,31 @@ class Grotle(Pokemon):
             36: Torterra
         }
 
-        super().__init__("GROTLE", nickname=nickname,
-                         hp=75, attack=89,special_attack=55, defense=85, special_defense=65, speed=36,
-                         types=[11], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/grotle_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/grotle_back.png")),
-                         exp_yield=141, evolutions=evolutions)
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        self.tier = 'D'
-        self.number = 2
 
 class Torterra(Pokemon):
     """Torterra."""
+    name = "TORTERRA"
+    hp = 95
+    attack = 109
+    special_attack = 75
+    defense = 105
+    special_defense = 85
+    speed = 56
+    tier = 'B'
+    number = 3
+    exp_yield = 208
+    types = [11,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -65,18 +95,31 @@ class Torterra(Pokemon):
         evolutions = {
         }
 
-        super().__init__("TORTERRA", nickname=nickname,
-                         hp=95, attack=109,special_attack=75, defense=105, special_defense=85, speed=56,
-                         types=[4, 11], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/torterra_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/torterra_back.png")),
-                         exp_yield=208, evolutions=evolutions)
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        self.tier = 'B'
-        self.number = 3
 
 class Chimchar(Pokemon):
     """Chimchar."""
+    name = "CHIMCHAR"
+    hp = 44
+    attack = 58
+    special_attack = 58
+    defense = 44
+    special_defense = 44
+    speed = 61
+    tier = 'F'
+    number = 4
+    exp_yield = 65
+    types = [9]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -86,18 +129,30 @@ class Chimchar(Pokemon):
             14: Monferno
         }
 
-        super().__init__("CHIMCHAR", nickname=nickname,
-                         hp=44, attack=58,special_attack=58, defense=44, special_defense=44, speed=61,
-                         types=[9], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/chimchar_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/chimchar_back.png")),
-                         exp_yield=65, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 4
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Monferno(Pokemon):
     """Monferno."""
+    name = "MONFERNO"
+    hp = 64
+    attack = 78
+    special_attack = 78
+    defense = 52
+    special_defense = 52
+    speed = 81
+    tier = 'D'
+    number = 5
+    exp_yield = 142
+    types = [9]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -107,18 +162,30 @@ class Monferno(Pokemon):
             36: Infernape
         }
 
-        super().__init__("MONFERNO", nickname=nickname,
-                         hp=64, attack=78,special_attack=78, defense=52, special_defense=52, speed=81,
-                         types=[9], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/monferno_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/monferno_back.png")),
-                         exp_yield=142, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 5
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Infernape(Pokemon):
     """Infernape."""
+    name = "INFERNAPE"
+    hp = 76
+    attack = 104
+    special_attack = 104
+    defense = 71
+    special_defense = 71
+    speed = 108
+    tier = 'A'
+    number = 6
+    exp_yield = 209
+    types = [9,1]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -127,18 +194,31 @@ class Infernape(Pokemon):
         evolutions = {
         }
 
-        super().__init__("INFERNAPE", nickname=nickname,
-                         hp=76, attack=104,special_attack=104, defense=71, special_defense=71, speed=108,
-                         types=[9], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/infernape_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/infernape_back.png")),
-                         exp_yield=142, evolutions=evolutions)
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        self.tier = 'D'
-        self.number = 5
 
 class Piplup(Pokemon):
     """Piplup."""
+    name = "PIPLUP"
+    hp = 53
+    attack = 51
+    special_attack = 61
+    defense = 53
+    special_defense = 56
+    speed = 40
+    tier = 'F'
+    number = 7
+    exp_yield = 66
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.webp")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         movetable = {
             1: Pound,
@@ -158,18 +238,30 @@ class Piplup(Pokemon):
 
         evolutions = {16: Prinplup}
 
-        super().__init__("PIPLUP", nickname=nickname,
-                         defense=53, attack=51, special_defense=56, special_attack=61, speed=40, hp=53,
-                         types=[10],gender=gender,level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/piplup_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/piplup_back.webp")),
-                         exp_yield=66, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 7
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Prinplup(Pokemon):
     """Prinplup."""
+    name = "PRINPLUP"
+    hp = 64
+    attack = 66
+    special_attack = 81
+    defense = 68
+    special_defense = 76
+    speed = 50
+    tier = 'D'
+    number = 8
+    exp_yield = 143
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -177,18 +269,30 @@ class Prinplup(Pokemon):
         }
         evolutions = {36: Empoleon}
 
-        super().__init__("PRINPLUP", nickname=nickname,
-                         hp=64, attack=66, defense=68,special_attack=81, special_defense=76, speed=50,
-                         types=[10], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/prinplup_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/prinplup_back.png")),
-                         exp_yield=143, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 8
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Empoleon(Pokemon):
     """Empoleon."""
+    name = "EMPOLEON"
+    hp = 84
+    attack = 86
+    special_attack = 111
+    defense = 88
+    special_defense = 101
+    speed = 60
+    tier = 'A'
+    number = 9
+    exp_yield = 210
+    types = [10,8]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -198,18 +302,30 @@ class Empoleon(Pokemon):
 
         }
 
-        super().__init__("EMPOLEON", nickname=nickname,
-                         hp=84, attack=86,special_attack=111, defense=88, special_defense=101, speed=60,
-                         types=[10, 8], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/empoleon_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/empoleon_back.png")),
-                         exp_yield=210, evolutions=evolutions)
-
-        self.tier = 'A'
-        self.number = 9
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Starly(Pokemon):
     """Starly."""
+    name = "STARLY"
+    hp = 40
+    attack = 55
+    special_attack = 30
+    defense = 30
+    special_defense = 30
+    speed = 60
+    tier = 'F'
+    number = 10
+    exp_yield = 56
+    types = [2,0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -219,18 +335,31 @@ class Starly(Pokemon):
             14: Staravia
         }
 
-        super().__init__("STARLY", nickname=nickname,
-                         hp=40, attack=55,special_attack=30, defense=30, special_defense=30, speed=60,
-                         types=[2,0], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/starly_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/starly_back.png")),
-                         exp_yield=56, evolutions=evolutions)
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        self.tier = 'F'
-        self.number = 10
 
 class Staravia(Pokemon):
     """Staravia."""
+    name = "STARAVIA"
+    hp = 55
+    attack = 75
+    special_attack = 40
+    defense = 50
+    special_defense = 40
+    speed = 80
+    tier = 'E'
+    number = 11
+    exp_yield = 113
+    types = [2,0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -240,18 +369,31 @@ class Staravia(Pokemon):
             34: Staraptor
         }
 
-        super().__init__("STARAVIA", nickname=nickname,
-                         hp=55, attack=75,special_attack=40, defense=50, special_defense=40, speed=80,
-                         types=[2,0], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/staravia_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/staravia_back.png")),
-                         exp_yield=113, evolutions=evolutions)
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        self.tier = 'E'
-        self.number = 11
 
 class Staraptor(Pokemon):
     """Staraptor."""
+    name = "STARAPTOR"
+    hp = 85
+    attack = 120
+    special_attack = 50
+    defense = 70
+    special_defense = 60
+    speed = 100
+    tier = 'C'
+    number = 12
+    exp_yield = 172
+    types = [2,0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -260,18 +402,30 @@ class Staraptor(Pokemon):
         evolutions = {
         }
 
-        super().__init__("STARAPTOR", nickname=nickname,
-                         hp=55, attack=75,special_attack=40, defense=50, special_defense=40, speed=80,
-                         types=[2,0], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/staraptor_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/staraptor_back.png")),
-                         exp_yield=172, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 12
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Bidoof(Pokemon):
     """Bidoof."""
+    name = "BIDOOF"
+    hp = 59
+    attack = 45
+    special_attack = 35
+    defense = 40
+    special_defense = 40
+    speed = 31
+    tier = 'F'
+    number = 13
+    exp_yield = 58
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -281,18 +435,30 @@ class Bidoof(Pokemon):
             15: Bibarel
         }
 
-        super().__init__("BIDOOF", nickname=nickname,
-                         hp=59, attack=45,special_attack=35, defense=40, special_defense=40, speed=31,
-                         types=[0], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/bidoof_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/bidoof_back.png")),
-                         exp_yield=58, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 13
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Bibarel(Pokemon):
     """Bibarel."""
+    name = "BIBAREL"
+    hp = 79
+    attack = 85
+    special_attack = 55
+    defense = 60
+    special_defense = 60
+    speed = 71
+    tier = 'D'
+    number = 14
+    exp_yield = 116
+    types = [0,10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -301,18 +467,30 @@ class Bibarel(Pokemon):
         evolutions = {
         }
 
-        super().__init__("BIBAREL", nickname=nickname,
-                         hp=79, attack=85,special_attack=55, defense=60, special_defense=60, speed=71,
-                         types=[0,10], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/bibarel_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/bibarel_back.png")),
-                         exp_yield=116, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 14
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Kricketot(Pokemon):
     """Kricketot."""
+    name = "KRICKETOT"
+    hp = 37
+    attack = 25
+    special_attack = 25
+    defense = 41
+    special_defense = 41
+    speed = 25
+    tier = 'F'
+    number = 15
+    exp_yield = 54
+    types = [6]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -322,18 +500,30 @@ class Kricketot(Pokemon):
             10: Kricketune
         }
 
-        super().__init__("KRICKETOT", nickname=nickname,
-                         hp=37, attack=25,special_attack=25, defense=41, special_defense=41, speed=25,
-                         types=[6], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/kricketot_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/kricketot_back.png")),
-                         exp_yield=54, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 15
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Kricketune(Pokemon):
     """Kricketune."""
+    name = "KRICKETUNE"
+    hp = 77
+    attack = 85
+    special_attack = 55
+    defense = 51
+    special_defense = 51
+    speed = 65
+    tier = 'E'
+    number = 16
+    exp_yield = 159
+    types = [6]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -343,18 +533,31 @@ class Kricketune(Pokemon):
             10: Kricketune
         }
 
-        super().__init__("KRICKETUNE", nickname=nickname,
-                         hp=77, attack=85,special_attack=55, defense=51, special_defense=51, speed=65,
-                         types=[6], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/kricketune_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/kricketune_back.png")),
-                         exp_yield=159, evolutions=evolutions)
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        self.tier = 'F'
-        self.number = 16
 
 class Shinx(Pokemon):
     """Shinx."""
+    name = "SHINX"
+    hp = 45
+    attack = 65
+    special_attack = 40
+    defense = 34
+    special_defense = 34
+    speed = 45
+    tier = 'F'
+    number = 17
+    exp_yield = 60
+    types = [12]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -364,18 +567,30 @@ class Shinx(Pokemon):
             15: Luxio
         }
 
-        super().__init__("SHINX", nickname=nickname,
-                         hp=45, attack=65,special_attack=40, defense=34, special_defense=34, speed=45,
-                         types=[12], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/shinx_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/shinx_back.png")),
-                         exp_yield=60, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 17
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Luxio(Pokemon):
     """Luxio."""
+    name = "LUXIO"
+    hp = 60
+    attack = 85
+    special_attack = 60
+    defense = 49
+    special_defense = 49
+    speed = 60
+    tier = 'E'
+    number = 18
+    exp_yield = 117
+    types = [12]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -384,19 +599,31 @@ class Luxio(Pokemon):
         evolutions = {
             30: "Luxray"
         }
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        super().__init__("LUXIO", nickname=nickname,
-                         hp=60, attack=85,special_attack=60, defense=49, special_defense=49, speed=60,
-                         types=[12], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/luxio_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/luxio_back.png")),
-                         exp_yield=117, evolutions=evolutions)
-
-        self.tier = 'E'
-        self.number = 18
 
 class Luxray(Pokemon):
     """Luxray."""
+    name = "LUXRAY"
+    hp = 80
+    attack = 120
+    special_attack = 95
+    defense = 79
+    special_defense = 79
+    speed = 70
+    tier = 'B'
+    number = 19
+    exp_yield = 194
+    types = [12]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -404,19 +631,31 @@ class Luxray(Pokemon):
         }
         evolutions = {
         }
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        super().__init__("LUXRAY", nickname=nickname,
-                         hp=80, attack=120,special_attack=95, defense=79, special_defense=79, speed=70,
-                         types=[12], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/luxray_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/luxray_back.png")),
-                         exp_yield=194, evolutions=evolutions)
-
-        self.tier = 'B'
-        self.number = 19
 
 class Abra(Pokemon):
     """Abra."""
+    name = "ABRA"
+    hp = 25
+    attack = 20
+    special_attack = 105
+    defense = 15
+    special_defense = 55
+    speed = 90
+    tier = 'F'
+    number = 20
+    exp_yield = 75
+    types = [13]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -426,18 +665,30 @@ class Abra(Pokemon):
             16:Kadabra
         }
 
-        super().__init__("ABRA", nickname=nickname,
-                         hp=25, attack=20,special_attack=105, defense=15, special_defense=55, speed=90,
-                         types=[13], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/abra_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/abra_back.png")),
-                         exp_yield=75, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 20
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Kadabra(Pokemon):
     """Kadabra."""
+    name = "KADABRA"
+    hp = 40
+    attack = 35
+    special_attack = 120
+    defense = 30
+    special_defense = 70
+    speed = 105
+    tier = 'D'
+    number = 21
+    exp_yield = 145
+    types = [13]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -447,18 +698,30 @@ class Kadabra(Pokemon):
             36:Alakazam
         }
 
-        super().__init__("KADABRA", nickname=nickname,
-                         hp=40, attack=35,special_attack=120, defense=30, special_defense=70, speed=105,
-                         types=[13], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/kadabra_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/kadabra_back.png")),
-                         exp_yield=145, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 21
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Alakazam(Pokemon):
     """Alakazam."""
+    name = "ALAKAZAM"
+    hp = 55
+    attack = 50
+    special_attack = 135
+    defense = 45
+    special_defense = 95
+    speed = 120
+    tier = 'B'
+    number = 22
+    exp_yield = 186
+    types = [13]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -467,18 +730,30 @@ class Alakazam(Pokemon):
         evolutions = {
         }
 
-        super().__init__("ALAKAZAM", nickname=nickname,
-                         hp=55, attack=50,special_attack=135, defense=45, special_defense=95, speed=120,
-                         types=[13], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/alakazam_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/alakazam_back.png")),
-                         exp_yield=186, evolutions=evolutions)
-
-        self.tier = 'B'
-        self.number = 22
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Magikarp(Pokemon):
     """Magikarp."""
+    name = "MAGIKARP"
+    hp = 20
+    attack = 10
+    special_attack = 15
+    defense = 55
+    special_defense = 20
+    speed = 80
+    tier = 'F'
+    number = 23
+    exp_yield = 20
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -488,18 +763,30 @@ class Magikarp(Pokemon):
             20: Gyarados
         }
 
-        super().__init__("MAGIKARP", nickname=nickname,
-                         hp=20, attack=10,special_attack=15, defense=55, special_defense=20, speed=80,
-                         types=[10], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/magikarp_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/magikarp_back.png")),
-                         exp_yield=20, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 23
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Gyarados(Pokemon):
     """Gyarados."""
+    name = "GYARADOS"
+    hp = 95
+    attack = 125
+    special_attack = 60
+    defense = 79
+    special_defense = 100
+    speed = 81
+    tier = 'A'
+    number = 24
+    exp_yield = 214
+    types = [10,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -508,18 +795,30 @@ class Gyarados(Pokemon):
         evolutions = {
         }
 
-        super().__init__("GYARADOS", nickname=nickname,
-                         hp=95, attack=125,special_attack=60, defense=79, special_defense=100, speed=81,
-                         types=[10,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/gyarados_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/gyarados_back.png")),
-                         exp_yield=214, evolutions=evolutions)
-
-        self.tier = 'A'
-        self.number = 24
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Budew(Pokemon):
     """Budew."""
+    name = "BUDEW"
+    hp = 40
+    attack = 30
+    special_attack = 50
+    defense = 35
+    special_defense = 70
+    speed = 55
+    tier = 'F'
+    number = 25
+    exp_yield = 68
+    types = [11,3]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -529,18 +828,30 @@ class Budew(Pokemon):
             16: Roselia
         }
 
-        super().__init__("BUDEW", nickname=nickname,
-                         hp=40, attack=30,special_attack=50, defense=35, special_defense=70, speed=55,
-                         types=[11,3], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/budew_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/budew_back.png")),
-                         exp_yield=68, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 25
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Roselia(Pokemon):
     """Roselia."""
+    name = "ROSELIA"
+    hp = 50
+    attack = 60
+    special_attack = 100
+    defense = 45
+    special_defense = 80
+    speed = 65
+    tier = 'D'
+    number = 26
+    exp_yield = 152
+    types = [11,3]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -551,18 +862,30 @@ class Roselia(Pokemon):
             32: Roserade
         }
 
-        super().__init__("ROSELIA", nickname=nickname,
-                         hp=50, attack=60,special_attack=100, defense=45, special_defense=80, speed=65,
-                         types=[11,3], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/roselia_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/roselia_back.png")),
-                         exp_yield=152, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 26
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Roserade(Pokemon):
     """Roserade."""
+    name = "ROSERADE"
+    hp = 60
+    attack = 70
+    special_attack = 125
+    defense = 65
+    special_defense = 105
+    speed = 90
+    tier = 'B'
+    number = 27
+    exp_yield = 204
+    types = [11,3]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -572,18 +895,30 @@ class Roserade(Pokemon):
         evolutions = {
         }
 
-        super().__init__("ROSERADE", nickname=nickname,
-                         hp=60, attack=70,special_attack=125, defense=65, special_defense=105, speed=90,
-                         types=[11,3], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/roserade_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/roserade_back.png")),
-                         exp_yield=204, evolutions=evolutions)
-
-        self.tier = 'B'
-        self.number = 27
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Zubat(Pokemon):
     """Zubat."""
+    name = "ZUBAT"
+    hp = 40
+    attack = 45
+    special_attack = 30
+    defense = 35
+    special_defense = 40
+    speed = 55
+    tier = 'F'
+    number = 28
+    exp_yield = 54
+    types = [3,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -593,18 +928,30 @@ class Zubat(Pokemon):
             22: Golbat
         }
 
-        super().__init__("ZUBAT", nickname=nickname,
-                         hp=40, attack=45,special_attack=30, defense=35, special_defense=40, speed=55,
-                         types=[3,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/zubat_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/zubat_back.png")),
-                         exp_yield=54, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 28
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Golbat(Pokemon):
     """Golbat."""
+    name = "GOLBAT"
+    hp = 75
+    attack = 80
+    special_attack = 65
+    defense = 70
+    special_defense = 75
+    speed = 90
+    tier = 'C'
+    number = 29
+    exp_yield = 171
+    types = [3,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -614,18 +961,30 @@ class Golbat(Pokemon):
             34: Crobat
         }
 
-        super().__init__("GOLBAT", nickname=nickname,
-                         hp=75, attack=80,special_attack=65, defense=70, special_defense=75, speed=90,
-                         types=[3,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/golbat_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/golbat_back.png")),
-                         exp_yield=171, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 29
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Crobat(Pokemon):
     """Crobat."""
+    name = "CROBAT"
+    hp = 85
+    attack = 90
+    special_attack = 70
+    defense = 80
+    special_defense = 80
+    speed = 130
+    tier = 'A'
+    number = 30
+    exp_yield = 204
+    types = [3,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -634,18 +993,30 @@ class Crobat(Pokemon):
         evolutions = {
         }
 
-        super().__init__("CROBAT", nickname=nickname,
-                         hp=85, attack=90,special_attack=70, defense=80, special_defense=80, speed=130,
-                         types=[3,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/crobat_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/crobat_back.png")),
-                         exp_yield=204, evolutions=evolutions)
-
-        self.tier = 'A'
-        self.number = 30
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Geodude(Pokemon):
     """Geodude."""
+    name = "GEODUDE"
+    hp = 40
+    attack = 80
+    special_attack = 30
+    defense = 100
+    special_defense = 30
+    speed = 20
+    tier = 'F'
+    number = 31
+    exp_yield = 73
+    types = [5,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -655,18 +1026,30 @@ class Geodude(Pokemon):
             24: Graveler
         }
 
-        super().__init__("GEODUDE", nickname=nickname,
-                         hp=40, attack=80,special_attack=30, defense=100, special_defense=30, speed=20,
-                         types=[5,4], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/geodude_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/geodude_back.png")),
-                         exp_yield=73, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 31
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Graveler(Pokemon):
     """Graveler."""
+    name = "GRAVELER"
+    hp = 55
+    attack = 95
+    special_attack = 45
+    defense = 115
+    special_defense = 45
+    speed = 35
+    tier = 'E'
+    number = 32
+    exp_yield = 134
+    types = [5,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -676,18 +1059,30 @@ class Graveler(Pokemon):
             36: Golem
         }
 
-        super().__init__("GRAVELER", nickname=nickname,
-                         hp=55, attack=95,special_attack=45, defense=115, special_defense=45, speed=35,
-                         types=[5,4], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/graveler_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/graveler_back.png")),
-                         exp_yield=134, evolutions=evolutions)
-
-        self.tier = 'E'
-        self.number = 32
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Golem(Pokemon):
     """Golem."""
+    name = "GOLEM"
+    hp = 80
+    attack = 120
+    special_attack = 55
+    defense = 130
+    special_defense = 65
+    speed = 45
+    tier = 'C'
+    number = 33
+    exp_yield = 177
+    types = [5,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -696,18 +1091,30 @@ class Golem(Pokemon):
         evolutions = {
         }
 
-        super().__init__("GOLEM", nickname=nickname,
-                         hp=80, attack=120,special_attack=55, defense=130, special_defense=65, speed=45,
-                         types=[5,4], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/golem_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/golem_back.png")),
-                         exp_yield=177, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 33
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Onix(Pokemon):
     """Onix."""
+    name = "ONIX"
+    hp = 35
+    attack = 45
+    special_attack = 30
+    defense = 160
+    special_defense = 45
+    speed = 70
+    tier = 'E'
+    number = 34
+    exp_yield = 108
+    types = [5,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -718,18 +1125,30 @@ class Onix(Pokemon):
             25: Steelix
         }
 
-        super().__init__("ONIX", nickname=nickname,
-                         hp=35, attack=45,special_attack=30, defense=160, special_defense=45, speed=70,
-                         types=[5,4], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/onix_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/onix_back.png")),
-                         exp_yield=108, evolutions=evolutions)
-
-        self.tier = 'E'
-        self.number = 34
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Steelix(Pokemon):
     """Steelix."""
+    name = "STEELIX"
+    hp = 75
+    attack = 85
+    special_attack = 35
+    defense = 200
+    special_defense = 65
+    speed = 30
+    tier = 'B'
+    number = 35
+    exp_yield = 196
+    types = [8,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -738,18 +1157,30 @@ class Steelix(Pokemon):
         evolutions = {
         }
 
-        super().__init__("STEELIX", nickname=nickname,
-                         hp=75, attack=85,special_attack=55, defense=200, special_defense=65, speed=30,
-                         types=[8,4], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/steelix_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/steelix_back.png")),
-                         exp_yield=196, evolutions=evolutions)
-
-        self.tier = 'B'
-        self.number = 35
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Cranidos(Pokemon):
     """Cranidos."""
+    name = "CRANIDOS"
+    hp = 67
+    attack = 125
+    special_attack = 30
+    defense = 40
+    special_defense = 30
+    speed = 58
+    tier = 'E'
+    number = 36
+    exp_yield = 99
+    types = [5]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -759,18 +1190,30 @@ class Cranidos(Pokemon):
             30: Rampardos
         }
 
-        super().__init__("CRANIDOS", nickname=nickname,
-                         hp=67, attack=125,special_attack=30, defense=40, special_defense=30, speed=58,
-                         types=[5], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/cranidos_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/cranidos_back.png")),
-                         exp_yield=99, evolutions=evolutions)
-
-        self.tier = 'E'
-        self.number = 36
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Rampardos(Pokemon):
-    """Cranidos."""
+    """Rampardos."""
+    name = "RAMPARDOS"
+    hp = 97
+    attack = 165
+    special_attack = 65
+    defense = 60
+    special_defense = 50
+    speed = 58
+    tier = 'C'
+    number = 37
+    exp_yield = 199
+    types = [5]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -779,18 +1222,30 @@ class Rampardos(Pokemon):
         evolutions = {
         }
 
-        super().__init__("RAMPARDOS", nickname=nickname,
-                         hp=97, attack=165,special_attack=65, defense=60, special_defense=50, speed=58,
-                         types=[5], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/rampardos_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/rampardos_back.png")),
-                         exp_yield=199, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 37
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Shieldon(Pokemon):
-    """Cranidos."""
+    """Shieldon."""
+    name = "SHIELDON"
+    hp = 30
+    attack = 42
+    special_attack = 42
+    defense = 118
+    special_defense = 88
+    speed = 30
+    tier = 'E'
+    number = 38
+    exp_yield = 99
+    types = [5,8]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -800,18 +1255,30 @@ class Shieldon(Pokemon):
             30: Bastiodon
         }
 
-        super().__init__("SHIELDON", nickname=nickname,
-                         hp=30, attack=42,special_attack=42, defense=118, special_defense=88, speed=30,
-                         types=[5, 8], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/shieldon_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/shieldon_back.png")),
-                         exp_yield=99, evolutions=evolutions)
-
-        self.tier = 'E'
-        self.number = 38
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Bastiodon(Pokemon):
     """Bastiodon."""
+    name = "BASTIODON"
+    hp = 60
+    attack = 52
+    special_attack = 47
+    defense = 168
+    special_defense = 138
+    speed = 30
+    tier = 'C'
+    number = 39
+    exp_yield = 199
+    types = [5,8]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -820,18 +1287,30 @@ class Bastiodon(Pokemon):
         evolutions = {
         }
 
-        super().__init__("BASTIODON", nickname=nickname,
-                         hp=60, attack=52,special_attack=47, defense=168, special_defense=138, speed=30,
-                         types=[5, 8], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/bastiodon_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/bastiodon_back.png")),
-                         exp_yield=199, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 39
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Machop(Pokemon):
     """Machop."""
+    name = "MACHOP"
+    hp = 70
+    attack = 80
+    special_attack = 35
+    defense = 50
+    special_defense = 35
+    speed = 35
+    tier = 'F'
+    number = 40
+    exp_yield = 75
+    types = [1]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -841,18 +1320,30 @@ class Machop(Pokemon):
             28: Machoke
         }
 
-        super().__init__("MACHOP", nickname=nickname,
-                         hp=70, attack=80,special_attack=35, defense=50, special_defense=35, speed=35,
-                         types=[1], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/machop_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/machop_back.png")),
-                         exp_yield=75, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 40
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Machoke(Pokemon):
     """Machoke."""
+    name = "MACHOKE"
+    hp = 80
+    attack = 100
+    special_attack = 50
+    defense = 70
+    special_defense = 60
+    speed = 45
+    tier = 'D'
+    number = 41
+    exp_yield = 146
+    types = [1]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -862,18 +1353,30 @@ class Machoke(Pokemon):
             40: Machamp
         }
 
-        super().__init__("MACHOKE", nickname=nickname,
-                         hp=80, attack=100,special_attack=50, defense=70, special_defense=60, speed=45,
-                         types=[1], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/machoke_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/machoke_back.png")),
-                         exp_yield=146, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 41
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Machamp(Pokemon):
     """Machamp."""
+    name = "MACHAMP"
+    hp = 90
+    attack = 130
+    special_attack = 65
+    defense = 80
+    special_defense = 68
+    speed = 85
+    tier = 'B'
+    number = 42
+    exp_yield = 193
+    types = [1]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -882,18 +1385,30 @@ class Machamp(Pokemon):
         evolutions = {
         }
 
-        super().__init__("MACHAMP", nickname=nickname,
-                         hp=90, attack=130,special_attack=65, defense=80, special_defense=80, speed=85,
-                         types=[1], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/machamp_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/machamp_back.png")),
-                         exp_yield=193, evolutions=evolutions)
-
-        self.tier = 'B'
-        self.number = 42
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Psyduck(Pokemon):
     """Psyduck."""
+    name = "PSYDUCK"
+    hp = 50
+    attack = 52
+    special_attack = 65
+    defense = 48
+    special_defense = 50
+    speed = 55
+    tier = 'F'
+    number = 43
+    exp_yield = 80
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -903,18 +1418,30 @@ class Psyduck(Pokemon):
             33: Golduck
         }
 
-        super().__init__("PSYDUCK", nickname=nickname,
-                         hp=50, attack=52,special_attack=65, defense=48, special_defense=50, speed=55,
-                         types=[10], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/psyduck_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/psyduck_back.png")),
-                         exp_yield=80, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 43
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Golduck(Pokemon):
     """Golduck."""
+    name = "GOLDUCK"
+    hp = 80
+    attack = 82
+    special_attack = 95
+    defense = 78
+    special_defense = 80
+    speed = 85
+    tier = 'B'
+    number = 44
+    exp_yield = 174
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -923,18 +1450,30 @@ class Golduck(Pokemon):
         evolutions = {
         }
 
-        super().__init__("GOLDUCK", nickname=nickname,
-                         hp=80, attack=82,special_attack=95, defense=78, special_defense=80, speed=85,
-                         types=[10], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/golduck_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/golduck_back.png")),
-                         exp_yield=174, evolutions=evolutions)
-
-        self.tier = 'B'
-        self.number = 44
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Burmy(Pokemon):
     """Burmy."""
+    name = "BURMY"
+    hp = 40
+    attack = 29
+    special_attack = 29
+    defense = 45
+    special_defense = 45
+    speed = 36
+    tier = 'F'
+    number = 45
+    exp_yield = 61
+    types = [6]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
@@ -953,19 +1492,31 @@ class Burmy(Pokemon):
                 20: Wormadam
             }
 
-        super().__init__("BURMY", nickname=nickname,
-                         hp=40, attack=29,special_attack=29, defense=45, special_defense=45, speed=36,
-                         types=[6], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/burmy_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/burmy_back.png")),
-                         exp_yield=61, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 45
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 
 class Wormadam(Pokemon):
     """Wormadam."""
+    name = "WORMADAM"
+    hp = 60
+    attack = 59
+    special_attack = 79
+    defense = 85
+    special_defense = 105
+    speed = 36
+    tier = 'D'
+    number = 46
+    exp_yield = 159
+    types = [6,11]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -975,18 +1526,29 @@ class Wormadam(Pokemon):
         evolutions = {
         }
 
-        super().__init__("WORMADAM", nickname=nickname,
-                         hp=60, attack=59, special_attack=79, defense=85, special_defense=105, speed=36,
-                         types=[6,11], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/wormadam_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/wormadam_back.png")),
-                         exp_yield=159, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 46
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Mothim(Pokemon):
     """Mothim."""
+    name = "MOTHIM"
+    hp = 70
+    attack = 94
+    special_attack = 94
+    defense = 50
+    special_defense = 50
+    speed = 66
+    tier = 'D'
+    number = 47
+    exp_yield = 159
+    types = [6,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -996,18 +1558,29 @@ class Mothim(Pokemon):
         evolutions = {
         }
 
-        super().__init__("MOTHIM", nickname=nickname,
-                         hp=70, attack=94, special_attack=94, defense=50, special_defense=50, speed=66,
-                         types=[6,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/mothim_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/mothim_back.png")),
-                         exp_yield=159, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 47
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Wurmple(Pokemon):
     """Wurmple."""
+    name = "WURMPLE"
+    hp = 45
+    attack = 45
+    special_attack = 20
+    defense = 35
+    special_defense = 30
+    speed = 20
+    tier = 'F'
+    number = 48
+    exp_yield = 54
+    types = [6]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1018,18 +1591,29 @@ class Wurmple(Pokemon):
             7: np.random.choice([Silcoon, Cascoon])
         }
 
-        super().__init__("WURMPLE", nickname=nickname,
-                         hp=45, attack=45, special_attack=20, defense=35, special_defense=30, speed=20,
-                         types=[6], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/wurmple_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/wurmple_back.png")),
-                         exp_yield=54, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 48
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Silcoon(Pokemon):
     """Silcoon."""
+    name = "SILCOON"
+    hp = 50
+    attack = 35
+    special_attack = 25
+    defense = 55
+    special_defense = 25
+    speed = 15
+    tier = 'F'
+    number = 49
+    exp_yield = 72
+    types = [6]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1040,18 +1624,29 @@ class Silcoon(Pokemon):
             10: Beautifly
         }
 
-        super().__init__("SILCOON", nickname=nickname,
-                         hp=50, attack=35, special_attack=25, defense=55, special_defense=25, speed=15,
-                         types=[6], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/silcoon_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/silcoon_back.png")),
-                         exp_yield=72, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 49
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Beautifly(Pokemon):
     """Beautifly."""
+    name = "BEAUTIFLY"
+    hp = 60
+    attack = 70
+    special_attack = 100
+    defense = 50
+    special_defense = 50
+    speed = 65
+    tier = 'D'
+    number = 50
+    exp_yield = 161
+    types = [6,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1061,18 +1656,29 @@ class Beautifly(Pokemon):
         evolutions = {
         }
 
-        super().__init__("BEAUTIFLY", nickname=nickname,
-                         hp=60, attack=70, special_attack=100, defense=50, special_defense=50, speed=65,
-                         types=[6,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/beautifly_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/beautifly_back.png")),
-                         exp_yield=161, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 50
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Cascoon(Pokemon):
     """Cascoon."""
+    name = "CASCOON"
+    hp = 50
+    attack = 35
+    special_attack = 25
+    defense = 55
+    special_defense = 25
+    speed = 15
+    tier = 'F'
+    number = 51
+    exp_yield = 72
+    types = [6]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1083,18 +1689,29 @@ class Cascoon(Pokemon):
             10: Dustox
         }
 
-        super().__init__("CASCOON", nickname=nickname,
-                         hp=50, attack=35, special_attack=25, defense=55, special_defense=25, speed=15,
-                         types=[6], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/cascoon_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/cascoon_back.png")),
-                         exp_yield=72, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 51
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Dustox(Pokemon):
     """Dustox."""
+    name = "DUSTOX"
+    hp = 60
+    attack = 50
+    special_attack = 50
+    defense = 70
+    special_defense = 90
+    speed = 65
+    tier = 'E'
+    number = 52
+    exp_yield = 161
+    types = [6,3]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1104,18 +1721,29 @@ class Dustox(Pokemon):
         evolutions = {
         }
 
-        super().__init__("DUSTOX", nickname=nickname,
-                         hp=60, attack=50, special_attack=50, defense=70, special_defense=90, speed=65,
-                         types=[6,3], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/dustox_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/dustox_back.png")),
-                         exp_yield=161, evolutions=evolutions)
-
-        self.tier = 'E'
-        self.number = 52
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Combee(Pokemon):
     """Combee."""
+    name = "COMBEE"
+    hp = 30
+    attack = 30
+    special_attack = 30
+    defense = 42
+    special_defense = 42
+    speed = 70
+    tier = 'F'
+    number = 53
+    exp_yield = 63
+    types = [6]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1133,18 +1761,29 @@ class Combee(Pokemon):
                 21: Vespiquen
             }
 
-        super().__init__("COMBEE", nickname=nickname,
-                         hp=30, attack=30, special_attack=30, defense=42, special_defense=42, speed=70,
-                         types=[6], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/combee_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/combee_back.png")),
-                         exp_yield=63, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 53
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Vespiquen(Pokemon):
     """Vespiquen."""
+    name = "VESPIQUEN"
+    hp = 70
+    attack = 80
+    special_attack = 80
+    defense = 102
+    special_defense = 102
+    speed = 40
+    tier = 'C'
+    number = 54
+    exp_yield = 188
+    types = [6,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1154,18 +1793,30 @@ class Vespiquen(Pokemon):
         evolutions = {
         }
 
-        super().__init__("VESPIQUEN", nickname=nickname,
-                         hp=70, attack=80, special_attack=80, defense=102, special_defense=102, speed=40,
-                         types=[6,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/vespiquen_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/vespiquen_back.png")),
-                         exp_yield=188, evolutions=evolutions)
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        self.tier = 'C'
-        self.number = 54
 
 class Pachirisu(Pokemon):
     """Pachirisu."""
+    name = "PACHIRISU"
+    hp = 60
+    attack = 45
+    special_attack = 45
+    defense = 70
+    special_defense = 90
+    speed = 95
+    tier = 'D'
+    number = 55
+    exp_yield = 120
+    types = [12]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1175,18 +1826,29 @@ class Pachirisu(Pokemon):
         evolutions = {
         }
 
-        super().__init__("PACHIRISU", nickname=nickname,
-                         hp=60, attack=45, special_attack=45, defense=70, special_defense=90, speed=95,
-                         types=[12], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/pachirisu_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/pachirisu_back.png")),
-                         exp_yield=120, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 55
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Buizel(Pokemon):
     """Buizel."""
+    name = "BUIZEL"
+    hp = 55
+    attack = 65
+    special_attack = 60
+    defense = 35
+    special_defense = 30
+    speed = 85
+    tier = 'F'
+    number = 56
+    exp_yield = 75
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1197,18 +1859,29 @@ class Buizel(Pokemon):
             26: Floatzel
         }
 
-        super().__init__("BUIZEL", nickname=nickname,
-                         hp=55, attack=65, special_attack=60, defense=35, special_defense=30, speed=85,
-                         types=[10], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/buizel_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/buizel_back.png")),
-                         exp_yield=75, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 56
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Floatzel(Pokemon):
     """Floatzel."""
+    name = "FLOATZEL"
+    hp = 85
+    attack = 105
+    special_attack = 85
+    defense = 55
+    special_defense = 50
+    speed = 115
+    tier = 'C'
+    number = 57
+    exp_yield = 178
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1218,18 +1891,29 @@ class Floatzel(Pokemon):
         evolutions = {
         }
 
-        super().__init__("FLOATZEL", nickname=nickname,
-                         hp=85, attack=105, special_attack=85, defense=55, special_defense=50, speed=115,
-                         types=[10], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/floatzel_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/floatzel_back.png")),
-                         exp_yield=178, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 57
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Cherubi(Pokemon):
     """Cherubi."""
+    name = "CHERUBI"
+    hp = 45
+    attack = 35
+    special_attack = 62
+    defense = 45
+    special_defense = 53
+    speed = 35
+    tier = 'F'
+    number = 58
+    exp_yield = 68
+    types = [11]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1240,18 +1924,29 @@ class Cherubi(Pokemon):
             25: Cherrim
         }
 
-        super().__init__("CHERUBI", nickname=nickname,
-                         hp=45, attack=35, special_attack=62, defense=45, special_defense=53, speed=35,
-                         types=[11], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/cherubi_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/cherubi_back.png")),
-                         exp_yield=68, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 58
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Cherrim(Pokemon):
-    """Cherubi."""
+    """Cherrim."""
+    name = "CHERRIM"
+    hp = 70
+    attack = 60
+    special_attack = 87
+    defense = 70
+    special_defense = 78
+    speed = 85
+    tier = 'C'
+    number = 59
+    exp_yield = 133
+    types = [11]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1261,18 +1956,29 @@ class Cherrim(Pokemon):
         evolutions = {
         }
 
-        super().__init__("CHERRIM", nickname=nickname,
-                         hp=70, attack=60, special_attack=87, defense=70, special_defense=78, speed=85,
-                         types=[11], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/cherrim_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/cherrim_back.png")),
-                         exp_yield=133, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 59
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Shellos(Pokemon):
     """Shellos."""
+    name = "SHELLOS"
+    hp = 76
+    attack = 48
+    special_attack = 57
+    defense = 48
+    special_defense = 62
+    speed = 34
+    tier = 'F'
+    number = 60
+    exp_yield = 73
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1283,18 +1989,29 @@ class Shellos(Pokemon):
             30: Gastrodon
         }
 
-        super().__init__("SHELLOS", nickname=nickname,
-                         hp=76, attack=48, special_attack=57, defense=48, special_defense=62, speed=34,
-                         types=[10], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/shellos_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/shellos_back.png")),
-                         exp_yield=73, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 60
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Gastrodon(Pokemon):
     """Gastrodon."""
+    name = "GASTRODON"
+    hp = 111
+    attack = 83
+    special_attack = 92
+    defense = 68
+    special_defense = 82
+    speed = 39
+    tier = 'C'
+    number = 61
+    exp_yield = 176
+    types = [10,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1304,18 +2021,29 @@ class Gastrodon(Pokemon):
         evolutions = {
         }
 
-        super().__init__("GASTRODON", nickname=nickname,
-                         hp=111, attack=83, special_attack=92, defense=68, special_defense=82, speed=39,
-                         types=[10,4], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/gastrodon_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/gastrodon_back.png")),
-                         exp_yield=176, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 61
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Heracross(Pokemon):
     """Heracross."""
+    name = "HERACROSS"
+    hp = 80
+    attack = 125
+    special_attack = 40
+    defense = 75
+    special_defense = 95
+    speed = 85
+    tier = 'B'
+    number = 62
+    exp_yield = 200
+    types = [6,1]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1325,18 +2053,29 @@ class Heracross(Pokemon):
         evolutions = {
         }
 
-        super().__init__("HERACROSS", nickname=nickname,
-                         hp=80, attack=125, special_attack=40, defense=75, special_defense=95, speed=85,
-                         types=[6,1], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/heracross_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/heracross_back.png")),
-                         exp_yield=200, evolutions=evolutions)
-
-        self.tier = 'B'
-        self.number = 62
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Aipom(Pokemon):
     """Aipom."""
+    name = "AIPOM"
+    hp = 55
+    attack = 70
+    special_attack = 40
+    defense = 55
+    special_defense = 55
+    speed = 85
+    tier = 'E'
+    number = 63
+    exp_yield = 94
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1346,18 +2085,29 @@ class Aipom(Pokemon):
         evolutions = {
         }
 
-        super().__init__("AIPOM", nickname=nickname,
-                         hp=55, attack=70, special_attack=40, defense=55, special_defense=55, speed=85,
-                         types=[0], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/aipom_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/aipom_back.png")),
-                         exp_yield=94, evolutions=evolutions)
-
-        self.tier = 'E'
-        self.number = 63
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Ambipom(Pokemon):
     """Ambipom."""
+    name = "AMBIPOM"
+    hp = 75
+    attack = 100
+    special_attack = 60
+    defense = 66
+    special_defense = 66
+    speed = 115
+    tier = 'C'
+    number = 64
+    exp_yield = 186
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1367,18 +2117,29 @@ class Ambipom(Pokemon):
         evolutions = {
         }
 
-        super().__init__("AMBIPOM", nickname=nickname,
-                         hp=75, attack=100, special_attack=60, defense=66, special_defense=66, speed=115,
-                         types=[0], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/ambipom_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/ambipom_back.png")),
-                         exp_yield=186, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 64
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Drifloon(Pokemon):
     """Drifloon."""
+    name = "DRIFLOON"
+    hp = 90
+    attack = 50
+    special_attack = 60
+    defense = 34
+    special_defense = 44
+    speed = 70
+    tier = 'E'
+    number = 65
+    exp_yield = 127
+    types = [7,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1389,18 +2150,29 @@ class Drifloon(Pokemon):
             28: Drifblim
         }
 
-        super().__init__("DRIFLOON", nickname=nickname,
-                         hp=90, attack=50, special_attack=60, defense=34, special_defense=44, speed=70,
-                         types=[7,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/drifloon_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/drifloon_back.png")),
-                         exp_yield=127, evolutions=evolutions)
-
-        self.tier = 'E'
-        self.number = 65
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Drifblim(Pokemon):
     """Drifblim."""
+    name = "DRIFBLIM"
+    hp = 150
+    attack = 80
+    special_attack = 90
+    defense = 44
+    special_defense = 54
+    speed = 80
+    tier = 'C'
+    number = 66
+    exp_yield = 204
+    types = [7,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1410,18 +2182,29 @@ class Drifblim(Pokemon):
         evolutions = {
         }
 
-        super().__init__("DRIFBLIM", nickname=nickname,
-                         hp=150, attack=80, special_attack=90, defense=44, special_defense=54, speed=80,
-                         types=[7,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/drifblim_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/drifblim_back.png")),
-                         exp_yield=204, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 66
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Buneary(Pokemon):
     """Buneary."""
+    name = "BUNEARY"
+    hp = 55
+    attack = 66
+    special_attack = 44
+    defense = 44
+    special_defense = 56
+    speed = 85
+    tier = 'E'
+    number = 67
+    exp_yield = 84
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1433,18 +2216,29 @@ class Buneary(Pokemon):
             18: Lopunny
         }
 
-        super().__init__("BUNEARY", nickname=nickname,
-                         hp=55, attack=66, special_attack=44, defense=44, special_defense=56, speed=85,
-                         types=[0], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/buneary_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/buneary_back.png")),
-                         exp_yield=84, evolutions=evolutions)
-
-        self.tier = 'E'
-        self.number = 67
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Lopunny(Pokemon):
     """Lopunny."""
+    name = "LOPUNNY"
+    hp = 65
+    attack = 76
+    special_attack = 54
+    defense = 84
+    special_defense = 96
+    speed = 105
+    tier = 'C'
+    number = 68
+    exp_yield = 178
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1454,18 +2248,29 @@ class Lopunny(Pokemon):
         evolutions = {
         }
 
-        super().__init__("LOPUNNY", nickname=nickname,
-                         hp=65, attack=76, special_attack=54, defense=84, special_defense=96, speed=105,
-                         types=[0], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/lopunny_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/lopunny_back.png")),
-                         exp_yield=178, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 68
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Gastly(Pokemon):
     """Gastly."""
+    name = "GASTLY"
+    hp = 30
+    attack = 35
+    special_attack = 100
+    defense = 30
+    special_defense = 35
+    speed = 80
+    tier = 'F'
+    number = 69
+    exp_yield = 95
+    types = [7,3]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1476,18 +2281,29 @@ class Gastly(Pokemon):
             25: Haunter
         }
 
-        super().__init__("GASTLY", nickname=nickname,
-                         hp=30, attack=35, special_attack=100, defense=30, special_defense=35, speed=80,
-                         types=[7,3], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/gastly_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/gastly_back.png")),
-                         exp_yield=95, evolutions=evolutions)
-
-        self.tier = 'F'
-        self.number = 69
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Haunter(Pokemon):
     """Haunter."""
+    name = "HAUNTER"
+    hp = 45
+    attack = 50
+    special_attack = 115
+    defense = 45
+    special_defense = 55
+    speed = 95
+    tier = 'D'
+    number = 70
+    exp_yield = 126
+    types = [7,3]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1498,18 +2314,29 @@ class Haunter(Pokemon):
             38: Gengar
         }
 
-        super().__init__("HAUNTER", nickname=nickname,
-                         hp=45, attack=50, special_attack=115, defense=45, special_defense=55, speed=95,
-                         types=[7,3], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/haunter_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/haunter_back.png")),
-                         exp_yield=126, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 70
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Gengar(Pokemon):
     """Gengar."""
+    name = "GENGAR"
+    hp = 60
+    attack = 65
+    special_attack = 130
+    defense = 60
+    special_defense = 75
+    speed = 110
+    tier = 'B'
+    number = 71
+    exp_yield = 190
+    types = [7,3]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1519,18 +2346,29 @@ class Gengar(Pokemon):
         evolutions = {
         }
 
-        super().__init__("GENGAR", nickname=nickname,
-                         hp=60, attack=65, special_attack=130, defense=60, special_defense=75, speed=110,
-                         types=[7,3], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/gengar_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/gengar_back.png")),
-                         exp_yield=190, evolutions=evolutions)
-
-        self.tier = 'B'
-        self.number = 71
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Misdreavus(Pokemon):
     """Misdreavus."""
+    name = "MISDREAVUS"
+    hp = 60
+    attack = 60
+    special_attack = 85
+    defense = 60
+    special_defense = 85
+    speed = 85
+    tier = 'D'
+    number = 72
+    exp_yield = 147
+    types = [7]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1542,18 +2380,29 @@ class Misdreavus(Pokemon):
             30: Mismagius
         }
 
-        super().__init__("MISDREAVUS", nickname=nickname,
-                         hp=60, attack=60, special_attack=85, defense=60, special_defense=85, speed=85,
-                         types=[7], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/misdreavus_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/misdreavus_back.png")),
-                         exp_yield=147, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 72
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Mismagius(Pokemon):
     """Mismagius."""
+    name = "MISMAGIUS"
+    hp = 60
+    attack = 60
+    special_attack = 105
+    defense = 60
+    special_defense = 105
+    speed = 105
+    tier = 'C'
+    number = 73
+    exp_yield = 187
+    types = [7]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1563,18 +2412,29 @@ class Mismagius(Pokemon):
         evolutions = {
         }
 
-        super().__init__("MISMAGIUS", nickname=nickname,
-                         hp=60, attack=60, special_attack=105, defense=60, special_defense=105, speed=105,
-                         types=[7], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/mismagius_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/mismagius_back.png")),
-                         exp_yield=187, evolutions=evolutions)
-
-        self.tier = 'C'
-        self.number = 73
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Murkrow(Pokemon):
     """Murkrow."""
+    name = "MURKROW"
+    hp = 60
+    attack = 85
+    special_attack = 85
+    defense = 42
+    special_defense = 42
+    speed = 91
+    tier = 'D'
+    number = 74
+    exp_yield = 107
+    types = [16,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1586,18 +2446,29 @@ class Murkrow(Pokemon):
             30: Honchkrow
         }
 
-        super().__init__("MURKROW", nickname=nickname,
-                         hp=60, attack=85, special_attack=85, defense=42, special_defense=42, speed=91,
-                         types=[16,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/murkrow_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/murkrow_back.png")),
-                         exp_yield=107, evolutions=evolutions)
-
-        self.tier = 'D'
-        self.number = 74
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 class Honchkrow(Pokemon):
     """Honchkrow."""
+    name = "HONCHKROW"
+    hp = 100
+    attack = 125
+    special_attack = 105
+    defense = 52
+    special_defense = 52
+    speed = 71
+    tier = 'B'
+    number = 75
+    exp_yield = 187
+    types = [16,2]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
@@ -1607,16 +2478,1195 @@ class Honchkrow(Pokemon):
         evolutions = {
         }
 
-        super().__init__("HONCHCROW", nickname=nickname,
-                         hp=100, attack=125, special_attack=105, defense=52, special_defense=52, speed=71,
-                         types=[16,2], gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
-                         front_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon front/honchkrow_front.png")),
-                         back_sprite=pg.sprite.Sprite(pg.image.load("sprites/pokemon back/honchkrow_back.png")),
-                         exp_yield=187, evolutions=evolutions)
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
-        self.tier = 'B'
-        self.number = 75
+class Glameow(Pokemon):
+    """Glameow."""
+    name = "GLAMEOW"
+    hp = 49
+    attack = 55
+    special_attack = 52
+    defense = 42
+    special_defense = 37
+    speed = 85
+    tier = 'F'
+    number = 76
+    exp_yield = 71
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            38: Purugly
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Purugly(Pokemon):
+    """Purugly."""
+    name = "PURUGLY"
+    hp = 71
+    attack = 82
+    special_attack = 64
+    defense = 64
+    special_defense = 59
+    speed = 112
+    tier = 'C'
+    number = 77
+    exp_yield = 183
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Goldeen(Pokemon):
+    """Goldeen."""
+    name = "GOLDEEN"
+    hp = 45
+    attack = 67
+    special_attack = 35
+    defense = 60
+    special_defense = 50
+    speed = 63
+    tier = 'F'
+    number = 78
+    exp_yield = 111
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            33: Seaking
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Seaking(Pokemon):
+    """Seaking."""
+    name = "SEAKING"
+    hp = 80
+    attack = 92
+    special_attack = 65
+    defense = 65
+    special_defense = 80
+    speed = 68
+    tier = 'C'
+    number = 79
+    exp_yield = 170
+    types = [10]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Barboach(Pokemon):
+    """Barboach."""
+    name = "BARBOACH"
+    hp = 50
+    attack = 48
+    special_attack = 46
+    defense = 43
+    special_defense = 41
+    speed = 60
+    tier = 'F'
+    number = 80
+    exp_yield = 92
+    types = [10,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            30: Whiscash
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Whiscash(Pokemon):
+    """Whiscash."""
+    name = "WHISCASH"
+    hp = 110
+    attack = 78
+    special_attack = 76
+    defense = 73
+    special_defense = 71
+    speed = 60
+    tier = 'C'
+    number = 81
+    exp_yield = 158
+    types = [10,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Chingling(Pokemon):
+    """Chingling."""
+    name = "CHINGLING"
+    hp = 45
+    attack = 30
+    special_attack = 65
+    defense = 50
+    special_defense = 50
+    speed = 45
+    tier = 'F'
+    number = 82
+    exp_yield = 74
+    types = [13]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        # TODO: friendship at night
+        evolutions = {
+            31: Chimecho
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Chimecho(Pokemon):
+    """Chimecho."""
+    name = "CHIMECHO"
+    hp = 75
+    attack = 50
+    special_attack = 95
+    defense = 80
+    special_defense = 90
+    speed = 65
+    tier = 'C'
+    number = 83
+    exp_yield = 147
+    types = [13]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Stunky(Pokemon):
+    """Stunky."""
+    name = "STUNKY"
+    hp = 63
+    attack = 63
+    special_attack = 41
+    defense = 47
+    special_defense = 41
+    speed = 74
+    tier = 'F'
+    number = 84
+    exp_yield = 79
+    types = [3,16]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            34: Skuntank
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Skuntank(Pokemon):
+    """Skuntank."""
+    name = "SKUNTANK"
+    hp = 103
+    attack = 93
+    special_attack = 71
+    defense = 67
+    special_defense = 61
+    speed = 84
+    tier = 'C'
+    number = 85
+    exp_yield = 209
+    types = [3,16]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Meditite(Pokemon):
+    """Meditite."""
+    name = "MEDITITE"
+    hp = 30
+    attack = 40
+    special_attack = 40
+    defense = 55
+    special_defense = 55
+    speed = 60
+    tier = 'F'
+    number = 86
+    exp_yield = 91
+    types = [1,13]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            37: Medicham
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Medicham(Pokemon):
+    """Medicham."""
+    name = "MEDICHAM"
+    hp = 60
+    attack = 60
+    special_attack = 60
+    defense = 75
+    special_defense = 75
+    speed = 80
+    tier = 'D'
+    number = 87
+    exp_yield = 153
+    types = [1,13]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Bronzor(Pokemon):
+    """Bronzor."""
+    name = "BRONZOR"
+    hp = 57
+    attack = 24
+    special_attack = 24
+    defense = 86
+    special_defense = 86
+    speed = 23
+    tier = 'F'
+    number = 88
+    exp_yield = 72
+    types = [8,13]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            33: Bronzong
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Bronzong(Pokemon):
+    """Bronzong."""
+    name = "BRONZONG"
+    hp = 67
+    attack = 89
+    special_attack = 79
+    defense = 116
+    special_defense = 116
+    speed = 23
+    tier = 'B'
+    number = 89
+    exp_yield = 188
+    types = [8,13]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Ponyta(Pokemon):
+    """Ponyta."""
+    name = "PONYTA"
+    hp = 50
+    attack = 85
+    special_attack = 65
+    defense = 55
+    special_defense = 65
+    speed = 90
+    tier = 'D'
+    number = 90
+    exp_yield = 152
+    types = [9]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            40: Rapidash
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Rapidash(Pokemon):
+    """Rapidash."""
+    name = "RAPIDASH"
+    hp = 65
+    attack = 100
+    special_attack = 80
+    defense = 70
+    special_defense = 80
+    speed = 105
+    tier = 'B'
+    number = 91
+    exp_yield = 192
+    types = [9]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Bonsly(Pokemon):
+    """Bonsly."""
+    name = "BONSLY"
+    hp = 50
+    attack = 80
+    special_attack = 10
+    defense = 95
+    special_defense = 45
+    speed = 10
+    tier = 'F'
+    number = 92
+    exp_yield = 68
+    types = [5]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        # TODO: after mimic learned... look up that level
+        evolutions = {
+            24: Sudowoodo
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Sudowoodo(Pokemon):
+    """Sudowoodo."""
+    name = "SUDOWOODO"
+    hp = 70
+    attack = 100
+    special_attack = 30
+    defense = 115
+    special_defense = 65
+    speed = 30
+    tier = 'D'
+    number = 93
+    exp_yield = 135
+    types = [5]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+### TODO: um... where are 94 and 95? ###
+
+class Happiny(Pokemon):
+    """Happiny."""
+    name = "HAPPINY"
+    hp = 100
+    attack = 5
+    special_attack = 15
+    defense = 5
+    special_defense = 65
+    speed = 30
+    tier = 'F'
+    number = 96
+    exp_yield = 255
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        # TODO: level w oval stone
+        evolutions = {
+            20: Chansey
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Chansey(Pokemon):
+    """Chansey."""
+    name = "CHANSEY"
+    hp = 250
+    attack = 5
+    special_attack = 35
+    defense = 5
+    special_defense = 105
+    speed = 50
+    tier = 'C'
+    number = 97
+    exp_yield = 255
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        # TODO: friendship
+        evolutions = {
+            38: Blissey
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Blissey(Pokemon):
+    """Blissey."""
+    name = "BLISSEY"
+    hp = 255
+    attack = 10
+    special_attack = 75
+    defense = 10
+    special_defense = 135
+    speed = 55
+    tier = 'A'
+    number = 98
+    exp_yield = 255
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Cleffa(Pokemon):
+    """Cleffa."""
+    name = "CLEFFA"
+    hp = 50
+    attack = 25
+    special_attack = 45
+    defense = 28
+    special_defense = 55
+    speed = 15
+    tier = 'F'
+    number = 99
+    exp_yield = 37
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        # TODO: friendship
+        evolutions = {
+            18: Clefairy
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Clefairy(Pokemon):
+    """Clefairy."""
+    name = "CLEFAIRY"
+    hp = 70
+    attack = 45
+    special_attack = 60
+    defense = 48
+    special_defense = 65
+    speed = 35
+    tier = 'F'
+    number = 100
+    exp_yield = 68
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        # TODO: moon stone
+        evolutions = {
+            34: Clefable
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Clefable(Pokemon):
+    """Clefable."""
+    name = "CLEFABLE"
+    hp = 95
+    attack = 70
+    special_attack = 95
+    defense = 73
+    special_defense = 90
+    speed = 60
+    tier = 'C'
+    number = 101
+    exp_yield = 129
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Chatot(Pokemon):
+    """Chatot."""
+    name = "CHATOT"
+    hp = 76
+    attack = 65
+    special_attack = 92
+    defense = 45
+    special_defense = 42
+    speed = 91
+    tier = 'D'
+    number = 102
+    exp_yield = 107
+    types = [2,0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Pichu(Pokemon):
+    """Pichu."""
+    name = "PICHU"
+    hp = 20
+    attack = 40
+    special_attack = 35
+    defense = 15
+    special_defense = 35
+    speed = 60
+    tier = 'F'
+    number = 103
+    exp_yield = 42
+    types = [12]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        # TODO: friendship
+        evolutions = {
+            15: Pikachu
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Pikachu(Pokemon):
+    """Pikachu."""
+    name = "PIKACHU"
+    hp = 35
+    attack = 55
+    special_attack = 50
+    defense = 40
+    special_defense = 50
+    speed = 90
+    tier = 'F'
+    number = 104
+    exp_yield = 82
+    types = [12]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        # TODO: thunder stone
+        evolutions = {
+            30: Raichu
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Raichu(Pokemon):
+    """Raichu."""
+    name = "RAICHU"
+    hp = 60
+    attack = 90
+    special_attack = 90
+    defense = 55
+    special_defense = 80
+    speed = 110
+    tier = 'C'
+    number = 105
+    exp_yield = 122
+    types = [12]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Hoothoot(Pokemon):
+    """Hoothoot."""
+    name = "HOOTHOOT"
+    hp = 60
+    attack = 30
+    special_attack = 36
+    defense = 30
+    special_defense = 56
+    speed = 50
+    tier = 'F'
+    number = 106
+    exp_yield = 58
+    types = [2,0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            20: Noctowl
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Noctowl(Pokemon):
+    """Noctowl."""
+    name = "NOCTOWL"
+    hp = 100
+    attack = 50
+    special_attack = 86
+    defense = 50
+    special_defense = 96
+    speed = 70
+    tier = 'C'
+    number = 107
+    exp_yield = 162
+    types = [2,0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Spiritomb(Pokemon):
+    """Spiritomb."""
+    name = "SPIRITOMB"
+    hp = 50
+    attack = 92
+    special_attack = 92
+    defense = 108
+    special_defense = 108
+    speed = 35
+    tier = 'C'
+    number = 108
+    exp_yield = 168
+    types = [7,16]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Gible(Pokemon):
+    """Gible."""
+    name = "GIBLE"
+    hp = 58
+    attack = 70
+    special_attack = 40
+    defense = 45
+    special_defense = 45
+    speed = 42
+    tier = 'F'
+    number = 109
+    exp_yield = 67
+    types = [15,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            24: Gabite
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Gabite(Pokemon):
+    """Gabite."""
+    name = "GABITE"
+    hp = 68
+    attack = 90
+    special_attack = 50
+    defense = 65
+    special_defense = 55
+    speed = 82
+    tier = 'D'
+    number = 110
+    exp_yield = 144
+    types = [15,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+            48: Garchomp
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Garchomp(Pokemon):
+    """Garchomp."""
+    name = "GARCHOMP"
+    hp = 108
+    attack = 130
+    special_attack = 80
+    defense = 95
+    special_defense = 85
+    speed = 102
+    tier = 'S'
+    number = 111
+    exp_yield = 218
+    types = [15,4]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Munchlax(Pokemon):
+    """Munchlax."""
+    name = "MUNCHLAX"
+    hp = 135
+    attack = 85
+    special_attack = 40
+    defense = 40
+    special_defense = 85
+    speed = 5
+    tier = 'E'
+    number = 112
+    exp_yield = 94
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        # TODO: friendship
+        evolutions = {
+            26: Snorlax
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
+
+class Snorlax(Pokemon):
+    """Snorlax."""
+    name = "SNORLAX"
+    hp = 160
+    attack = 110
+    special_attack = 65
+    defense = 65
+    special_defense = 110
+    speed = 30
+    tier = 'A'
+    number = 113
+    exp_yield = 154
+    types = [0]
+    front_sprite = pg.image.load("sprites/pokemon front/"+name.lower()+"_front.png")
+    back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
+
+    def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
+        # TODO: MOVE TABLE
+        movetable = {
+            1: Pound
+        }
+        evolutions = {
+        }
+
+        super().__init__(self.name, nickname=nickname,
+                         hp=self.hp, attack=self.attack,special_attack=self.special_attack, defense=self.defense,
+                         special_defense=self.special_defense, speed=self.speed,
+                         types=self.types, gender=gender, level=level, xp=xp, moveset=moveset, movetable=movetable,
+                         front_sprite=pg.sprite.Sprite(self.front_sprite),
+                         back_sprite=pg.sprite.Sprite(self.back_sprite),
+                         exp_yield=self.exp_yield, evolutions=evolutions)
 
 ##### ALL MOVES #####
 class Splash(PokemonMove):
@@ -1776,12 +3826,49 @@ POKEDEX_MAP = {
     72: Misdreavus,
     73: Mismagius,
     74: Murkrow,
-    75: Honchkrow
+    75: Honchkrow,
+    76: Glameow,
+    77: Purugly,
+    78: Goldeen,
+    79: Seaking,
+    80: Barboach,
+    81: Whiscash,
+    82: Chingling,
+    83: Chimecho,
+    84: Stunky,
+    85: Skuntank,
+    86: Meditite,
+    87: Medicham,
+    88: Bronzor,
+    89: Bronzong,
+    90: Ponyta,
+    91: Rapidash,
+    92: Bonsly,
+    93: Sudowoodo,
+
+    96: Happiny,
+    97: Chansey,
+    98: Blissey,
+    99: Cleffa,
+    100: Clefairy,
+    101: Clefable,
+    102: Chatot,
+    103: Pichu,
+    104: Pikachu,
+    105: Raichu,
+    106: Hoothoot,
+    107: Noctowl,
+    108: Spiritomb,
+    109: Gible,
+    110: Gabite,
+    111: Garchomp,
+    112: Munchlax,
+    113: Snorlax
 }
 
 
 
-TEST_TRAINER = PokemonTrainer(pokemon=[Piplup(level=100), Drifblim(level=50), Machamp(level=100), Gyarados(level=50), Crobat(level=50), Staraptor(level=50)],
+TEST_TRAINER = PokemonTrainer(pokemon=[Garchomp(level=99), Snorlax(level=50), Machamp(level=100), Gyarados(level=50), Crobat(level=50), Staraptor(level=50)],
                               items={Item(0, 0, None, name="Empty"): 1, KeyItem(None, name="Empty"): 1},
                               money=0)
 
