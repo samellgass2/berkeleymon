@@ -16,8 +16,8 @@ class GameBoard:
         self.width = 24
         self.height = 16
         self._board = []
-        for i in range(self.height):
-            self._board.append([None for i in range(self.width)])
+        for i in range(self.height + 2):
+            self._board.append([None for i in range(self.width + 2)])
 
         self.batches = []
         self.back_batch = graphics.Batch()
@@ -44,6 +44,8 @@ class GameBoard:
         self.trainer_agent = trainer_agent
 
         ### animation params ###
+        self.right_left_offset = 0
+        self.up_down_offset = 0
         self.move_offset = 0
         self.max_moves = 8
 
@@ -142,19 +144,19 @@ class GameBoard:
 
     def get(self, x: int, y: int):
         """Get sprite at board (x,y)."""
-        return self._board[y][x]
+        return self._board[y+1][x+1]
 
     def set(self, x: int, y: int, sprite: pg.sprite.Sprite):
         """Set board (x,y) as sprite."""
-        self._board[y][x] = sprite
+        self._board[y+1][x+1] = sprite
 
     def populate_board(self):
         """Grabs the w x h tiles from Location necessary to fill screen."""
 
         # Else render environment dynamically
         self.batches = [graphics.Batch() for i in range(len(self.batches))]
-        for j in range(self.height):
-            for i in range(self.width):
+        for j in range(-1, self.height + 1):
+            for i in range(-1, self.width+1):
                 # Convert from screen space to location space
                 loc_x = self.bottom_left[0] + i
                 loc_y = self.bottom_left[1] + j
@@ -162,68 +164,19 @@ class GameBoard:
 
                 # Tell tile's sprite where it is
                 tile = self.get(i, j)
-                tile.update_pos(i * TILE_WIDTH, j * TILE_HEIGHT)
+                tile.update_pos(i * TILE_WIDTH + TILE_WIDTH * (self.right_left_offset / self.max_moves), j * TILE_HEIGHT + TILE_HEIGHT * (self.up_down_offset / self.max_moves))
                 tile.set_batch(self.batches)
 
-    def transition_board(self, offset: float):
+    def transition_board(self):
         """Moves all tiles by offset parts of a tile."""
         # Do not move environment if indoors
         if self.location.is_indoors:
             return
         # Else transition tiles
-        offset_tup = (0,0)
-        extra_tiles = []
-        if self.player_heading == 0 and self.can_move(self.player_loc[0], self.player_loc[1]+1, 0):
-            offset_tup = (0, -offset*TILE_HEIGHT)
-
-            for x in range(self.bottom_left[0],self.bottom_left[0] + self.width):
-                new_tile = self.location.get(x, self.bottom_left[1]+self.height)
-                sister_tile = self.get((x-self.bottom_left[0]), self.height-1)
-                new_tile.update_pos(sister_tile.x, sister_tile.y + TILE_HEIGHT)
-
-                new_tile.set_batch(self.batches)
-                extra_tiles.append(new_tile)
-
-        elif self.player_heading == 1 and self.can_move(self.player_loc[0]+1, self.player_loc[1], 1):
-            offset_tup = (-offset*TILE_WIDTH, 0)
-
-            for y in range(self.bottom_left[1],self.bottom_left[1] + self.height):
-                new_tile = self.location.get(self.bottom_left[0]+self.width, y)
-                sister_tile = self.get(self.width - 1, (y-self.bottom_left[1]))
-                new_tile.update_pos(sister_tile.x + TILE_WIDTH, sister_tile.y)
-
-                new_tile.set_batch(self.batches)
-                extra_tiles.append(new_tile)
-
-        elif self.player_heading == 2 and self.can_move(self.player_loc[0], self.player_loc[1]-1, 2):
-            offset_tup = (0, offset*TILE_HEIGHT)
-
-            for x in range(self.bottom_left[0],self.bottom_left[0] + self.width):
-                new_tile = self.location.get(x, self.bottom_left[1]-1)
-                sister_tile = self.get((x - self.bottom_left[0]), 0)
-                new_tile.update_pos(sister_tile.x, sister_tile.y - TILE_HEIGHT)
-                new_tile.set_batch(self.batches)
-                extra_tiles.append(new_tile)
-
-        elif self.player_heading == 3 and self.can_move(self.player_loc[0]-1, self.player_loc[1], 3):
-            offset_tup = (offset*TILE_WIDTH, 0)
-
-            for y in range(self.bottom_left[1],self.bottom_left[1] + self.height):
-                new_tile = self.location.get(self.bottom_left[0]-1, y)
-                sister_tile = self.get(0, y - self.bottom_left[1])
-                new_tile.update_pos(sister_tile.x - TILE_WIDTH, sister_tile.y)
-
-                new_tile.set_batch(self.batches)
-                extra_tiles.append(new_tile)
-
-        for j in range(self.height):
-            for i in range(self.width):
-                # Tell tile's sprite where it is
+        for j in range(-1, self.height + 1):
+            for i in range(-1, self.width+1):
                 tile = self.get(i, j)
-                tile.offset_pos(offset_tup[0], offset_tup[1])
-
-        for tile in extra_tiles:
-            tile.offset_pos(offset_tup[0], offset_tup[1])
+                tile.update_pos(i * TILE_WIDTH + TILE_WIDTH * (self.right_left_offset / self.max_moves), j * TILE_HEIGHT + TILE_HEIGHT * (self.up_down_offset / self.max_moves))
 
         for batch in self.batches:
             batch.draw()
@@ -352,32 +305,33 @@ class GameBoard:
            self.overworld_update()
 
 
-    def overworld_update(self):
+    def overworld_update(self, second=False):
         # Case currently moving
         if self.player_heading > -1:
-            if self.move_offset < self.max_moves:
-                self.transition_board(1 / self.max_moves)
-                self.move_offset += 1
-            else:
+            if self.player_heading == 0 and abs(self.up_down_offset) < self.max_moves and self.can_move(self.player_loc[0], self.player_loc[1]+1, self.player_heading):
+                self.up_down_offset -= 1
+
+            elif self.player_heading == 1 and abs(self.right_left_offset) < self.max_moves and self.can_move(self.player_loc[0]+1, self.player_loc[1], self.player_heading):
+                self.right_left_offset -= 1
+
+            elif self.player_heading == 2 and abs(self.up_down_offset) < self.max_moves and self.can_move(self.player_loc[0], self.player_loc[1]-1, self.player_heading):
+                self.up_down_offset += 1
+
+            elif self.player_heading == 3 and abs(self.right_left_offset) < self.max_moves and self.can_move(self.player_loc[0]-1, self.player_loc[1], self.player_heading):
+                self.right_left_offset += 1
+
+            if abs(self.up_down_offset) == self.max_moves:
+                self.up_down_offset = 0
                 self.move(self.player_heading)
-                self.move_offset = 0
+            elif abs(self.right_left_offset) == self.max_moves:
+                self.right_left_offset = 0
+                self.move(self.player_heading)
+            else:
+                self.transition_board()
 
             # Case sprinting: move twice as much
-            if self.player_sprinting:
-                if self.move_offset < self.max_moves:
-                    self.transition_board(1 / self.max_moves)
-                    self.move_offset += 1
-                else:
-                    self.move(self.player_heading)
-                    self.move_offset = 0
-
-        # Case movement ended, lock to next square
-        elif self.move_offset > 0:
-            while self.move_offset < self.max_moves:
-                self.transition_board(1 / self.max_moves)
-                self.move_offset += 1
-            self.move_offset = 0
-            self.move(self.player_last_facing)
+            if self.player_sprinting and not second:
+                self.overworld_update(second=True)
 
 
     def update_player_icon(self, dt=None):
