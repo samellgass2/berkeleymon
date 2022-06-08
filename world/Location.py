@@ -238,8 +238,8 @@ empty = pg.sprite.Sprite(empty_space_img)
 # TODO: the test location is a 50 x 50 grass patch with appropriate edges.
 
 # TODO: implement a few mons to test encounter behavior
-flying_types = [mon for mon in POKEDEX_MAP.values() if mon.tier == 'F']
-print(flying_types)
+flying_types = [mon for mon in POKEDEX_MAP.values() if mon.tier == 'S']
+print([mon.name for mon in flying_types])
 mon_odd = 1 / len(flying_types)
 TEST_PKMN_AND_ODDS = [(mon, mon_odd) for mon in flying_types]
 TEST_GENERATOR = PokemonGenerator(TEST_PKMN_AND_ODDS, 40, 50)
