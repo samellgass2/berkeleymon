@@ -168,11 +168,17 @@ class Pokemon:
 
     def take_damage(self, damage: int):
         """Logic to take damage and note if the user is fainted."""
-        if damage < self.hp:
-            self.hp -= damage
+        if damage < 0:
+            if self.hp - damage > self.stats["max_hp"]:
+                self.hp = self.stats["max_hp"]
+            else:
+                self.hp -= damage
         else:
-            self.hp = 0
-            self.fainted = True
+            if damage < self.hp:
+                self.hp -= damage
+            else:
+                self.hp = 0
+                self.fainted = True
 
     def level_up(self):
         """Called on level, automatically updates stats."""
@@ -254,45 +260,82 @@ class PokemonGenerator:
 
 class Item:
     """A usable in-game item."""
-    def __init__(self, kind: int, value: int, owner, name):
+    def __init__(self, kind: int, value: int, name, sprite, owner=None, count=1, color=(179,179,179)):
         self.kind = kind
         self.owner = owner
         self.name = name
+        self.count = count
+        self.color = color
+        self.sprite = sprite
 
     def use(self, target: Pokemon):
+        self.count -= 1
+        if self.count == 0:
+            self.remove()
         return
 
-    def sell(self):
+    def sell(self, num: int):
+        self.count -= num
+
+        if self.count == 0:
+            self.remove()
+
+    def remove(self):
         self.owner.items.remove(self)
 
+    def set_owner(self, owner):
+        self.owner = owner
 
 
 # TODO: implement all items in subclasses of Item
 class KeyItem(Item):
-    def __init__(self, owner, name):
+    def __init__(self, owner, name, sprite):
         """A key item is type 0, has no value, and an owner."""
-        super().__init__(0, 0, owner, name)
+        super().__init__(value=0, kind=0, owner=owner, name=name, sprite=sprite)
 
-    def sell(self):
+    def sell(self, num):
         """A key item may not be sold"""
         return
 
 class PokeballItem(Item):
-    def __init__(self, value, owner, name):
-        super().__init__(1, value, owner, name)
+    def __init__(self, value, name, sprite, count=1, owner=None, catch_number=255, catch_rate=1):
+        super().__init__(2, value=value, owner=owner, name=name, count=count, color=(229,132,132), sprite=sprite)
+        self.catch_number = catch_number
+        self.catch_rate = catch_rate
 
     def use(self, target: Pokemon):
         # Do self.owner.battle.catch() --> attempt catch
-        return
+        self.count -= 1
+        if self.count == 0:
+            self.remove()
+
+    def assign_owner(self, owner):
+        self.owner = owner
+
+class BattleItem(Item):
+    def __init__(self, value, name, sprite, count=1, owner=None, healing=10):
+        super().__init__(1, value=value, owner=owner, name=name, count=count, color=(132,132,229), sprite=sprite)
+        self.healing = healing
+
+    def use(self, target: Pokemon):
+        self.count -= 1
+        target.take_damage(-self.healing)
+
+        if self.count == 0:
+            self.remove()
+
 
 
 # TODO: implement the TRAINER class, make it agnostic for use by an AGENT or by a PLAYER
 class PokemonTrainer:
     """A container to keep track of a trainer's pokemon and items."""
-    def __init__(self, pokemon: [Pokemon], items: {Item, int}, money: int):
+    def __init__(self, pokemon: [Pokemon], items: [Item], money: int):
         self.team = pokemon
         self.items = items
+        for item in self.items:
+            item.set_owner(self)
         self.money = money
+        self.pc = []
 
     def use_item(self, item: Item):
         """Use a given item from inventory. *NOT SAFE*"""
@@ -346,6 +389,12 @@ class Battle:
 
         ##### BATTLE VARS #####
         self.curr_menu = 0
+
+        self.items_menu_offset = 0
+        self.curr_used_item = None
+        self.pokeball_wiggle_count = -1
+        self.pokeball_sprite = None
+
         # 0 for player, 1 for agent
         self.curr_turn = None
         self.curr_user_move = None
@@ -430,7 +479,7 @@ class Battle:
             self.render_buttons()
 
         elif self.curr_menu == 1:
-            self.render_items_menu()
+            self.render_items_main_menu()
 
         elif self.curr_menu == 2:
             self.render_battle_menu()
@@ -438,14 +487,36 @@ class Battle:
         elif self.curr_menu == 3:
             self.render_pokemon_menu()
 
+        elif self.curr_menu == 4:
+            self.render_items(battle_items=True)
+
+        elif self.curr_menu == 5:
+            self.render_items(battle_items=False)
+
         for batch in self.batches:
             batch.draw()
 
+        if self.pokeball_sprite is not None:
+            self.pokeball_sprite.draw()
+
+
     def battle_update_logic(self):
         """Contains the hierarchical logical structure of the within a turn in battle."""
+
         # If a move is being learned or another interactive dialogue is open, handle that before all else
         if self.board.last_choice is not None:
             self.handle_interactive_dialogue()
+            return
+
+        if 0 <= self.pokeball_wiggle_count <= 6 * REFRESH_RATE :
+            self.handle_pokeball()
+
+        # If an item has been used, handle that before battle actions
+        if self.curr_used_item is not None and not self.curr_used_item[1]:
+            self.handle_item()
+            return
+
+        elif self.curr_used_item is not None and self.pokeball_wiggle_count <= 6 * REFRESH_RATE:
             return
 
         # Edge case multiple new moves at once
@@ -457,6 +528,9 @@ class Battle:
             self.player_may_take_action = False
 
         else:
+            # If an item is in use, continue item dialogue
+            if self.curr_used_item is not None and self.curr_used_item[1]:
+                self.handle_item()
             # If a switch is underway, allow it to continue:
             if self.mid_switch:
                 if self.user_current_pkmn is None:
@@ -541,6 +615,17 @@ class Battle:
             self.mon_learning_new_move.replace_move(forgotten)
             self.board.display_text(TextBox(message, overworld=False, unskippable=False), skip_queue=True)
             self.board.last_choice = None
+
+        elif self.curr_used_item is not None and self.curr_used_item[0].kind == 1:
+            ind = int(self.board.last_choice[0])-1
+            self.curr_used_item[0].use(self.trainer.team[ind])
+            self.curr_used_item = None
+            self.board.display_text(TextBox(self.trainer.team[ind].name+" was healed!", overworld=False), skip_queue=True)
+            self.curr_turn = 0
+            self.turn_counter = 0
+            self.shown_effectiveness = True
+            self.switch_turn()
+
 
     def new_move_dialogue(self, mon: Pokemon):
         """Trigger dialogue for learning a new move"""
@@ -652,7 +737,7 @@ class Battle:
             friendly_mon.back_sprite.y = 6*TILE_HEIGHT
 
         foe_mon = self.foe_current_pkmn
-        if foe_mon is not None:
+        if foe_mon is not None and self.pokeball_wiggle_count < 0:
             foe_mon.front_sprite.batch = self.batches[2]
             foe_mon.front_sprite.x = 15*TILE_WIDTH
             foe_mon.front_sprite.y = 11*TILE_HEIGHT
@@ -724,9 +809,25 @@ class Battle:
                     and self.pokemon_button_bottom_left[1] <= y <= self.pokemon_button_top_right[1]:
                 print("POKEMON CLICKED")
                 self.curr_menu = 3
-        # Case in items menu
+        # Case in items main menu
         elif self.curr_menu == 1:
-            return
+            # Case back button clicked
+            if 19 * TILE_WIDTH <= x <= 23 * TILE_WIDTH and 1.5 * TILE_HEIGHT <= y <= 5 * TILE_HEIGHT:
+                self.curr_menu = 0
+                print("BACK CLICKED")
+
+            # case battle items clicked
+            elif 3 * TILE_WIDTH <= x <= 3 * TILE_WIDTH + self.switch_box_width and \
+                1 * TILE_HEIGHT <= y <+ 1 * TILE_HEIGHT + 1.5 * self.switch_box_height:
+                self.curr_menu = 4
+                print("BATTLE ITEMS CLICKED")
+
+            # case pokeball items clicked
+            elif 4 * TILE_WIDTH + self.switch_box_width <= x <= 3 * TILE_WIDTH + 2 * self.switch_box_width and \
+                1 * TILE_HEIGHT <= y <= 1 * TILE_HEIGHT + 1.5 * self.switch_box_height:
+                self.curr_menu = 5
+                print("POKEBALLS ITEMS CLICKED")
+
         # Case in battle menu
         elif self.curr_menu == 2:
             # Case move one exists and is clicked
@@ -767,6 +868,67 @@ class Battle:
 
                 print("BACK CLICKED")
                 self.curr_menu = 0
+        # case battle (4) / pokeball (5) items menu within menu
+        elif self.curr_menu == 4 or self.curr_menu == 5:
+            if self.curr_menu == 4:
+                kind_index = 1
+            else:
+                kind_index = 2
+            items_to_render = [item for item in self.trainer.items if item.kind == kind_index][self.items_menu_offset:self.items_menu_offset+5]
+
+            if 3 * TILE_WIDTH <= x <= 3 * TILE_WIDTH + 1.5 * self.switch_box_width \
+                    and 4.75 * TILE_HEIGHT <= y <= 5.75 * TILE_HEIGHT and len(items_to_render)>0:
+
+                self.curr_used_item = (items_to_render[0], False)
+                self.items_menu_offset = 0
+                self.curr_menu = 0
+                print("USED", items_to_render[0].name)
+
+            elif 3 * TILE_WIDTH <= x <= 3 * TILE_WIDTH + 1.5 * self.switch_box_width \
+                    and 3.65 * TILE_HEIGHT <= y <= 4.65 * TILE_HEIGHT and len(items_to_render) > 1:
+                self.curr_used_item = (items_to_render[1], False)
+                self.items_menu_offset = 0
+                self.curr_menu = 0
+                print("USED", items_to_render[1].name)
+
+            elif 3 * TILE_WIDTH <= x <= 3 * TILE_WIDTH + 1.5 * self.switch_box_width \
+                    and 2.55 * TILE_HEIGHT <= y <= 3.55 * TILE_HEIGHT and len(items_to_render) > 2:
+                self.curr_used_item = (items_to_render[2], False)
+                self.items_menu_offset = 0
+                self.curr_menu = 0
+                print("USED", items_to_render[2].name)
+
+            elif 3 * TILE_WIDTH <= x <= 3 * TILE_WIDTH + 1.5 * self.switch_box_width \
+                    and 1.45 * TILE_HEIGHT <= y <= 2.45 * TILE_HEIGHT and len(items_to_render) > 3:
+                self.curr_used_item = (items_to_render[3], False)
+                self.items_menu_offset = 0
+                self.curr_menu = 0
+                print("USED", items_to_render[3].name)
+
+            elif 3 * TILE_WIDTH <= x <= 3 * TILE_WIDTH + 1.5 * self.switch_box_width \
+                    and 0.35 * TILE_HEIGHT <= y <= 1.35 * TILE_HEIGHT and len(items_to_render) > 4:
+                self.curr_used_item = (items_to_render[4], False)
+                self.items_menu_offset = 0
+                self.curr_menu = 0
+                print("USED", items_to_render[4].name)
+
+            # Case may scroll down and scrolls down
+            elif 7 * TILE_WIDTH + 1.5 * self.switch_box_width <= x <= 8.5 * TILE_WIDTH + 1.5 * self.switch_box_width \
+                and 2.5 * TILE_HEIGHT <= y <= 4 * TILE_HEIGHT and self.items_menu_offset < len(items_to_render):
+                self.items_menu_offset += 5
+                print("SCROLLED DOWN")
+
+            elif 4 * TILE_WIDTH + 1.5 * self.switch_box_width <= x <= 5.5 * TILE_WIDTH + 1.5 * self.switch_box_width \
+                and 2.5 * TILE_HEIGHT <= y <= 4 * TILE_HEIGHT and self.items_menu_offset > 0:
+                self.items_menu_offset -= 5
+                print("SCROLLED UP")
+
+            # Case back button
+            elif 19 * TILE_WIDTH <= x <= 23 * TILE_WIDTH \
+                    and 1.5 * TILE_HEIGHT <= y <= 5 * TILE_HEIGHT and self.user_current_pkmn is not None:
+
+                print("BACK CLICKED")
+                self.curr_menu = 1
 
 
         # Case in pokemon menu
@@ -1103,10 +1265,6 @@ class Battle:
         if self.is_crit and self.effectiveness != -2:
             self.board.display_text(TextBox("A critical hit!", overworld=False, unskippable=True), 1 * REFRESH_RATE)
 
-    def render_items_menu(self):
-        # TODO: make items menu and corresponding mouse parsing
-        pass
-
     def render_battle_menu(self):
 
         move_objects = []
@@ -1321,6 +1479,250 @@ class Battle:
             pkmn_objects.extend([switch_box_six])
 
         self.shapes.extend(pkmn_objects)
+
+    def render_items_main_menu(self):
+        """Rendering logic for main items menu screen."""
+        battle_items_button = pg.shapes.BorderedRectangle(x = 3 * TILE_WIDTH, y = 1 * TILE_HEIGHT,
+                                                       width=self.switch_box_width, height=1.5 * self.switch_box_height,
+                                                       color=(69, 97, 236), border_color=(0,0,0), border=3,
+                                                       batch=self.batches[3])
+        battle_items_title = pg.text.Label(text="BATTLE \n ITEMS",
+                                           x= 4.5 * TILE_WIDTH + self.switch_box_width / 2, width = self.switch_box_width,
+                                           y= 3 * TILE_HEIGHT, anchor_x="center",
+                                           color=(255,255,255,255), batch=self.batches[4], multiline=True, bold=True
+                                           )
+
+        balls_items_button = pg.shapes.BorderedRectangle(x = 4 * TILE_WIDTH + self.switch_box_width, y = 1 * TILE_HEIGHT,
+                                                       width=self.switch_box_width, height=1.5 * self.switch_box_height,
+                                                       color=(238, 51, 51), border_color=(0,0,0), border=3,
+                                                       batch=self.batches[3])
+        balls_items_title = pg.text.Label(text="POKEBALLS",
+                                           x= 4 * TILE_WIDTH + 3 * self.switch_box_width / 2, width = self.switch_box_width,
+                                           y= 2.5 * TILE_HEIGHT, anchor_x="center",
+                                           color=(255,255,255,255), batch=self.batches[4], bold=True
+                                           )
+
+
+        back_button = pg.shapes.BorderedRectangle(x=19 * TILE_WIDTH, y=1.5 * TILE_HEIGHT,
+                                                  width=4 * TILE_WIDTH, height=3.5 * TILE_HEIGHT,
+                                                  color=(128, 237, 68), border_color=(0, 0, 0), border=3,
+                                                  batch=self.batches[3])
+
+        back_button_title = pg.text.Label(text="BACK",
+                                          x=21 * TILE_WIDTH, width=4 * TILE_WIDTH,
+                                          y=3 * TILE_HEIGHT, anchor_x="center",
+                                          color=(0, 0, 0, 255), batch=self.batches[4])
+        self.shapes.extend([battle_items_button, battle_items_title, balls_items_button,balls_items_title,
+                            back_button,back_button_title])
+
+    def render_items(self, battle_items: bool=True):
+        if battle_items:
+            index_key = 1
+        else:
+            index_key = 2
+
+        fitting_items = [item for item in self.trainer.items if item.kind == index_key]
+
+        items_to_render = fitting_items[self.items_menu_offset: self.items_menu_offset + 5]
+
+        for i in range(5):
+            # Case item to fill
+            if i+1 <= len(items_to_render):
+                self.shapes.extend([
+                    pg.shapes.BorderedRectangle(x = 3 * TILE_WIDTH, y = (4.75 - (1.1 * i)) * TILE_HEIGHT,
+                                                width = 1.5 * self.switch_box_width, height = 1 * TILE_HEIGHT,
+                                                color=items_to_render[i].color, border_color=(0,0,0), border=3,
+                                                batch=self.batches[3]),
+                    pg.text.Label(text=items_to_render[i].name + " x"+str(items_to_render[i].count),
+                                  x = 4 * TILE_WIDTH, width = 1.5 * self.switch_box_width,
+                                  y = (5.1 - (1.1 * i)) * TILE_HEIGHT, anchor_x = "left",
+                                  color=(0,0,0,255), batch=self.batches[4])
+                ])
+            # Case placeholder box
+            else:
+                self.shapes.append(pg.shapes.BorderedRectangle(x = 3 * TILE_WIDTH, y = (4.75 - (1.1 * i)) * TILE_HEIGHT,
+                                                width = 1.5 * self.switch_box_width, height = 1 * TILE_HEIGHT,
+                                                color=(179,179,179), border_color=(0,0,0), border=3,
+                                                batch=self.batches[3])
+                )
+
+        # Case may scroll up
+        if self.items_menu_offset > 0:
+            up_button = pg.shapes.BorderedRectangle(
+                x=4 * TILE_WIDTH + 1.5 * self.switch_box_width, y = 2.5 * TILE_HEIGHT,
+                width = 1.5 * TILE_WIDTH, height = 1.5 * TILE_HEIGHT, color=(190, 190, 190), border_color=(0,0,0),
+                border=3, batch=self.batches[3]
+            )
+            up_arrow = pg.shapes.Triangle(x= 4.3 * TILE_WIDTH + 1.5 * self.switch_box_width, y = 2.66 * TILE_HEIGHT,
+                                          x2 = 5.3 * TILE_WIDTH + 1.5 * self.switch_box_width, y2 = 2.66 * TILE_HEIGHT,
+                                          x3 = 4.8 * TILE_WIDTH + 1.5 * self.switch_box_width, y3 = 3.66 * TILE_HEIGHT,
+                                          color=(240,240,240), batch=self.batches[4])
+            self.shapes.append(up_arrow)
+        else:
+            up_button = pg.shapes.BorderedRectangle(
+                x=4 * TILE_WIDTH + 1.5 * self.switch_box_width, y = 2.5 * TILE_HEIGHT,
+                width = 1.5 * TILE_WIDTH, height = 1.5 * TILE_HEIGHT, color=(100, 100, 100), border_color=(0,0,0),
+                border=3, batch=self.batches[3]
+            )
+
+        # Case may scroll down
+        if len(fitting_items[self.items_menu_offset:]) > 5:
+            down_button = pg.shapes.BorderedRectangle(
+                x=7 * TILE_WIDTH + 1.5 * self.switch_box_width, y = 2.5 * TILE_HEIGHT,
+                width = 1.5 * TILE_WIDTH, height = 1.5 * TILE_HEIGHT, color=(190, 190, 190), border_color=(0,0,0),
+                border=3, batch=self.batches[3]
+            )
+            down_arrow = pg.shapes.Triangle(x= 7.3 * TILE_WIDTH + 1.5 * self.switch_box_width, y = 3.66 * TILE_HEIGHT,
+                                          x2 = 7.8 * TILE_WIDTH + 1.5 * self.switch_box_width, y2 = 2.66 * TILE_HEIGHT,
+                                          x3 = 8.3 * TILE_WIDTH + 1.5 * self.switch_box_width, y3 = 3.66 * TILE_HEIGHT,
+                                          color=(240,240,240), batch=self.batches[4])
+            self.shapes.append(down_arrow)
+        else:
+            down_button = pg.shapes.BorderedRectangle(
+                x=7 * TILE_WIDTH + 1.5 * self.switch_box_width, y = 2.5 * TILE_HEIGHT,
+                width = 1.5 * TILE_WIDTH, height = 1.5 * TILE_HEIGHT, color=(100, 100, 100), border_color=(0,0,0),
+                border=3, batch=self.batches[3]
+            )
+
+
+        self.shapes.extend([up_button, down_button])
+
+
+        back_button = pg.shapes.BorderedRectangle(x=19 * TILE_WIDTH, y=1.5 * TILE_HEIGHT,
+                                                  width=4 * TILE_WIDTH, height=3.5 * TILE_HEIGHT,
+                                                  color=(128, 237, 68), border_color=(0, 0, 0), border=3,
+                                                  batch=self.batches[3])
+
+        back_button_title = pg.text.Label(text="BACK",
+                                          x=21 * TILE_WIDTH, width=4 * TILE_WIDTH,
+                                          y=3 * TILE_HEIGHT, anchor_x="center",
+                                          color=(0, 0, 0, 255), batch=self.batches[4])
+
+        self.shapes.extend([back_button, back_button_title])
+
+    def handle_item(self):
+        """Process an item that's in use."""
+        item, status = self.curr_used_item
+        # If this is the beginning of the turn, process item
+        if not status:
+            self.curr_used_item = (item, True)
+        # Case healing item, dispatch dialogue
+        if item.kind == 1:
+            mons = [mon.name for mon in self.trainer.team]
+            mons = [str(i+1)+". "+mon for i, mon in enumerate(mons)]
+            self.board.display_text(DialogueBox("Use "+item.name+" on which Pokemon?",
+                                    options=mons, overworld=False))
+
+        # Case Pokeball item, dispatch catching
+        else:
+            item.use(self.foe_current_pkmn)
+            self.board.display_text(TextBox("You threw a "+item.name+"!", overworld=False, unskippable=False))
+            self.pokeball_wiggle_count = 0
+            self.player_may_take_action = False
+
+    def handle_pokeball(self):
+        """Logic for handling a user throwing a pokeball."""
+        if not self.is_wild:
+            self.board.display_text(TextBox("You can't catch another trainer's pokemon!", overworld=False, unskippable=False), skip_queue=True)
+
+        # case turn opponent into ball and begin catching
+        if self.pokeball_wiggle_count == 0:
+            self.pokeball_sprite = self.curr_used_item[0].sprite
+            self.pokeball_sprite.x = 16 * TILE_WIDTH
+            self.pokeball_sprite.y = 11 * TILE_HEIGHT
+        elif self.pokeball_wiggle_count == REFRESH_RATE:
+            if self.catch_effectiveness():
+                self.pokeball_sprite.x -= 0.5 * TILE_WIDTH
+            else:
+                self.board.display_text(TextBox("Oh no! The wild pokemon broke free!", overworld=False, unskippable=False))
+                self.catch_failed()
+                return
+        # wiggle 1 logic
+        elif self.pokeball_wiggle_count == 2 * REFRESH_RATE:
+            if self.catch_effectiveness():
+                self.pokeball_sprite.x += 0.5 * TILE_WIDTH
+            else:
+                self.board.display_text(TextBox("Aargh! Almost had it!", overworld=False, unskippable=False))
+                self.catch_failed()
+                return
+        elif self.pokeball_wiggle_count == 3 * REFRESH_RATE:
+            self.pokeball_sprite.x += 0.5 * TILE_WIDTH
+        # wiggle 2 logic
+        elif self.pokeball_wiggle_count == 4 * REFRESH_RATE:
+            if self.catch_effectiveness():
+                self.pokeball_sprite.x -= 0.5 * TILE_WIDTH
+            else:
+                self.board.display_text(TextBox("Shoot! It was so close too!", overworld=False, unskippable=False))
+                self.catch_failed()
+                return
+        elif self.pokeball_wiggle_count == 5 * REFRESH_RATE:
+            self.pokeball_sprite.x -= 0.5 * TILE_WIDTH
+        # wiggle 3 logic
+        elif self.pokeball_wiggle_count == 4 * REFRESH_RATE:
+            if self.catch_effectiveness():
+                self.pokeball_sprite.x += 0.5 * TILE_WIDTH
+            else:
+                self.board.display_text(TextBox("Oh no! The wild pokemon broke free!", overworld=False, unskippable=False))
+                self.catch_failed()
+                return
+        # complete capture logic
+        elif self.pokeball_wiggle_count == 6 * REFRESH_RATE:
+            self.pokeball_sprite.x += 0.5 * TILE_WIDTH
+            self.board.display_text(TextBox("Gotcha! "+self.foe_current_pkmn.name+" was caught!", overworld=False, unskippable=False))
+            self.battle_ended_bool = True
+            self.player_may_take_action = True
+            self.curr_used_item = None
+            self.caught_pokemon()
+
+        self.pokeball_wiggle_count += 1
+
+    def catch_effectiveness(self):
+        B_max = 3 * self.foe_current_pkmn.stats["max_hp"]
+        B_curr = 2 * self.foe_current_pkmn.hp
+        # TODO: implement variable catch rate by species
+        R = 255
+        e_ball = self.curr_used_item[0].catch_rate
+
+        if self.foe_current_pkmn.status in ["sleep", "freeze"]:
+            e_status = 2
+        elif self.foe_current_pkmn.status in ["paralyze", "poison", "burn"]:
+            e_status = 1.5
+        else:
+            e_status = 1
+
+        # Probability of capture
+        omega = min(e_status * ((B_max - B_curr) * R * e_ball) / B_max, 255)
+        # Threshold decided by ball
+        theta = np.random.choice(range(self.curr_used_item[0].catch_number))
+
+        print(omega, theta)
+        return omega > theta
+
+    def catch_failed(self):
+        self.pokeball_sprite = None
+        self.player_may_take_action = True
+        self.pokeball_wiggle_count = -1
+        self.curr_used_item = None
+        self.curr_turn = 0
+        self.turn_counter = 0
+        self.shown_effectiveness = True
+        self.switch_turn()
+
+    def caught_pokemon(self):
+        if len(self.trainer.team) < 6:
+            self.trainer.team.append(self.foe_current_pkmn)
+            self.board.display_text(TextBox(self.foe_current_pkmn.name+" was added to your party!", overworld=False, unskippable=False))
+        else:
+            self.trainer.pc.append(self.foe_current_pkmn)
+            self.board.display_text(
+                TextBox("Your party is full, so "+ self.foe_current_pkmn.name + " was sent to your pc!", overworld=False, unskippable=False))
+
+
+
+
+
+
+
 
 
 

@@ -6844,8 +6844,23 @@ POKEDEX_MAP = {
 }
 
 
-
-TEST_TRAINER = PokemonTrainer(pokemon=[Garchomp(level=99), Snorlax(level=50), Machamp(level=100), Gyarados(level=50), Crobat(level=50), Staraptor(level=50)],
-                              items={Item(0, 0, None, name="Empty"): 1, KeyItem(None, name="Empty"): 1},
+pokeball_sprite = pg.sprite.Sprite(pg.image.load("sprites/items/pokeball.png"))
+TEST_TRAINER = PokemonTrainer(pokemon=[Garchomp(level=60), Snorlax(level=50), Crobat(level=50), Staraptor(level=50)],
+                              items=[
+                                  PokeballItem(value=0, name="Pokeball",sprite=pokeball_sprite),
+                                  PokeballItem(value=0, name="Great Ball", count=10,sprite=pokeball_sprite),
+                                  PokeballItem(value=0, name="Ultra Ball", count=100,sprite=pokeball_sprite),
+                                  PokeballItem(value=0, name="Pokeball", count=9,sprite=pokeball_sprite),
+                                  PokeballItem(value=0, name="Great Ball", count=20,sprite=pokeball_sprite),
+                                  PokeballItem(value=0, name="Ultra Ball", count=200,sprite=pokeball_sprite),
+                                  PokeballItem(value=0, name="Pokeball", count=80,sprite=pokeball_sprite),
+                                  PokeballItem(value=0, name="Great Ball", count=7,sprite=pokeball_sprite),
+                                  PokeballItem(value=0, name="Ultra Ball", count=60,sprite=pokeball_sprite),
+                                  Item(value=1, kind=1, name="Test battle item",sprite=pokeball_sprite),
+                                  BattleItem(value=100, name="Hyper Potion", count=20,sprite=None),
+                                  BattleItem(value=100, name="Potion", count=10,sprite=None),
+                                  BattleItem(value=100, name="Potion", count=10,sprite=None),
+                                  KeyItem(None, name="Test key item 1", sprite=None),
+                              ],
                               money=0)
 
