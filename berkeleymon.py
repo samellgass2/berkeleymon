@@ -20,6 +20,7 @@ BOARD = GameBoard(TEST_LOCATION, TEST_LOCATION.width//2, TEST_LOCATION.height//2
 
 # For now, only implemented agent is 'easy' random agent
 BOARD.set_agents(RandomLegalAgent(BOARD))
+TEST_TRAINER.set_board(BOARD)
 
 window = pg.window.Window(width=24*TILE_WIDTH, height=16*TILE_HEIGHT, caption="Berkeleymon")
 

@@ -1,5 +1,5 @@
 """Pokemon and Trainers."""
-from game_utils.Encounter import *
+from game_utils.Actions import *
 from data.Constants import *
 
 ##### ALL MONS #####
@@ -23,7 +23,17 @@ class Turtwig(Pokemon):
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            1: Tackle,
+            5: Withdraw,
+            9: Absorb,
+            13: RazorLeaf,
+            17: Curse,
+            21: Bite,
+            25: MegaDrain,
+            29: LeechSeed,
+            37: Crunch,
+            41: GigaDrain,
+            45: LeafStorm
         }
         evolutions = {
             18: Grotle
@@ -56,7 +66,18 @@ class Grotle(Pokemon):
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Tackle,
+            5: Withdraw,
+            9: Absorb,
+            13: RazorLeaf,
+            17: Curse,
+            22: Bite,
+            27: MegaDrain,
+            32: LeechSeed,
+            37: Synthesis,
+            42: Crunch,
+            47: GigaDrain,
+            52: LeafStorm
         }
         evolutions = {
             36: Torterra
@@ -90,7 +111,19 @@ class Torterra(Pokemon):
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Tackle,
+            5: Withdraw,
+            9: Absorb,
+            13: RazorLeaf,
+            17: Curse,
+            22: Bite,
+            27: MegaDrain,
+            32: Earthquake,
+            33: LeechSeed,
+            39: Synthesis,
+            45: Crunch,
+            51: GigaDrain,
+            57: LeafStorm
         }
         evolutions = {
         }
@@ -123,7 +156,18 @@ class Chimchar(Pokemon):
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
         # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Scratch,
+            1: Leer,
+            7: Ember,
+            9: Taunt,
+            15: FurySwipes,
+            17: FlameWheel,
+            23: NastyPlot,
+            25: Torment,
+            31: Facade,
+            33: FireSpin,
+            39: SlackOff,
+            41: FlameThrower
         }
         evolutions = {
             14: Monferno
@@ -6557,88 +6601,6 @@ class Jynx(Pokemon):
                          back_sprite=pg.sprite.Sprite(self.back_sprite),
                          exp_yield=self.exp_yield, evolutions=evolutions)
 
-##### ALL MOVES #####
-class Splash(PokemonMove):
-    def __init__(self):
-        super().__init__(type=10, name="Splash", power=0, physical=True, accuracy=100,pp=35, is_status=True)
-
-class Pound(PokemonMove):
-    """Pound."""
-    def __init__(self):
-        super().__init__(type=0, name="Pound", power=40, physical=True, accuracy=100, pp=35)
-
-class Growl(PokemonMove):
-    """Growl."""
-    def __init__(self):
-        super().__init__(type=0, name="Growl", power=0, physical=False, accuracy=100, pp=40, is_status=True)
-
-    def use(self, opponent):
-        return False, 0, True, 0
-
-    # TODO: override attack for STATUS move type
-
-class Bubble(PokemonMove):
-    """Bubble."""
-    def __init__(self):
-        super().__init__(type=10, name="Bubble", power=20, physical=True, accuracy=100, pp=30)
-
-class WaterSport(PokemonMove):
-    """Water Sport."""
-    def __init__(self):
-        super().__init__(type=10, name="Water Sport", power=0, physical=False, accuracy=100, pp=15, is_status=True)
-
-class Peck(PokemonMove):
-    """Peck."""
-    def __init__(self):
-        super().__init__(type=2, name="Peck", power=35, physical=True, accuracy=100, pp=35)
-
-class Bide(PokemonMove):
-    """Bide."""
-    def __init__(self):
-        super().__init__(type=0, name="Bide", power=50, physical=True, accuracy=100, pp=10)
-
-    # TODO: override behavior for counting turns and forcing move to be bide
-
-class BubbleBeam(PokemonMove):
-    """BubbleBeam."""
-    def __init__(self):
-        super().__init__(type=10, name="Bubblebeam", power=65, physical=False, accuracy=100, pp=20)
-
-class FuryAttack(PokemonMove):
-    """Fury Attack."""
-    def __init__(self):
-        super().__init__(type=0, name="Fury Attack", power=15, physical=True, accuracy=85, pp=20)
-
-    # TODO: make multi-hit moves random
-
-class Brine(PokemonMove):
-    """Brine."""
-    def __init__(self):
-        super().__init__(type=10, name="Brine", power=65, physical=False, accuracy=100, pp=10)
-
-class Whirlpool(PokemonMove):
-    """Whirlpool."""
-    def __init__(self):
-        super().__init__(type=10, name="Whirlpool", power=15, physical=False, accuracy=85, pp=15)
-
-    # TODO: make lingering moves
-
-class Mist(PokemonMove):
-    """Mist."""
-    def __init__(self):
-        super().__init__(type=14, name="Mist", power=0, physical=False, accuracy=100, pp=30, is_status=True)
-
-    # TODO: do MIST
-
-class DrillPeck(PokemonMove):
-    """Drill Peck."""
-    def __init__(self):
-        super().__init__(type=2, name="Drill Peck", power=80, physical=True, accuracy=100, pp=20)
-
-class HydroPump(PokemonMove):
-    """Hydro Pump."""
-    def __init__(self):
-        super().__init__(type=10, name="Hydro Pump", power=120, physical=False, accuracy=80, pp=5)
 
 POKEDEX_MAP = {
     1: Turtwig,
@@ -6845,7 +6807,7 @@ POKEDEX_MAP = {
 
 
 pokeball_sprite = pg.sprite.Sprite(pg.image.load("sprites/items/pokeball.png"))
-TEST_TRAINER = PokemonTrainer(pokemon=[Garchomp(level=60), Snorlax(level=50), Crobat(level=50), Staraptor(level=50)],
+TEST_TRAINER = PokemonTrainer(pokemon=[Torterra(level=51), Snorlax(level=50), Crobat(level=50), Staraptor(level=50), Turtwig(level=10)],
                               items=[
                                   PokeballItem(value=0, name="Pokeball",sprite=pokeball_sprite),
                                   PokeballItem(value=0, name="Great Ball", count=10,sprite=pokeball_sprite),

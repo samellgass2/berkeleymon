@@ -76,8 +76,52 @@ class PokemonMove:
         """Sets user for use to know typing and speed."""
         self.user = pkmn
 
+    def raise_stat(self, opponent, key: str, sharply: bool=False, lower: bool=False, lower_self=False):
+        if lower:
+            using_mon = opponent
+            sharply_str = " fell"
+        else:
+            using_mon = self.user
+            sharply_str = " rose"
 
-    # TODO: implement as object that can be dispatched accurately in battle
+        if lower_self:
+            using_mon = self.user
+
+        change = (-1 ** int(lower)) + (-1 ** int(lower) * int(sharply))
+
+        if sharply:
+            sharply_str += " sharply"
+
+        if key == 'defense' and -6 < using_mon.defense_stage + change < 6:
+                self.user.trainer.board.display_text(TextBox(using_mon.name+"'s defense" + sharply_str + "!", overworld=False,
+                                                     unskippable=False), skip_queue=True)
+                using_mon.defense_stage += change
+
+        elif key == 'special defense' and -6 < using_mon.special_defense_stage + change < 6:
+                self.user.trainer.board.display_text(TextBox(using_mon.name+"'s special defense" + sharply_str + "!", overworld=False,
+                                                     unskippable=False), skip_queue=True)
+                using_mon.special_defense_stage += change
+
+        elif key == 'attack' and -6 < using_mon.attack_stage + change < 6:
+                self.user.trainer.board.display_text(TextBox(using_mon.name+"'s attack" + sharply_str + "!", overworld=False,
+                                                     unskippable=False), skip_queue=True)
+                using_mon.attack_stage += change
+
+        elif key == 'special attack' and -6 < using_mon.special_attack_stage + change < 6:
+                self.user.trainer.board.display_text(
+                    TextBox(using_mon.name + "'s special attack" + sharply_str + "!", overworld=False,
+                            unskippable=False), skip_queue=True)
+                using_mon.special_attack += change
+
+        elif key == 'speed' and -6 < using_mon.speed_stage + change < 6:
+                self.user.trainer.board.display_text(TextBox(using_mon.name+"'s speed" + sharply_str + "!", overworld=False,
+                                                     unskippable=False), skip_queue=True)
+                using_mon.speed_stage += change
+        else:
+            self.user.trainer.board.display_text(TextBox("But nothing changed!", overworld=False,
+                                                 unskippable=False), skip_queue=True)
+
+
 
 class Pokemon:
     """The general, archetypal Pokemon class to create most of the skeleton for actions."""
@@ -142,6 +186,7 @@ class Pokemon:
 
         self.seen = []
         self.move_queue = []
+        self.trainer = None
 
     def reset_stat_stages(self):
         self.attack_stage = 0
@@ -231,6 +276,16 @@ class Pokemon:
             if self.moveset[i].name == old_move:
                 self.moveset[i] = new_move
             i += 1
+
+    def set_trainer(self, trainer):
+        self.trainer = trainer
+
+    def inflict_status(self, status):
+        if self.status in ["paralysis", "burn", "sleep"]:
+            self.status = status
+            self.trainer.board.display_text(TextBox(self.name+" got "+self.status+"ed!"))
+        else:
+            return
 
 class PokemonGenerator:
     def __init__(self, pkmn_and_odds: list, min_level: int, max_level: int):
@@ -331,9 +386,12 @@ class PokemonTrainer:
     """A container to keep track of a trainer's pokemon and items."""
     def __init__(self, pokemon: [Pokemon], items: [Item], money: int):
         self.team = pokemon
+        for mon in self.team:
+            mon.set_trainer(self)
         self.items = items
         for item in self.items:
             item.set_owner(self)
+        self.board = None
         self.money = money
         self.pc = []
 
@@ -342,6 +400,9 @@ class PokemonTrainer:
         self.items[item].use()
         if self.items[item] == 0:
             self.items.pop(item)
+
+    def set_board(self, board):
+        self.board = board
 
 
 # TODO: implement the BATTLE class, figure out how to flag in main render loop --> do encounter UI
@@ -427,6 +488,7 @@ class Battle:
             ai_trainer = opponent
 
         self.opponent = ai_trainer
+        self.opponent.set_board(self.board)
         self.foe_current_pkmn = self.opponent.team[0]
 
         # Set the appropriate AI agent up
@@ -833,7 +895,7 @@ class Battle:
             # Case move one exists and is clicked
             if 1 * TILE_WIDTH <= x <= 1 * TILE_WIDTH + self.move_box_width \
                 and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.move_box_height \
-                and len(self.user_current_pkmn.moveset)>=1:
+                and len(self.user_current_pkmn.moveset)>=1 and self.user_current_pkmn.moveset[0].pp>0:
 
                     move = self.user_current_pkmn.moveset[0]
                     print(move.name)
@@ -841,7 +903,7 @@ class Battle:
             # Case move two exists and is clicked
             elif 10 * TILE_WIDTH <= x <= 10 * TILE_WIDTH + self.move_box_width \
                 and 3.25 * TILE_HEIGHT <= y <= 3.25 * TILE_HEIGHT + self.move_box_height \
-                and len(self.user_current_pkmn.moveset)>=2:
+                and len(self.user_current_pkmn.moveset)>=2 and self.user_current_pkmn.moveset[1].pp>0:
 
                     move = self.user_current_pkmn.moveset[1]
                     print(move.name)
@@ -849,7 +911,7 @@ class Battle:
             # case move three exists and is clicked
             elif 1 * TILE_WIDTH <= x <= 1 * TILE_WIDTH + self.move_box_width \
                 and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
-                and len(self.user_current_pkmn.moveset)>=3:
+                and len(self.user_current_pkmn.moveset)>=3 and self.user_current_pkmn.moveset[2].pp>0:
 
                     move = self.user_current_pkmn.moveset[2]
                     print(move.name)
@@ -857,7 +919,7 @@ class Battle:
             # case move four exists and is clicked
             elif 10 * TILE_WIDTH <= x <= 10 * TILE_WIDTH + self.move_box_width \
                 and 0.5 * TILE_HEIGHT <= y <= 0.5 * TILE_HEIGHT + self.move_box_height \
-                and len(self.user_current_pkmn.moveset)>=4:
+                and len(self.user_current_pkmn.moveset)>=4 and self.user_current_pkmn.moveset[3].pp>0:
 
                     move = self.user_current_pkmn.moveset[3]
                     print(move.name)
@@ -1709,6 +1771,7 @@ class Battle:
         self.switch_turn()
 
     def caught_pokemon(self):
+        self.foe_current_pkmn.set_trainer(self.trainer)
         if len(self.trainer.team) < 6:
             self.trainer.team.append(self.foe_current_pkmn)
             self.board.display_text(TextBox(self.foe_current_pkmn.name+" was added to your party!", overworld=False, unskippable=False))
