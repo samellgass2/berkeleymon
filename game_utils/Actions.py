@@ -253,6 +253,181 @@ class FlameThrower(PokemonMove):
             opponent.inflict_status("burn")
         return is_crit, is_super_eff, is_hit, total_damage
 
+class MachPunch(PokemonMove):
+    """Mach Punch."""
+    def __init__(self):
+        super().__init__(type=1, name="Mach Punch", power=40, accuracy=100, pp=30, physical=True)
+
+    # TODO: MAKE MOVE FIRST
+
+class Feint(PokemonMove):
+    """Feint."""
+    def __init__(self):
+        super().__init__(type=0, name="Feint",physical=True, power=50, accuracy=100, pp=10)
+
+    # TODO: MAKE BREAK PROTECT
+
+class CloseCombat(PokemonMove):
+    """Close Combat."""
+    def __init__(self):
+        super().__init__(type=1, name="Close Combat",physical=True, power=120, accuracy=100, pp=5)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        self.raise_stat(opponent, "defense", lower=True, lower_self=True)
+        self.raise_stat(opponent, "special defense", lower=True, lower_self=True)
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class FlareBlitz(PokemonMove):
+    """Flare Blitz."""
+    def __init__(self):
+        super().__init__(type=9, name="Flare Blitz", physical=True, power=120, accuracy=100, pp=15)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if np.random.random() <= 0.1:
+            opponent.inflict_status("burn")
+        self.user.take_damage(total_damage // 3)
+        self.user.trainer.board.display_text(TextBox(self.user.name+" was hurt by the recoil!"))
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class Punishment(PokemonMove):
+    """Punishment."""
+    def __init__(self):
+        super().__init__(type=16, name="Punishment", physical=True, power=60, accuracy=100, pp=5)
+
+    def use(self, opponent):
+        pow_offset = 0
+        if opponent.attack_stage > 0:
+            pow_offset += 20 * opponent.attack_stage
+        if opponent.special_attack_stage > 0:
+            pow_offset += 20 * opponent.special_attack_stage
+        if opponent.defense_stage > 0:
+            pow_offset += 20 * opponent.defense_stage
+        if opponent.special_defense_stage > 0:
+            pow_offset += 20 * opponent.special_defense_stage
+        if opponent.speed_stage > 0:
+            pow_offset += 20 * opponent.speed_stage
+        self.power += pow_offset
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        self.power -= pow_offset
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class CalmMind(PokemonMove):
+    """Calm Mind."""
+    def __init__(self):
+        super().__init__(type=16, name="Calm Mind", power=0, physical=False, accuracy=100, pp=20)
+
+
+    def use(self, opponent):
+        self.raise_stat(opponent, "special attack", sharply=False)
+        self.raise_stat(opponent, "special defense", sharply=False)
+        return False, False, True, 0
+
+class MetalClaw(PokemonMove):
+    """Metal Claw."""
+    def __init__(self):
+        super().__init__(type=8, name="Metal Claw", power=50, accuracy=95, pp=35, physical=True)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if np.random.random() <= 0.1:
+            self.raise_stat(opponent, "attack")
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class SwordsDance(PokemonMove):
+    """Swords Dance."""
+    def __init__(self):
+        super().__init__(type=0, name="Swords Dance", power=0, accuracy=100, pp=30, physical=False)
+
+    def use(self, opponent):
+        self.pp -= 1
+        self.raise_stat(opponent, "attack", sharply=True)
+
+class Swagger(PokemonMove):
+    """Swagger."""
+    def __init__(self):
+        super().__init__(type=0, name="Swagger", power=0, physical=False, pp=10, accuracy=100)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if is_hit:
+            opponent.inflict_secondary_status("confusion")
+        return False, False, is_hit, 0
+
+class DoubleTeam(PokemonMove):
+    """Double Team."""
+    def __init__(self):
+        super().__init__(type=0, name="Double Team", power=0, physical=False, pp=15, accuracy=100)
+
+    def use(self, opponent):
+        self.raise_stat(opponent, "evasiveness", sharply=True)
+        self.pp -= 1
+
+class Endeavor(PokemonMove):
+    """Endeavor."""
+    def __init__(self):
+        super().__init__(type=0, name="Endeavor", power=0, physical=True, pp=5, accuracy=100)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if is_hit and is_super_eff > -2:
+            total_damage = max(opponent.hp - self.user.hp,0)
+        return False, is_super_eff, is_hit, total_damage
+
+class Whirlwind(PokemonMove):
+    """Whirlwind."""
+    def __init__(self):
+        super().__init__(type=0, name="Whirlwind", power=0, physical=False, pp=20, accuracy=100)
+
+    # TODO: make whirlwind immediately force random switch / end random encounters
+
+class AerialAce(PokemonMove):
+    """Aerial Ace."""
+    def __init__(self):
+        super().__init__(type=2, name="Aerial Ace", power=60, physical=True, pp=20, accuracy=100000)
+
+class TakeDown(PokemonMove):
+    """Take Down."""
+    def __init__(self):
+        super().__init__(type=0, name="Take Down", power=90, physical=True, pp=20, accuracy=85)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if is_hit and is_super_eff > -2:
+            self.user.take_damage(total_damage // 4)
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class DefenseCurl(PokemonMove):
+    """Defense Curl."""
+    def __init__(self):
+        super().__init__(type=0, name="Defense Curl", power=0, physical=False, pp=40, accuracy=100)
+
+    def use(self, opponent):
+        self.pp -= 1
+        self.raise_stat(opponent, "defense")
+
+class Agility(PokemonMove):
+    """Agility."""
+    def __init__(self):
+        super().__init__(type=13, name="Agility", power=0, physical=False, pp=30, accuracy=100)
+
+    def use(self, opponent):
+        self.pp -= 1
+        self.raise_stat(opponent, "speed", sharply=True)
+        return False, False, True, 0
+
+class BraveBird(PokemonMove):
+    """Brave Bird."""
+    def __init__(self):
+        super().__init__(type=2, name="Brave Bird", power=120, physical=True, pp=15, accuracy=100)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if is_hit and is_super_eff > -2:
+            self.user.take_damage(total_damage // 3)
+        return is_crit, is_super_eff, is_hit, total_damage
+
 class Bubble(PokemonMove):
     """Bubble."""
     def __init__(self):
@@ -292,6 +467,18 @@ class Brine(PokemonMove):
     def __init__(self):
         super().__init__(type=10, name="Brine", power=65, physical=False, accuracy=100, pp=10)
 
+    def use(self, opponent):
+        """Attack: damage is doubled if below half."""
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if opponent.hp <= opponent.stats["max_hp"]//2:
+            total_damage *= 2
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class AquaJet(PokemonMove):
+    """Aqua Jet."""
+    def __init__(self):
+        super().__init__(type=10, name="Aqua Jet", power=40, accuracy=100, pp=20, priority=True, physical=True)
+
 class Whirlpool(PokemonMove):
     """Whirlpool."""
     def __init__(self):
@@ -304,7 +491,19 @@ class Mist(PokemonMove):
     def __init__(self):
         super().__init__(type=14, name="Mist", power=0, physical=False, accuracy=100, pp=30, is_status=True)
 
-    # TODO: do MIST
+    def use(self, opponent):
+        self.user.reset_stat_stages()
+        self.user.trainer.board.display_text(TextBox(self.user.name+"'s stats returned to normal!", overworld=False))
+
+class QuickAttack(PokemonMove):
+    """Quick Attack."""
+    def __init__(self):
+        super().__init__(type=0, name="Quick Attack", power=40, accuracy=100, pp=30, physical=True, priority=True)
+
+class WingAttack(PokemonMove):
+    """Wing Attack."""
+    def __init__(self):
+        super().__init__(type=2, name="Wing Attack", power=60, accuracy=100, pp=35, physical=True)
 
 class DrillPeck(PokemonMove):
     """Drill Peck."""
@@ -315,3 +514,168 @@ class HydroPump(PokemonMove):
     """Hydro Pump."""
     def __init__(self):
         super().__init__(type=10, name="Hydro Pump", power=120, physical=False, accuracy=80, pp=5)
+
+class Rollout(PokemonMove):
+    """Rollout."""
+    def __init__(self):
+        super().__init__(type=5, name="Rollout", power=30, accuracy=90, pp=20, physical=True)
+
+    # TODO: make hit over 5 turns
+
+class Headbutt(PokemonMove):
+    """Headbutt."""
+    def __init__(self):
+        super().__init__(type=0, name="Headbutt", power=70, accuracy=90, pp=15, physical=True)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if np.random.random() <= 0.3:
+            opponent.inflict_secondary_status("flinch")
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class HyperFang(PokemonMove):
+    """Hyper Fang."""
+    def __init__(self):
+        super().__init__(type=0, name="Hyper Fang", power=85, accuracy=100, pp=15, physical=True)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if np.random.random() <= 0.1:
+            opponent.inflict_secondary_status("flinch")
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class SuperFang(PokemonMove):
+    """Super Fang."""
+    def __init__(self):
+        super().__init__(type=0, name="Super Fang", power=0, accuracy=100, pp=10, physical=True)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if is_hit and is_super_eff > -2:
+            total_damage = opponent.hp // 2
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class Superpower(PokemonMove):
+    """Super Fang."""
+    def __init__(self):
+        super().__init__(type=1, name="Superpower", power=120, accuracy=100, pp=5, physical=True)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if is_hit and is_super_eff > -2:
+            self.raise_stat(opponent, "defense", lower=True, lower_self=True)
+            self.raise_stat(opponent, "attack", lower=True, lower_self=True)
+
+class Yawn(PokemonMove):
+    """Yawn."""
+    def __init__(self):
+        super().__init__(type=0, name="Yawn", power=0, physical=False, pp=10, accuracy=100)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if is_hit:
+            opponent.inflict_secondary_status("yawn")
+        return False, False, is_hit, 0
+
+class Amnesia(PokemonMove):
+    """Amnesia."""
+    def __init__(self):
+        super().__init__(type=13, name="Amnesia", power=0, physical=False, pp=20, accuracy=100)
+
+    def use(self, opponent):
+        self.pp -= 1
+        self.raise_stat(opponent, "special defense", sharply=True)
+
+class WaterGun(PokemonMove):
+    """Water Gun."""
+    def __init__(self):
+        super().__init__(type=10, name="Water Gun", power=40, accuracy=100, pp=25, physical=False)
+
+class BugBite(PokemonMove):
+    """Bug Bite."""
+    def __init__(self):
+        super().__init__(type=6, name="Bug Bite", power=60, accuracy=100, pp=20, physical=True)
+
+    # TODO: make eat berry if holding berry
+
+class FuryCutter(PokemonMove):
+    """Fury Cutter."""
+    def __init__(self):
+        super().__init__(type=6, name="Fury Cutter", power=10, accuracy=95, pp=20, physical=True)
+
+    # TODO: rises in power for successive hits
+
+class LeechLife(PokemonMove):
+    """Leech Life."""
+    def __init__(self):
+        super().__init__(type=6, name="Leech Life", power=20, accuracy=100, pp=15, physical=True)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        # TODO: FIND A MORE KOSHER WAY TO IMPLEMENT THIS
+        if is_hit and is_super_eff > -2:
+            self.user.take_damage(-total_damage // 2)
+            self.user.trainer.board.display_text(
+                TextBox(self.user.name + " was healed!", overworld=False, unskippable=False), skip_queue=True)
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class Sing(PokemonMove):
+    """Sing."""
+    def __init__(self):
+        super().__init__(type=0, name="Sing", power=0, accuracy=55, pp=15, physical=False)
+
+    def use(self, opponent):
+        self.pp -= 1
+        opponent.inflict_status("sleep")
+        return False, 0, True, 0
+
+class FocusEnergy(PokemonMove):
+    """Focus Energy."""
+    def __init__(self):
+        super().__init__(type=0, name="Focus Energy", power=0, accuracy=100, pp=30, physical=False)
+
+    # TODO: MAKE CRIT STAGES
+    def use(self, opponent):
+        self.pp -=1
+        #self.inflict_status(opponent, "crit ?")
+        return False, 0, True, 0
+
+class XScissor(PokemonMove):
+    """X-Scissor."""
+    def __init__(self):
+        super().__init__(type=6, name="X-Scissor", power=80, accuracy=100, pp=15, physical=True)
+
+class Screech(PokemonMove):
+    """Screech."""
+    def __init__(self):
+        super().__init__(type=0, name="Screech", power=0, accuracy=85, pp=40, physical=False)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        # TODO: FIND A MORE KOSHER WAY TO IMPLEMENT THIS
+        if is_hit and is_super_eff > -2:
+            self.raise_stat(opponent, "defense", sharply=True, lower=True)
+        return False, is_super_eff, is_hit, 0
+
+class BugBuzz(PokemonMove):
+    """Bug Buzz."""
+    def __init__(self):
+        super().__init__(type=6, name="Bug Buzz", power=90, accuracy=100, pp=10, physical=False)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if is_hit and is_super_eff > -2 and np.random.random() <= 0.1:
+            self.raise_stat(opponent, "special defense", lower=True)
+        return is_crit, is_super_eff, is_hit, total_damage
+
+class PerishSong(PokemonMove):
+    """Perish Song."""
+    def __init__(self):
+        super().__init__(type=0, name="Perish Song", power=0, accuracy=100, pp=5, physical=False)
+
+    def use(self, opponent):
+        self.pp -= 1
+        opponent.inflict_secondary_status("perish song: 3")
+        return False, 0, True, 0
+
+# TODO: HANDLE PERISH SONG AND ALL STATUS AT END OF TURN

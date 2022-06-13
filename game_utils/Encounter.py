@@ -60,7 +60,8 @@ class PokemonMove:
         damage = (((2 * self.user.level / 5 + 2) * self.power * attack_defense_ratio / 50) + 2) * \
                  crit_multiplier * rand_multiplier * STAB_multiplier * super_eff_multiplier * effectiveness_multiplier
 
-        hit_prob = np.random.choice(range(0, 101))
+        hit_prob = np.random.choice(range(0, 101)) * ACC_MULTIPLIERS.get(self.user.accuracy_stage) \
+                / ACC_MULTIPLIERS.get(-opponent.evasiveness_stage)
         if hit_prob <= self.accuracy:
             is_hit = True
             total_damage = min(damage, opponent.hp+1)
@@ -117,6 +118,17 @@ class PokemonMove:
                 self.user.trainer.board.display_text(TextBox(using_mon.name+"'s speed" + sharply_str + "!", overworld=False,
                                                      unskippable=False), skip_queue=True)
                 using_mon.speed_stage += change
+
+        elif key == 'accuracy' and -6 < using_mon.accuracy_stage + change < 6:
+            self.user.trainer.board.display_text(TextBox(using_mon.name+"'s accuracy" + sharply_str + "!", overworld=False),
+                                                 skip_queue=True)
+            using_mon.accuracy_stage += change
+
+        elif key == 'evasiveness' and -6 < using_mon.evasiveness_stage + change < 6:
+            self.user.trainer.board.display_text(TextBox(using_mon.name+"'s evasiveness" + sharply_str + "!", overworld=False),
+                                                 skip_queue=True)
+            using_mon.evasiveness_stage += change
+
         else:
             self.user.trainer.board.display_text(TextBox("But nothing changed!", overworld=False,
                                                  unskippable=False), skip_queue=True)
@@ -177,12 +189,15 @@ class Pokemon:
         self.hp = self.stats["max_hp"]
 
         self.status = -1
+        self.secondary_status = []
         self.fainted = False
         self.attack_stage = 0
         self.defense_stage = 0
         self.special_attack_stage = 0
         self.special_defense_stage = 0
         self.speed_stage = 0
+        self.accuracy_stage = 0
+        self.evasiveness_stage = 0
 
         self.seen = []
         self.move_queue = []
@@ -194,6 +209,8 @@ class Pokemon:
         self.special_attack_stage = 0
         self.special_defense_stage = 0
         self.speed_stage = 0
+        self.accuracy_stage = 0
+        self.evasiveness_stage = 0
 
     def get_most_recent_moves(self):
         """Retrieves the up to 4 most recent moves a Pokemon would have learned."""
@@ -286,6 +303,9 @@ class Pokemon:
             self.trainer.board.display_text(TextBox(self.name+" got "+self.status+"ed!"))
         else:
             return
+
+    def inflict_secondary_status(self, status):
+        self.secondary_status.append(status)
 
 class PokemonGenerator:
     def __init__(self, pkmn_and_odds: list, min_level: int, max_level: int):

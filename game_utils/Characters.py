@@ -21,7 +21,6 @@ class Turtwig(Pokemon):
 
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
             1: Tackle,
             5: Withdraw,
@@ -64,7 +63,6 @@ class Grotle(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
             0: Tackle,
             5: Withdraw,
@@ -109,7 +107,6 @@ class Torterra(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
             0: Tackle,
             5: Withdraw,
@@ -154,7 +151,6 @@ class Chimchar(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
             0: Scratch,
             1: Leer,
@@ -198,9 +194,20 @@ class Monferno(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Scratch,
+            1: Leer,
+            7: Ember,
+            9: Taunt,
+            11: MachPunch,
+            16: FurySwipes,
+            19: FlameWheel,
+            26: Feint,
+            29: Torment,
+            36: CloseCombat,
+            39: FireSpin,
+            46: SlackOff,
+            49: FlareBlitz
         }
         evolutions = {
             36: Infernape
@@ -231,9 +238,20 @@ class Infernape(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Scratch,
+            1: Leer,
+            7: Ember,
+            9: Taunt,
+            14: MachPunch,
+            17: FurySwipes,
+            21: FlameWheel,
+            29: Feint,
+            33: Punishment,
+            41: CloseCombat,
+            45: FireSpin,
+            53: CalmMind,
+            57: FlareBlitz
         }
         evolutions = {
         }
@@ -307,9 +325,21 @@ class Prinplup(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            1: Tackle,
+            4: Growl,
+            8: Bubble,
+            11: WaterSport,
+            15: Peck,
+            16: MetalClaw,
+            19: Bide,
+            24: BubbleBeam,
+            28: FuryAttack,
+            33: Brine,
+            37: Whirlpool,
+            42: Mist,
+            46: DrillPeck,
+            51: HydroPump
         }
         evolutions = {36: Empoleon}
 
@@ -338,9 +368,22 @@ class Empoleon(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            1: Tackle,
+            4: Growl,
+            8: Bubble,
+            11: SwordsDance,
+            15: Peck,
+            16: MetalClaw,
+            19: Swagger,
+            24: BubbleBeam,
+            28: FuryAttack,
+            33: Brine,
+            36: AquaJet,
+            39: Whirlpool,
+            46: Mist,
+            52: DrillPeck,
+            59: HydroPump
         }
         evolutions = {
 
@@ -371,9 +414,18 @@ class Starly(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Tackle,
+            1: Growl,
+            5: QuickAttack,
+            9: WingAttack,
+            13: DoubleTeam,
+            17: Endeavor,
+            21: Whirlwind,
+            25: AerialAce,
+            29: TakeDown,
+            33: Agility,
+            37: BraveBird
         }
         evolutions = {
             14: Staravia
@@ -405,9 +457,18 @@ class Staravia(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Tackle,
+            1: Growl,
+            5: QuickAttack,
+            9: WingAttack,
+            13: DoubleTeam,
+            18: Endeavor,
+            23: Whirlwind,
+            28: AerialAce,
+            33: TakeDown,
+            38: Agility,
+            43: BraveBird
         }
         evolutions = {
             34: Staraptor
@@ -439,9 +500,19 @@ class Staraptor(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Tackle,
+            1: Growl,
+            5: QuickAttack,
+            9: WingAttack,
+            13: DoubleTeam,
+            18: Endeavor,
+            23: Whirlwind,
+            28: AerialAce,
+            33: TakeDown,
+            34: CloseCombat,
+            41: Agility,
+            49: BraveBird
         }
         evolutions = {
         }
@@ -471,9 +542,19 @@ class Bidoof(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            1: Tackle,
+            5: Growl,
+            9: DefenseCurl,
+            13: Rollout,
+            17: Headbutt,
+            21: HyperFang,
+            25: Yawn,
+            29: Amnesia,
+            33: TakeDown,
+            37: SuperFang,
+            41: Superpower
+
         }
         evolutions = {
             15: Bibarel
@@ -504,9 +585,19 @@ class Bibarel(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            1: Tackle,
+            5: Growl,
+            9: DefenseCurl,
+            13: Rollout,
+            15: WaterGun,
+            18: Headbutt,
+            23: HyperFang,
+            28: Yawn,
+            33: Amnesia,
+            38: TakeDown,
+            43: SuperFang,
+            48: Superpower
         }
         evolutions = {
         }
@@ -536,9 +627,10 @@ class Kricketot(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Growl,
+            1: Bide,
+            16: BugBite
         }
         evolutions = {
             10: Kricketune
@@ -569,9 +661,17 @@ class Kricketune(Pokemon):
     back_sprite = pg.image.load("sprites/pokemon back/" + name.lower() + "_back.png")
 
     def __init__(self, gender=None, moveset=None, nickname=None, level=None, xp=None):
-        # TODO: MOVE TABLE
         movetable = {
-            1: Pound
+            0: Growl,
+            1: Bide,
+            10: FuryCutter,
+            14: LeechLife,
+            18: Sing,
+            22: FocusEnergy,
+            26: XScissor,
+            30: Screech,
+            34: BugBuzz,
+            38: PerishSong
         }
         evolutions = {
             10: Kricketune
