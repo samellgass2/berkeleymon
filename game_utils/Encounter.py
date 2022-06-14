@@ -134,6 +134,13 @@ class PokemonMove:
                                                  unskippable=False), skip_queue=True)
 
 
+class Confusion(PokemonMove):
+    def __init__(self):
+        super().__init__(type=0, name="CONFUSION", power=40, physical=True, accuracy=100, pp=1000)
+
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(self.user)
+        return total_damage
 
 class Pokemon:
     """The general, archetypal Pokemon class to create most of the skeleton for actions."""
@@ -298,14 +305,15 @@ class Pokemon:
         self.trainer = trainer
 
     def inflict_status(self, status):
-        if self.status in ["paralysis", "burn", "sleep"]:
+        if self.status in ["paralysis", "burn", "sleep", "freeze","poison", "toxic poison"]:
             self.status = status
             self.trainer.board.display_text(TextBox(self.name+" got "+self.status+"ed!"))
         else:
             return
 
     def inflict_secondary_status(self, status):
-        self.secondary_status.append(status)
+        if status[:-2] not in [stat[:-2]for stat in self.secondary_status]:
+            self.secondary_status.append(status)
 
 class PokemonGenerator:
     def __init__(self, pkmn_and_odds: list, min_level: int, max_level: int):
@@ -493,6 +501,7 @@ class Battle:
         self.mid_switch = False
         self.recently_deceased = None
         self.mon_learning_new_move = None
+        self.user_stuck, self.foe_stuck = 0, 0
         ##### END BATTLE VARS #####
 
 
@@ -644,6 +653,59 @@ class Battle:
         else:
             self.player_may_take_action = False
 
+    def post_turn_cleanup(self):
+        """Affect status, etc."""
+        mons = [self.foe_current_pkmn, self.user_current_pkmn]
+        for mon in [mon for mon in mons if mon is not None and not mon.fainted]:
+        # Primary status
+            if mon.status == "burn":
+                mon.take_damage(mon.stats["max_hp"]//8)
+                self.board.display_text(TextBox(mon.name+" is hurt by burn!", overworld=False))
+            elif mon.status == "poison" or mon.status == "toxic poison":
+                mon.take_damage(mon.stats["max_hp"]//8)
+                self.board.display_text(TextBox(mon.name + " is hurt by poison!", overworld=False))
+
+        # Secondary status
+            # Yawn
+            if "yawn" in mon.secondary_status:
+                mon.secondary_status.remove("yawn")
+                mon.inflict_status("sleep")
+
+            new_statuses = []
+            for status in mon.secondary_status:
+                # Perish song
+                if "perish song:" in status:
+                    count = int(status[-1])
+                    count -= 1
+                    self.board.display_text(TextBox(mon.name + "'s perish song count fell to "+str(count)+"!", overworld=False))
+                    if count == 0:
+                        if mon is self.foe_current_pkmn:
+                            self.opponent_fainted()
+                        else:
+                            self.user_fainted()
+                    else:
+                        new_statuses.append("perish song:"+str(count))
+                # fire spin
+                if "fire spin:" in status:
+                    count = int(status[-1])
+                    count -= 1
+                    self.board.display_text(
+                        TextBox(mon.name + " is trapped in a fiery vortex!", overworld=False))
+                    mon.take_damage(mon.stats["max_hp"]//8)
+
+                    if count > 0:
+                        new_statuses.append("fire spin:" + str(count))
+                # confusion
+                if "confusion:" in status:
+                    count = int(status[-1])
+                    count -= 1
+                    if count >= 0:
+                        new_statuses.append("confusion:" + str(count))
+
+            mon.secondary_status = new_statuses
+
+        self.user_stuck, self.foe_stuck = 0, 0
+
     def award_xp(self):
         """Dispatch xp gains to all """
         participants = sum([1 for mon in self.trainer.team if not mon.fainted and self.recently_deceased in mon.seen])
@@ -707,7 +769,6 @@ class Battle:
             self.turn_counter = 0
             self.shown_effectiveness = True
             self.switch_turn()
-
 
     def new_move_dialogue(self, mon: Pokemon):
         """Trigger dialogue for learning a new move"""
@@ -1133,6 +1194,7 @@ class Battle:
             self.turn_counter = None
             self.curr_turn = None
             self.curr_damage = 0
+            self.post_turn_cleanup()
             return
 
 
@@ -1147,37 +1209,134 @@ class Battle:
             else:
                 self.curr_turn = 1
                 self.curr_damage = 0
-                if self.is_hit:
-                    hit_str = ""
+                self.handle_stuck(is_user=False)
+                if self.foe_stuck not in [1,2,3]:
+                    if self.is_hit:
+                        hit_str = ""
+                    else:
+                        hit_str = "\n" + self.foe_current_pkmn.name+" missed!"
+                    if self.is_wild:
+                        self.board.display_text(TextBox("The wild " + self.foe_current_pkmn.name + str(
+                            " used ") + self.curr_agent_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
+                    else:
+                        self.board.display_text(TextBox("The foe's " + self.foe_current_pkmn.name + str(
+                            " used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
                 else:
-                    hit_str = "\n" + self.foe_current_pkmn.name+" missed!"
-                if self.is_wild:
-                    self.board.display_text(TextBox("The wild " + self.foe_current_pkmn.name + str(
-                        " used ") + self.curr_agent_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
-                else:
-                    self.board.display_text(TextBox("The foe's " + self.foe_current_pkmn.name + str(
-                        " used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
+                    self.curr_total_damage, self.effectiveness = 0, 0
+                    self.is_crit, self.is_hit = False, True
 
         ### If agent move has ended, begin user turn ###
         elif self.curr_turn == 1:
             self.is_crit, self.effectiveness, self.is_hit, self.curr_total_damage = self.curr_user_move.use(self.foe_current_pkmn)
             self.curr_damage = 0
             self.curr_turn = 0
-            if self.is_hit:
-                hit_str = ""
+            self.handle_stuck(is_user=True)
+            if self.user_stuck not in [1,2,3]:
+                if self.is_hit:
+                    hit_str = ""
+                else:
+                    hit_str = "\n" + self.user_current_pkmn.name + " missed!"
+                self.board.display_text(TextBox(self.user_current_pkmn.name+str(" used ")+self.curr_user_move.name+"!"+hit_str, overworld=False, unskippable=True), 0)
             else:
-                hit_str = "\n" + self.user_current_pkmn.name + " missed!"
-            self.board.display_text(TextBox(self.user_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
+                self.curr_total_damage, self.effectiveness = 0, 0
+                self.is_crit, self.is_hit = False, True
+
+    def determine_order(self, user_move: PokemonMove):
+        """Determines who moves first"""
+        if self.user_current_pkmn.status == "paralysis" and np.random.random() <= 0.25:
+            user_stuck = 1
+        elif self.user_current_pkmn.status == "sleep":
+            user_stuck = 2
+        elif "confusion" in [cond[:-2] for cond in self.user_current_pkmn.secondary_status]:
+            if "confusion:0" in self.user_current_pkmn.secondary_status:
+                user_stuck = 5
+            elif np.random.random() <= 0.5:
+                user_stuck = 3
+            else:
+                user_stuck = 4
+        else:
+            user_stuck = 0
+
+        if self.foe_current_pkmn.status == "paralysis" and np.random.random() <= 0.25:
+            foe_stuck = 1
+        elif self.foe_current_pkmn.status == "sleep":
+            foe_stuck = 2
+        elif "confusion" in [cond[:-2] for cond in self.foe_current_pkmn.secondary_status]:
+            if "confusion:0" in self.foe_current_pkmn.secondary_status:
+                foe_stuck = 5
+            elif np.random.random() <= 0.5:
+                foe_stuck = 3
+            else:
+                foe_stuck = 4
+        else:
+            foe_stuck = 0
+
+        if user_move.priority:
+            return 0, user_stuck, foe_stuck
+        # TODO: ADD PRIORITY OF AGENT MOVE INTO ROTATION
+        if self.user_current_pkmn.status == "paralysis":
+            user_speed = self.user_current_pkmn.stats["speed"] // 4
+        else:
+            user_speed = self.user_current_pkmn.stats["speed"]
+
+        if self.foe_current_pkmn.status == "paralysis":
+            foe_speed = self.foe_current_pkmn.stats["speed"] // 4
+        else:
+            foe_speed = self.foe_current_pkmn.stats["speed"]
+
+        if user_speed == foe_speed:
+            order = np.random.choice(range(0,2))
+        elif user_speed > foe_speed:
+            order = 0
+        else:
+            order = 1
+
+        return order, user_stuck, foe_stuck
+
+    def hurt_itself_in_confusion(self, mon: Pokemon):
+        """Does confusion damage and sends text"""
+        confusion = Confusion()
+        confusion.set_user(mon)
+        damage = confusion.use(mon)
+        self.board.display_text(
+            TextBox(mon.name + " hurt itself in its confusion!", overworld=False))
+        mon.take_damage(damage)
+        if mon.hp <= 0:
+            if mon is self.user_current_pkmn:
+                self.user_fainted()
+            else:
+                self.opponent_fainted()
+
+    def handle_stuck(self, is_user: bool=True):
+        """Handles being stuck due to status conditions"""
+        if is_user:
+            mon = self.user_current_pkmn
+            stuck = self.user_stuck
+        else:
+            mon = self.foe_current_pkmn
+            stuck = self.foe_stuck
+
+        if stuck:
+            if stuck == 1:
+                self.board.display_text(
+                    TextBox(mon.name + " is paralyzed! It can't move!", overworld=False))
+            elif stuck == 2:
+                self.board.display_text(
+                    TextBox(mon.name + " is fast asleep!", overworld=False))
+            elif stuck >= 3:
+                self.board.display_text(
+                    TextBox(mon.name + " is confused...", overworld=False))
+                if stuck == 5:
+                    self.board.display_text(
+                    TextBox(mon.name + " snapped out of confusion!", overworld=False))
+                if stuck == 3:
+                    self.hurt_itself_in_confusion(mon)
+
 
     def battle_action(self, user_move: PokemonMove):
         """When a move is picked, set up one turn cycle."""
         # Determine turn order by speed
-        if self.user_current_pkmn.stats["speed"] == self.foe_current_pkmn.stats["speed"]:
-            order = np.random.choice(range(0,2))
-        elif self.user_current_pkmn.stats["speed"] > self.foe_current_pkmn.stats["speed"]:
-            order = 0
-        else:
-            order = 1
+        order, self.user_stuck, self.foe_stuck = self.determine_order(user_move)
 
         # Prepare to display effectiveness
         self.shown_effectiveness = False
@@ -1190,12 +1349,18 @@ class Battle:
         self.curr_user_move = user_move
         if order == 0:
             self.is_crit, self.effectiveness, self.is_hit, self.curr_total_damage = user_move.use(self.foe_current_pkmn)
+            self.handle_stuck(is_user=True)
+
             self.curr_damage = 0
-            if self.is_hit:
-                hit_str = ""
+            if self.user_stuck not in [1,2,3]:
+                if self.is_hit:
+                    hit_str = ""
+                else:
+                    hit_str = "\n" + self.user_current_pkmn.name + " missed!"
+                self.board.display_text(TextBox(self.user_current_pkmn.name+str(" used ")+user_move.name+"!"+hit_str, overworld=False, unskippable=True), 0)
             else:
-                hit_str = "\n" + self.user_current_pkmn.name + " missed!"
-            self.board.display_text(TextBox(self.user_current_pkmn.name+str(" used ")+user_move.name+"!"+hit_str, overworld=False, unskippable=True), 0)
+                self.curr_total_damage, self.effectiveness = 0, 0
+                self.is_crit, self.is_hit = False, True
 
         # Agent moves first
         else:
@@ -1203,16 +1368,22 @@ class Battle:
             if self.is_crit is None:
                 # Case item or switch
                 return
+            self.handle_stuck(is_user=False)
+
             # Case agent used move
             self.curr_damage = 0
-            if self.is_hit:
-                hit_str = ""
+            if self.foe_stuck not in [1, 2, 3]:
+                if self.is_hit:
+                    hit_str = ""
+                else:
+                    hit_str = "\n" + self.foe_current_pkmn.name + " missed!"
+                if self.is_wild:
+                    self.board.display_text(TextBox("The wild "+self.foe_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
+                else:
+                    self.board.display_text(TextBox("The foe's "+self.foe_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
             else:
-                hit_str = "\n" + self.foe_current_pkmn.name + " missed!"
-            if self.is_wild:
-                self.board.display_text(TextBox("The wild "+self.foe_current_pkmn.name + str(" used ") + self.curr_agent_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
-            else:
-                self.board.display_text(TextBox("The foe's "+self.foe_current_pkmn.name + str(" used ") + self.curr_user_move.name + "!"+hit_str, overworld=False, unskippable=True), 0)
+                self.curr_total_damage, self.effectiveness = 0, 0
+                self.is_crit, self.is_hit = False, True
 
         self.curr_menu = 0
 

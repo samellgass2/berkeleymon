@@ -229,7 +229,14 @@ class FireSpin(PokemonMove):
     def __init__(self):
         super().__init__(type=9, name="Fire Spin", power=15, physical=True, accuracy=70, pp=15)
 
-    # TODO: make lasting status somehow
+    def use(self, opponent):
+        is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
+        if is_hit and is_super_eff > -2:
+            turns = np.random.choice(range(2,6), p=[0.375, 0.375, 0.125, 0.125])
+            opponent.inflict_secondary_status("fire spin:"+str(turns))
+            self.user.trainer.board.display_text(TextBox(opponent.name+" was trapped in a fiery vortex!", overworld=False))
+        return is_crit, is_super_eff, is_hit, total_damage
+
 
 class SlackOff(PokemonMove):
     """Slack Off."""
@@ -343,6 +350,7 @@ class SwordsDance(PokemonMove):
     def use(self, opponent):
         self.pp -= 1
         self.raise_stat(opponent, "attack", sharply=True)
+        return False, False, True, 0
 
 class Swagger(PokemonMove):
     """Swagger."""
@@ -352,7 +360,9 @@ class Swagger(PokemonMove):
     def use(self, opponent):
         is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
         if is_hit:
-            opponent.inflict_secondary_status("confusion")
+            turns = np.random.choice(range(2, 6))
+            opponent.inflict_secondary_status("confusion:"+str(turns))
+            self.user.trainer.board.display_text(TextBox(opponent.name+" became confused!", overworld=False))
         return False, False, is_hit, 0
 
 class DoubleTeam(PokemonMove):
@@ -363,6 +373,7 @@ class DoubleTeam(PokemonMove):
     def use(self, opponent):
         self.raise_stat(opponent, "evasiveness", sharply=True)
         self.pp -= 1
+        return False, False, True, 0
 
 class Endeavor(PokemonMove):
     """Endeavor."""
@@ -406,6 +417,7 @@ class DefenseCurl(PokemonMove):
     def use(self, opponent):
         self.pp -= 1
         self.raise_stat(opponent, "defense")
+        return False, False, True, 0
 
 class Agility(PokemonMove):
     """Agility."""

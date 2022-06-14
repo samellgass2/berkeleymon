@@ -242,7 +242,7 @@ flying_types = [POKEDEX_MAP.get(mon) for mon in POKEDEX_MAP.keys() if mon <= 15]
 print([mon.name for mon in flying_types])
 mon_odd = 1 / len(flying_types)
 TEST_PKMN_AND_ODDS = [(mon, mon_odd) for mon in flying_types]
-TEST_GENERATOR = PokemonGenerator(TEST_PKMN_AND_ODDS, 40, 50)
+TEST_GENERATOR = PokemonGenerator(TEST_PKMN_AND_ODDS, 20, 35)
 
 TEST_LOCATION = Location(50, 50, False, TEST_GENERATOR)
 
