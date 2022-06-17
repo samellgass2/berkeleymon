@@ -198,6 +198,29 @@ ACC_MULTIPLIERS = {
     5: 8/3,
     6: 3
 }
+
+PARALYSIS = (245, 226, 105)
+SLEEP = (148, 148, 146)
+BURN = (227, 98, 34)
+FREEZE = (45, 237, 224)
+POISON = (213, 92, 237)
+
+STATUS_TO_COLOR = {
+    "paralysis": PARALYSIS,
+    "sleep": SLEEP,
+    "burn": BURN,
+    "freeze": FREEZE,
+    "poison": POISON
+}
+
+STATUS_TO_ABBREVIATION = {
+    "paralysis": "PAR",
+    "sleep": "SLP",
+    "burn": "BRN",
+    "freeze": "FRZ",
+    "poison": "PSN"
+}
+
     # move_table[pokemon] = dict[level, dict["stat", value]]
     # so that you can look up move_table[pokemon][level] to get the stat table
 

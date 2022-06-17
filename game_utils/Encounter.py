@@ -158,6 +158,13 @@ class Pokemon:
         if gender is None:
             gender = np.random.choice(range(2))
 
+        if gender == 0:
+            self.gender_symbol = pg.sprite.Sprite(pg.image.load("sprites/male_symbol.png"))
+        elif gender == 1:
+            self.gender_symbol = pg.sprite.Sprite(pg.image.load("sprites/female_symbol.png"))
+        else:
+            self.gender_symbol = None
+
         self.movetable = movetable
         self.moveset = moveset
         if moveset is None:
@@ -835,6 +842,21 @@ class Battle:
             xp_bar = pg.shapes.Rectangle(x=16.5*TILE_WIDTH, y=7*TILE_HEIGHT, height=0.1*TILE_HEIGHT, width=6.5*TILE_WIDTH*percent_to_next_lvl,
                                                 color=(50, 175, 244), batch=self.batches[1])
 
+            if STATUS_TO_COLOR.get(self.user_current_pkmn.status) is not None:
+                status_box = pg.shapes.BorderedRectangle(x = 15.5 * TILE_WIDTH, y = 8.2 * TILE_HEIGHT,
+                                                         width=1 * TILE_WIDTH, height=0.5 * TILE_HEIGHT, border=2,
+                                                         border_color=(0,0,0), color=STATUS_TO_COLOR.get(self.user_current_pkmn.status),
+                                                         batch=self.batches[3])
+                status_label = pg.text.Label(text=STATUS_TO_ABBREVIATION.get(self.user_current_pkmn.status),
+                                             font_size=8, x=15.6 * TILE_WIDTH, y=8.3 * TILE_HEIGHT,
+                                             color=(0, 0, 0, 255), batch=self.batches[4])
+                self.shapes.extend([status_box, status_label])
+
+            if self.user_current_pkmn.gender_symbol is not None:
+                self.user_current_pkmn.gender_symbol.batch = self.batches[3]
+                self.user_current_pkmn.gender_symbol.x = 20.6 * TILE_WIDTH
+                self.user_current_pkmn.gender_symbol.y = 7.9 * TILE_HEIGHT
+
             self.shapes.extend([main_bar, f_triangle,
                             health_bar1, health_bar2, health_bar3, health_bar4,
                             pkmn_name, healthbarfill, health_counter, friendly_level, xp_bar])
@@ -863,6 +885,21 @@ class Battle:
                                            batch=self.batches[1], color=(200,200,200))
             enemy_triangle = pg.shapes.Triangle(x=7*TILE_WIDTH, y=13*TILE_HEIGHT, x2=7*TILE_WIDTH, y2=15*TILE_HEIGHT, x3=8*TILE_WIDTH, y3=15*TILE_HEIGHT,
                                             batch=self.batches[1], color=(200,200,200))
+
+            if STATUS_TO_COLOR.get(self.foe_current_pkmn.status) is not None:
+                status_box = pg.shapes.BorderedRectangle(x = 4.1 * TILE_WIDTH, y = 14.2 * TILE_HEIGHT,
+                                                         width=1 * TILE_WIDTH, height=0.5 * TILE_HEIGHT, border=2,
+                                                         border_color=(0,0,0), color=STATUS_TO_COLOR.get(self.foe_current_pkmn.status),
+                                                         batch=self.batches[3])
+                status_label = pg.text.Label(text=STATUS_TO_ABBREVIATION.get(self.foe_current_pkmn.status),
+                                             font_size=8, x=4.2 * TILE_WIDTH, y=14.3 * TILE_HEIGHT,
+                                             color=(0, 0, 0, 255), batch=self.batches[4])
+                self.shapes.extend([status_box, status_label])
+
+            if self.foe_current_pkmn.gender_symbol is not None:
+                self.foe_current_pkmn.gender_symbol.batch = self.batches[3]
+                self.foe_current_pkmn.gender_symbol.x = 5.2 * TILE_WIDTH
+                self.foe_current_pkmn.gender_symbol.y = 13.9 * TILE_HEIGHT
 
 
 
