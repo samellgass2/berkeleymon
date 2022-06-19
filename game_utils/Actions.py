@@ -44,7 +44,8 @@ class Absorb(PokemonMove):
         # TODO: FIND A MORE KOSHER WAY TO IMPLEMENT THIS
         if is_hit:
             self.user.take_damage(-total_damage // 2)
-            self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!",overworld=False, unskippable=False), skip_queue=True)
+            if self.user.trainer.board is not None:
+                self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!",overworld=False, unskippable=False), skip_queue=True)
         return is_crit, is_super_eff, is_hit, total_damage
 
 class RazorLeaf(PokemonMove):
@@ -62,6 +63,7 @@ class Curse(PokemonMove):
         self.raise_stat(opponent, key="attack")
         self.raise_stat(opponent, key="defense")
         self.pp -= 1
+        return False, 0, True, 0
 
 class Bite(PokemonMove):
     def __init__(self):
@@ -78,7 +80,8 @@ class MegaDrain(PokemonMove):
         # TODO: FIND A MORE KOSHER WAY TO IMPLEMENT THIS
         if is_hit:
             self.user.take_damage(-total_damage // 2)
-            self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!",overworld=False, unskippable=False), skip_queue=True)
+            if self.user.trainer.board is not None:
+                self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!",overworld=False, unskippable=False), skip_queue=True)
         return is_crit, is_super_eff, is_hit, total_damage
 
 class LeechSeed(PokemonMove):
@@ -96,7 +99,8 @@ class Synthesis(PokemonMove):
     def use(self, opponent):
         healing = np.random.choice(range(self.user.stats["max_hp"] // 3, self.user.stats["max_hp"] // 2))
         self.user.take_damage(-healing)
-        self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!", overworld=False, unskippable=False))
+        if self.user.trainer.board is not None:
+            self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!", overworld=False, unskippable=False))
         return False, False, True, 0
 
 class Crunch(PokemonMove):
@@ -121,7 +125,8 @@ class GigaDrain(PokemonMove):
         # TODO: FIND A MORE KOSHER WAY TO IMPLEMENT THIS
         if is_hit:
             self.user.take_damage(-total_damage // 2)
-            self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!",overworld=False, unskippable=False), skip_queue=True)
+            if self.user.trainer.board is not None:
+                self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!",overworld=False, unskippable=False), skip_queue=True)
         return is_crit, is_super_eff, is_hit, total_damage
 
 class LeafStorm(PokemonMove):
@@ -234,7 +239,8 @@ class FireSpin(PokemonMove):
         if is_hit and is_super_eff > -2:
             turns = np.random.choice(range(2,6), p=[0.375, 0.375, 0.125, 0.125])
             opponent.inflict_secondary_status("fire spin:"+str(turns))
-            self.user.trainer.board.display_text(TextBox(opponent.name+" was trapped in a fiery vortex!", overworld=False))
+            if self.user.trainer.board is not None:
+                self.user.trainer.board.display_text(TextBox(opponent.name+" was trapped in a fiery vortex!", overworld=False))
         return is_crit, is_super_eff, is_hit, total_damage
 
 
@@ -246,7 +252,8 @@ class SlackOff(PokemonMove):
     def use(self, opponent):
         healing = np.random.choice(range(self.user.stats["max_hp"] // 3, self.user.stats["max_hp"] // 2))
         self.user.take_damage(-healing)
-        self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!", overworld=False, unskippable=False))
+        if self.user.trainer.board is not None:
+            self.user.trainer.board.display_text(TextBox(self.user.name+" was healed!", overworld=False, unskippable=False))
         return False, False, True, 0
 
 class FlameThrower(PokemonMove):
@@ -295,7 +302,8 @@ class FlareBlitz(PokemonMove):
         if np.random.random() <= 0.1:
             opponent.inflict_status("burn")
         self.user.take_damage(total_damage // 3)
-        self.user.trainer.board.display_text(TextBox(self.user.name+" was hurt by the recoil!"))
+        if self.user.trainer.board is not None:
+            self.user.trainer.board.display_text(TextBox(self.user.name+" was hurt by the recoil!"))
         return is_crit, is_super_eff, is_hit, total_damage
 
 class Punishment(PokemonMove):
@@ -362,7 +370,8 @@ class Swagger(PokemonMove):
         if is_hit:
             turns = np.random.choice(range(2, 6))
             opponent.inflict_secondary_status("confusion:"+str(turns))
-            self.user.trainer.board.display_text(TextBox(opponent.name+" became confused!", overworld=False))
+            if self.user.trainer.board is not None:
+                self.user.trainer.board.display_text(TextBox(opponent.name+" became confused!", overworld=False))
         return False, False, is_hit, 0
 
 class DoubleTeam(PokemonMove):
@@ -505,7 +514,9 @@ class Mist(PokemonMove):
 
     def use(self, opponent):
         self.user.reset_stat_stages()
-        self.user.trainer.board.display_text(TextBox(self.user.name+"'s stats returned to normal!", overworld=False))
+        if self.user.trainer.board is not None:
+            self.user.trainer.board.display_text(TextBox(self.user.name+"'s stats returned to normal!", overworld=False))
+        return False, 0, True, 0
 
 class QuickAttack(PokemonMove):
     """Quick Attack."""
@@ -586,7 +597,7 @@ class Yawn(PokemonMove):
     def use(self, opponent):
         is_crit, is_super_eff, is_hit, total_damage = super().use(opponent)
         if is_hit:
-            opponent.inflict_secondary_status("yawn")
+            opponent.inflict_secondary_status("yawn:1")
         return False, False, is_hit, 0
 
 class Amnesia(PokemonMove):
@@ -597,6 +608,7 @@ class Amnesia(PokemonMove):
     def use(self, opponent):
         self.pp -= 1
         self.raise_stat(opponent, "special defense", sharply=True)
+        return False, False, True, 0
 
 class WaterGun(PokemonMove):
     """Water Gun."""
@@ -627,7 +639,8 @@ class LeechLife(PokemonMove):
         # TODO: FIND A MORE KOSHER WAY TO IMPLEMENT THIS
         if is_hit and is_super_eff > -2:
             self.user.take_damage(-total_damage // 2)
-            self.user.trainer.board.display_text(
+            if self.user.trainer.board is not None:
+                self.user.trainer.board.display_text(
                 TextBox(self.user.name + " was healed!", overworld=False, unskippable=False), skip_queue=True)
         return is_crit, is_super_eff, is_hit, total_damage
 

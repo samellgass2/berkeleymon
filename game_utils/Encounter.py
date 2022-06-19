@@ -94,43 +94,51 @@ class PokemonMove:
             sharply_str += " sharply"
 
         if key == 'defense' and -6 < using_mon.defense_stage + change < 6:
+            if self.user.trainer.board is not None:
                 self.user.trainer.board.display_text(TextBox(using_mon.name+"'s defense" + sharply_str + "!", overworld=False,
                                                      unskippable=False), skip_queue=True)
                 using_mon.defense_stage += change
 
         elif key == 'special defense' and -6 < using_mon.special_defense_stage + change < 6:
+            if self.user.trainer.board is not None:
                 self.user.trainer.board.display_text(TextBox(using_mon.name+"'s special defense" + sharply_str + "!", overworld=False,
                                                      unskippable=False), skip_queue=True)
                 using_mon.special_defense_stage += change
 
         elif key == 'attack' and -6 < using_mon.attack_stage + change < 6:
+            if self.user.trainer.board is not None:
                 self.user.trainer.board.display_text(TextBox(using_mon.name+"'s attack" + sharply_str + "!", overworld=False,
                                                      unskippable=False), skip_queue=True)
                 using_mon.attack_stage += change
 
         elif key == 'special attack' and -6 < using_mon.special_attack_stage + change < 6:
+            if self.user.trainer.board is not None:
                 self.user.trainer.board.display_text(
                     TextBox(using_mon.name + "'s special attack" + sharply_str + "!", overworld=False,
                             unskippable=False), skip_queue=True)
                 using_mon.special_attack += change
 
         elif key == 'speed' and -6 < using_mon.speed_stage + change < 6:
+            if self.user.trainer.board is not None:
                 self.user.trainer.board.display_text(TextBox(using_mon.name+"'s speed" + sharply_str + "!", overworld=False,
                                                      unskippable=False), skip_queue=True)
                 using_mon.speed_stage += change
 
         elif key == 'accuracy' and -6 < using_mon.accuracy_stage + change < 6:
-            self.user.trainer.board.display_text(TextBox(using_mon.name+"'s accuracy" + sharply_str + "!", overworld=False),
+            if self.user.trainer.board is not None:
+                self.user.trainer.board.display_text(TextBox(using_mon.name+"'s accuracy" + sharply_str + "!", overworld=False),
                                                  skip_queue=True)
             using_mon.accuracy_stage += change
 
         elif key == 'evasiveness' and -6 < using_mon.evasiveness_stage + change < 6:
-            self.user.trainer.board.display_text(TextBox(using_mon.name+"'s evasiveness" + sharply_str + "!", overworld=False),
+            if self.user.trainer.board is not None:
+                self.user.trainer.board.display_text(TextBox(using_mon.name+"'s evasiveness" + sharply_str + "!", overworld=False),
                                                  skip_queue=True)
             using_mon.evasiveness_stage += change
 
         else:
-            self.user.trainer.board.display_text(TextBox("But nothing changed!", overworld=False,
+            if self.user.trainer.board is not None:
+                self.user.trainer.board.display_text(TextBox("But nothing changed!", overworld=False,
                                                  unskippable=False), skip_queue=True)
 
 
@@ -181,6 +189,7 @@ class Pokemon:
             self.display_name = name
 
         self.types = types
+        self.evolutions = evolutions
         self.gender = gender
         self.exp_yield = exp_yield
         self.tier = 'NA'
@@ -312,15 +321,22 @@ class Pokemon:
         self.trainer = trainer
 
     def inflict_status(self, status):
-        if self.status in ["paralysis", "burn", "sleep", "freeze","poison", "toxic poison"]:
+        if self.status not in ["paralysis", "burn", "sleep", "freeze","poison", "toxic poison"]:
             self.status = status
-            self.trainer.board.display_text(TextBox(self.name+" got "+self.status+"ed!"))
+            if self.trainer.board is not None:
+                self.trainer.board.display_text(TextBox(self.name+" got "+self.status+"ed!", overworld=False))
         else:
             return
 
     def inflict_secondary_status(self, status):
         if status[:-2] not in [stat[:-2]for stat in self.secondary_status]:
             self.secondary_status.append(status)
+
+    def copy(self):
+        new_table = []
+        for move in self.moveset:
+            new_table.append(move.__class__())
+        return self.__class__(gender=self.gender, moveset=new_table, nickname=self.display_name, level=self.level)
 
 class PokemonGenerator:
     def __init__(self, pkmn_and_odds: list, min_level: int, max_level: int):
@@ -438,6 +454,16 @@ class PokemonTrainer:
 
     def set_board(self, board):
         self.board = board
+
+    def copy(self):
+        pokemon = [mon.copy() for mon in self.team]
+        # TODO: DEEP COPY ITEMS
+        new_trainer = PokemonTrainer(pokemon=pokemon, items=[], money=self.money)
+        for mon in new_trainer.team:
+            mon.set_trainer(new_trainer)
+            for move in mon.moveset:
+                move.set_user(mon)
+        return new_trainer
 
 
 # TODO: implement the BATTLE class, figure out how to flag in main render loop --> do encounter UI
@@ -673,11 +699,6 @@ class Battle:
                 self.board.display_text(TextBox(mon.name + " is hurt by poison!", overworld=False))
 
         # Secondary status
-            # Yawn
-            if "yawn" in mon.secondary_status:
-                mon.secondary_status.remove("yawn")
-                mon.inflict_status("sleep")
-
             new_statuses = []
             for status in mon.secondary_status:
                 # Perish song
@@ -708,6 +729,13 @@ class Battle:
                     count -= 1
                     if count >= 0:
                         new_statuses.append("confusion:" + str(count))
+                # yawn
+                if "yawn" in status:
+                    count = int(status[-1])
+                    if count == 0:
+                        mon.inflict_status("sleep")
+                    else:
+                        new_statuses.append("yawn:0")
 
             mon.secondary_status = new_statuses
 
@@ -1368,7 +1396,6 @@ class Battle:
                     TextBox(mon.name + " snapped out of confusion!", overworld=False))
                 if stuck == 3:
                     self.hurt_itself_in_confusion(mon)
-
 
     def battle_action(self, user_move: PokemonMove):
         """When a move is picked, set up one turn cycle."""

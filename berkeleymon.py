@@ -19,7 +19,9 @@ player_trainer = TEST_TRAINER
 BOARD = GameBoard(TEST_LOCATION, TEST_LOCATION.width//2, TEST_LOCATION.height//2, player_trainer)
 
 # For now, only implemented agent is 'easy' random agent
-BOARD.set_agents(RandomLegalAgent(BOARD))
+# BOARD.set_agents(RandomLegalAgent(BOARD))
+# Testing 'hard' rollout / particle filtering agent
+BOARD.set_agents(NStepRolloutDamageAgent(n=5, x=3, board=BOARD))
 TEST_TRAINER.set_board(BOARD)
 
 window = pg.window.Window(width=24*TILE_WIDTH, height=16*TILE_HEIGHT, caption="Berkeleymon")

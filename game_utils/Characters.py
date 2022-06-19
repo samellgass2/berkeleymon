@@ -6907,7 +6907,7 @@ POKEDEX_MAP = {
 
 
 pokeball_sprite = pg.sprite.Sprite(pg.image.load("sprites/items/pokeball.png"))
-TEST_TRAINER = PokemonTrainer(pokemon=[Empoleon(level=35), Torterra(level=50), Crobat(level=50), Staraptor(level=50), Turtwig(level=10)],
+TEST_TRAINER = PokemonTrainer(pokemon=[Bibarel(level=38), Torterra(level=50), Crobat(level=50), Staraptor(level=50), Turtwig(level=10)],
                               items=[
                                   PokeballItem(value=0, name="Pokeball",sprite=pokeball_sprite),
                                   PokeballItem(value=0, name="Great Ball", count=10,sprite=pokeball_sprite),
