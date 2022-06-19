@@ -459,6 +459,7 @@ class PokemonTrainer:
         pokemon = [mon.copy() for mon in self.team]
         # TODO: DEEP COPY ITEMS
         new_trainer = PokemonTrainer(pokemon=pokemon, items=[], money=self.money)
+        new_trainer.set_board(None)
         for mon in new_trainer.team:
             mon.set_trainer(new_trainer)
             for move in mon.moveset:
@@ -644,7 +645,8 @@ class Battle:
             return
 
         # Edge case multiple new moves at once
-        if self.user_current_pkmn is not None and self.user_current_pkmn.move_queue:
+        # TODO: make sure this works... I think it fails for multiple moves at one level
+        if self.user_current_pkmn is not None and len(self.user_current_pkmn.move_queue) > 1:
             self.new_move_dialogue(self.user_current_pkmn)
 
         # If skippable text is being displayed, update NONE of the battle params

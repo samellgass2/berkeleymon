@@ -126,14 +126,24 @@ class NStepRolloutDamageAgent(PokemonAgent):
 
     def action(self):
         """Perform rollouts of len n and return the best expected outcome."""
+        simulated_trainer = self.trainer.copy()
+        simulated_trainer.set_board(None)
+        simulated_adversary = self.encounter.trainer.copy()
+        simulated_adversary.set_board(None)
         true_actions = self.get_valid_actions()
+        simulated_actions = self.get_valid_actions(curr_mon=simulated_trainer.team[self.trainer.team.index(self.encounter.foe_current_pkmn)],
+                                              curr_trainer=simulated_trainer)
+        # ***** TODO: make sure that the outputs of true and simulated actions match exactly! *****
         actions_and_values = {}
-        for action in true_actions:
+        for action in simulated_actions:
             actions_and_values[action] = 0
 
-        for true_action in actions_and_values:
-            print("****** SIMULATING PAYOUT FOR ", true_action.name, "******")
-            battle_ended = False
+        sim_to_real = {}
+        for sim, real in zip(simulated_actions, true_actions):
+            sim_to_real[sim] = real
+
+        for simulated_action in actions_and_values:
+            print("****** SIMULATING PAYOUT FOR ", simulated_action.name, "******")
             for i in range(self.x):
                 print("Episode", i, ":")
                 simulated_trainer = self.trainer.copy()
@@ -142,25 +152,28 @@ class NStepRolloutDamageAgent(PokemonAgent):
                 simulated_adversary.set_board(None)
                 in_battle = simulated_trainer.team[self.trainer.team.index(self.encounter.foe_current_pkmn)]
                 adv_in_battle = simulated_adversary.team[self.encounter.trainer.team.index(self.encounter.user_current_pkmn)]
-
-                action = true_action
+                action = simulated_action
                 j = 0
+                battle_ended = False
                 while j < self.n and not battle_ended:
+                    print(in_battle.name, adv_in_battle.name)
                     adv_action = self.adversary_action(simulated_adversary, adv_in_battle, simulated_trainer, in_battle)
                     value, simulated_adversary, adv_in_battle, simulated_trainer, in_battle, battle_ended = self.run_turn(
                         simulated_adversary, adv_in_battle, simulated_trainer, in_battle, action, adv_action)
+                    print("now:", in_battle.name, adv_in_battle.name)
                     # TODO: GET ALL LEGAL AND FOLLOWING ACTIONS BEFORE LOOPING
 
                     print("Agent chose:", action.name, "simulating adversary choosing:", adv_action.name, "for payout", value)
 
                     action = self.weighted_next_action(simulated_adversary, adv_in_battle, simulated_trainer, in_battle)
-                    actions_and_values[true_action] += value
+                    actions_and_values[simulated_action] += value
                     j += 1
-            print(true_action.name, "RESULTED IN TOTAL VALUE", actions_and_values[true_action])
+
+            print(simulated_action.name, "RESULTED IN TOTAL VALUE", actions_and_values[simulated_action])
             print(" ")
 
-        print(actions_and_values)
-        return max(actions_and_values, key=actions_and_values.get)
+        print([(action.name, actions_and_values.get(action)) for action in actions_and_values])
+        return sim_to_real.get(max(actions_and_values, key=actions_and_values.get))
 
 
     def adversary_action(self, adversary_trainer, adv_in_battle, simulated_trainer, in_battle):
@@ -198,6 +211,7 @@ class NStepRolloutDamageAgent(PokemonAgent):
 
         if isinstance(adv_action, Pokemon):
             adv_in_battle = adv_action
+            print("SWITCHED, NOW", adv_in_battle.name)
             adv_moved = True
         # TODO: do items later
         elif isinstance(adv_action, Item):
@@ -230,34 +244,40 @@ class NStepRolloutDamageAgent(PokemonAgent):
                 is_crit, is_super_eff, is_hit, total_damage = action.use(adv_in_battle)
                 adv_in_battle.hp -= total_damage
                 value += min(total_damage, adv_in_battle.hp)
+                # Case opponent may move
                 if adv_in_battle.hp > 0 and not adv_moved and adv_stuck not in [1,2,3]:
                     is_crit, is_super_eff, is_hit, total_damage = adv_action.use(in_battle)
                     in_battle.hp -= total_damage
                     value -= total_damage
-                else:
+                # Case opponent may move but is dead
+                elif adv_in_battle.hp <= 0:
                     adv_in_battle.fainted = True
                     remaining = [mon for mon in adversary_trainer.team if not mon.fainted]
                     if len(remaining) == 0:
                         battle_ended = True
                     else:
                         adv_in_battle = remaining[0]
-            # Case adverary gets to move first
+                # Else, opponent may not move
+
+            # Case adversary gets to move first
             else:
                 is_crit, is_super_eff, is_hit, total_damage = adv_action.use(in_battle)
                 in_battle.hp -= total_damage
                 value -= min(total_damage, in_battle.hp)
+                # Case agent may move
                 if in_battle.hp > 0 and not agent_moved and agent_stuck not in [1,2,3]:
                     is_crit, is_super_eff, is_hit, total_damage = action.use(adv_in_battle)
                     adv_in_battle.hp -= total_damage
                     value += total_damage
-                else:
+                # Case agent may move but is dead
+                elif in_battle.hp <= 0:
                     in_battle.fainted = True
                     remaining = [mon for mon in simulated_trainer.team if not mon.fainted]
                     if len(remaining) == 0:
                         battle_ended = True
                     else:
                         in_battle = remaining[0]
-
+                # Else agent chose switch / item
 
         return value, adversary_trainer, adv_in_battle, simulated_trainer, in_battle, battle_ended
 

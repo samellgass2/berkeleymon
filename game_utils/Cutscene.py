@@ -102,7 +102,6 @@ class DialogueBox(TextBox):
         self.choice = None
         self.shapes = []
         self.height_per_option = [math.ceil((10 * len(option))/(6 * TILE_WIDTH)) for option in self.options]
-        print(self.height_per_option)
 
     def increment_cursor(self):
         if self.pointer_ind == 0:

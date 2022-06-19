@@ -24,6 +24,7 @@ class Withdraw(PokemonMove):
     def use(self, opponent):
         self.raise_stat("defense", opponent)
         self.pp -= 1
+        return False, 0, True, 0
 
 class Growl(PokemonMove):
     """Growl."""
@@ -31,8 +32,9 @@ class Growl(PokemonMove):
         super().__init__(type=0, name="Growl", power=0, physical=False, accuracy=100, pp=40, is_status=True)
 
     def use(self, opponent):
-        opponent.raise_stat("attack", opponent, lower=True)
+        self.raise_stat("attack", opponent, lower=True)
         self.pp -= 1
+        return False, 0, True, 0
 
 class Absorb(PokemonMove):
     """Absorb."""
@@ -97,6 +99,7 @@ class Synthesis(PokemonMove):
         super().__init__(type=11, name="Synthesis", power=0, physical=False, accuracy=100, pp=10, is_status=True)
 
     def use(self, opponent):
+        self.pp -= 1
         healing = np.random.choice(range(self.user.stats["max_hp"] // 3, self.user.stats["max_hp"] // 2))
         self.user.take_damage(-healing)
         if self.user.trainer.board is not None:
